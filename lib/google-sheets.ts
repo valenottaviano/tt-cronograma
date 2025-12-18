@@ -5,9 +5,8 @@ export async function getRaces(): Promise<Race[]> {
   const sheetUrl = process.env.GOOGLE_SHEET_CSV_URL;
 
   if (!sheetUrl) {
-    console.warn("GOOGLE_SHEET_CSV_URL is not defined, using mock data.");
-    const { races } = await import("./data");
-    return races;
+    console.warn("GOOGLE_SHEET_CSV_URL is not defined.");
+    return [];
   }
 
   try {
@@ -19,7 +18,7 @@ export async function getRaces(): Promise<Race[]> {
       skipEmptyLines: true,
     });
 
-    return data.map((row: any) => ({
+    const races = data.map((row: any) => ({
       id: row.id || Math.random().toString(36).substr(2, 9),
       name: row.name,
       date: row.date,
@@ -32,10 +31,13 @@ export async function getRaces(): Promise<Race[]> {
       description: row.description,
       discountCode: row.discountCode,
     })) as Race[];
+
+    return races.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
   } catch (error) {
     console.error("Error fetching races from Google Sheets:", error);
-    const { races } = await import("./data");
-    return races;
+    return [];
   }
 }
 
