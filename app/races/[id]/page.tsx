@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   const races = await getRaces();
   return races.map((race) => ({

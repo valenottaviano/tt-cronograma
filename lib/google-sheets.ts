@@ -2,15 +2,34 @@ import Papa from "papaparse";
 import { Race, RaceType } from "./data";
 
 export async function getRaces(): Promise<Race[]> {
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  const sheetGid = process.env.GOOGLE_SHEET_GID || "0";
   const sheetUrl = process.env.GOOGLE_SHEET_CSV_URL;
 
-  if (!sheetUrl) {
-    console.warn("GOOGLE_SHEET_CSV_URL is not defined.");
+  let url = sheetUrl;
+
+  // Prioritize using the direct export URL if ID is available
+  // This avoids the "Publish to Web" latency
+  if (sheetId) {
+    url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${sheetGid}`;
+  }
+
+  if (!url) {
+    console.warn("GOOGLE_SHEET_ID or GOOGLE_SHEET_CSV_URL is not defined.");
     return [];
   }
 
   try {
-    const response = await fetch(sheetUrl, { next: { revalidate: 3600 } }); // Cache for 1 hour
+    // revalidate: 0 ensures we always get the latest data
+    const response = await fetch(url, { next: { revalidate: 0 } });
+
+    if (!response.ok) {
+      console.error(
+        `Failed to fetch sheet: ${response.status} ${response.statusText}`
+      );
+      return [];
+    }
+
     const csvText = await response.text();
 
     const { data } = Papa.parse(csvText, {
