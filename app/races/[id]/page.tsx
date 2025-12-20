@@ -193,14 +193,13 @@ export default async function RacePage({
                   ¡Código de Descuento!
                 </h3>
                 <p className="text-yellow-700 dark:text-yellow-600 mb-3 text-sm">
-                  Usa este código al inscribirte para obtener un beneficio
-                  especial.
+                  Código de descuento disponible. Solicitarlo a staff TT.
                 </p>
-                <div className="bg-white dark:bg-black/40 border-2 border-dashed border-yellow-300 dark:border-yellow-700 rounded-lg p-3 text-center">
+                {/* <div className="bg-white dark:bg-black/40 border-2 border-dashed border-yellow-300 dark:border-yellow-700 rounded-lg p-3 text-center">
                   <span className="text-xl font-mono font-bold text-yellow-900 dark:text-yellow-400 tracking-wider select-all">
                     {race.discountCode}
                   </span>
-                </div>
+                </div> */}
               </motion.div>
             )}
 
