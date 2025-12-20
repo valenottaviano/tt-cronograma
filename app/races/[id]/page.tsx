@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ImageWithSkeleton } from "@/components/image-with-skeleton";
 
 export const revalidate = 0;
 
@@ -44,10 +45,7 @@ export default async function RacePage({
     <div className="min-h-screen bg-background font-sans pb-12">
       <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden">
         <div className="absolute inset-0 bg-black/40 z-10" />
-        <motion.img
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+        <ImageWithSkeleton
           src={
             race.image ||
             "https://images.unsplash.com/photo-1533560906234-8f85e186d6ea?q=80&w=1000&auto=format&fit=crop"

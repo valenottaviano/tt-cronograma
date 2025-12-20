@@ -12,9 +12,9 @@ export function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-md"
+      className=" fixed top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-md"
     >
-      <div className="container flex h-14 items-center px-4">
+      <div className="container mx-auto py-8 flex h-14 items-center px-4">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <img
@@ -26,14 +26,14 @@ export function Navbar() {
               Cronograma TT
             </span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          {/* <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link
               href="/"
               className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
               Inicio
             </Link>
-          </nav>
+          </nav> */}
         </div>
         <Sheet>
           <SheetTrigger asChild>

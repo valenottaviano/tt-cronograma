@@ -26,6 +26,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ImageWithSkeleton } from "@/components/image-with-skeleton";
 
 interface RaceListProps {
   races: Race[];
@@ -86,17 +87,13 @@ export function RaceList({ races }: RaceListProps) {
             <Card className="overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow duration-300 p-0 gap-0 pb-4">
               <div className="relative">
                 <AspectRatio ratio={16 / 9}>
-                  <img
+                  <ImageWithSkeleton
                     src={
                       race.image ||
                       "https://images.unsplash.com/photo-1533560906234-8f85e186d6ea?q=80&w=1000&auto=format&fit=crop"
                     }
                     alt={race.name}
                     className="object-cover w-full h-full"
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "https://images.unsplash.com/photo-1533560906234-8f85e186d6ea?q=80&w=1000&auto=format&fit=crop"; // Fallback
-                    }}
                   />
                 </AspectRatio>
                 <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
