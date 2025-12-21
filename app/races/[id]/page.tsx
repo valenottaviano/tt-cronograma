@@ -198,7 +198,7 @@ export default async function RacePage({
                   ¡Código de Descuento!
                 </h3>
                 <p className="text-yellow-100/80 mb-3 text-sm">
-                  Código de descuento disponible. Solicitarlo a staff TT.
+                  {race.discountCode}
                 </p>
               </motion.div>
             )}
