@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageWithSkeleton } from "@/components/image-with-skeleton";
+import { DiscountCode } from "@/components/discount-code";
 
 export const revalidate = 0;
 
@@ -198,12 +199,7 @@ export default async function RacePage({
                   ¡Código de Descuento!
                 </h3>
                 {race.discountCode.split(",").map((code, i) => (
-                  <div
-                    key={i}
-                    className="bg-yellow-400/10 hover:bg-yellow-400/20  border border-dashed border-yellow-400/20 px-4 py-2 rounded-lg font-medium text-lg text-yellow-200 transition-colors mb-2"
-                  >
-                    {code.trim()}
-                  </div>
+                  <DiscountCode key={i} code={code.trim()} />
                 ))}
               </motion.div>
             )}
