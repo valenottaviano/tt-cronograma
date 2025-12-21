@@ -101,8 +101,8 @@ export function RaceList({ races }: RaceListProps) {
                     variant={race.type === "trail" ? "default" : "secondary"}
                     className={
                       race.type === "trail"
-                        ? "bg-green-600/80 hover:bg-green-700/90 backdrop-blur-md border-0 text-white"
-                        : "bg-white/20 hover:bg-white/30 backdrop-blur-md border-white/10 text-white"
+                        ? "bg-green-600/80 hover:bg-green-700/90 border-0 text-white"
+                        : "bg-white/20 hover:bg-white/30 border-white/10 text-white"
                     }
                   >
                     {race.type === "trail" ? "Trail" : "Calle"}
@@ -139,7 +139,7 @@ export function RaceList({ races }: RaceListProps) {
                   </span>
                 </div>
 
-                <div className="bg-black/20 border border-white/5 rounded-lg p-3 mb-2 backdrop-blur-sm">
+                <div className="bg-black/20 border border-white/5 rounded-lg p-3 mb-2">
                   <div className="text-xs text-white/60 mb-1 text-center uppercase tracking-wider">
                     Faltan
                   </div>
