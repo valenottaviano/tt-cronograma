@@ -197,9 +197,14 @@ export default async function RacePage({
                   <Ticket className="w-5 h-5 mr-2" />
                   ¡Código de Descuento!
                 </h3>
-                <p className="text-yellow-100/80 mb-3 text-sm">
-                  {race.discountCode}
-                </p>
+                {race.discountCode.split(",").map((code, i) => (
+                  <div
+                    key={i}
+                    className="bg-yellow-400/10 hover:bg-yellow-400/20  border border-dashed border-yellow-400/20 px-4 py-2 rounded-lg font-medium text-lg text-yellow-200 transition-colors mb-2"
+                  >
+                    {code.trim()}
+                  </div>
+                ))}
               </motion.div>
             )}
 
