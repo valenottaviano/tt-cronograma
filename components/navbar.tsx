@@ -12,9 +12,9 @@ export function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className=" fixed top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-md"
+      className="fixed top-4 left-4 right-4 z-50 rounded-2xl border border-white/10 bg-black/30 backdrop-blur-xl shadow-2xl"
     >
-      <div className="container mx-auto py-8 flex h-14 items-center px-4">
+      <div className="container mx-auto py-4 flex h-14 items-center px-6">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <img
@@ -23,7 +23,7 @@ export function Navbar() {
               className="h-8 w-auto"
             />
             <span className="hidden font-bold sm:inline-block">
-              Cronograma TT
+              Calendario TT
             </span>
           </Link>
           {/* <nav className="flex items-center space-x-6 text-sm font-medium">

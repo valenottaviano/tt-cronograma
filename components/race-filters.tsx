@@ -62,16 +62,16 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
     filters.province || filters.type || filters.dateRange;
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:flex-wrap">
+    <div className="glass-panel p-4 rounded-2xl flex flex-col gap-4 md:flex-row md:items-center md:flex-wrap">
       {/* Province Filter */}
       <Select
         value={filters.province || "all"}
         onValueChange={handleProvinceChange}
       >
-        <SelectTrigger className="w-full md:w-[200px]">
+        <SelectTrigger className="w-full md:w-[200px] glass-input border-white/10 text-white">
           <SelectValue placeholder="Provincia" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="glass-panel border-white/10 text-white bg-black/80 backdrop-blur-xl">
           <SelectItem value="all">Todas las provincias</SelectItem>
           {provinces.map((province) => (
             <SelectItem key={province} value={province}>
@@ -83,10 +83,10 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
 
       {/* Type Filter */}
       <Select value={filters.type || "all"} onValueChange={handleTypeChange}>
-        <SelectTrigger className="w-full md:w-[180px]">
+        <SelectTrigger className="w-full md:w-[180px] glass-input border-white/10 text-white">
           <SelectValue placeholder="Modalidad" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="glass-panel border-white/10 text-white bg-black/80 backdrop-blur-xl">
           <SelectItem value="all">Todas las modalidades</SelectItem>
           <SelectItem value="road">Calle</SelectItem>
           <SelectItem value="trail">Trail</SelectItem>
@@ -101,7 +101,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
               id="date"
               variant={"outline"}
               className={cn(
-                "w-full md:w-[300px] justify-start text-left font-normal",
+                "w-full md:w-[300px] justify-start text-left font-normal glass-input border-white/10 text-white hover:bg-white/10 hover:text-white",
                 !filters.dateRange && "text-muted-foreground"
               )}
             >
@@ -123,7 +123,10 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent
+            className="w-auto p-0 glass-panel border-white/10 bg-black/80 backdrop-blur-xl"
+            align="start"
+          >
             <Calendar
               initialFocus
               mode="range"
@@ -131,6 +134,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
               selected={filters.dateRange}
               onSelect={handleDateSelect}
               numberOfMonths={2}
+              className="text-white"
             />
           </PopoverContent>
         </Popover>
@@ -141,7 +145,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
         <Button
           variant="ghost"
           onClick={clearFilters}
-          className="h-8 px-2 lg:px-3"
+          className="h-8 px-2 lg:px-3 text-white/70 hover:text-white hover:bg-white/10"
         >
           Limpiar
           <X className="ml-2 h-4 w-4" />

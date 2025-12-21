@@ -82,9 +82,9 @@ export function RaceList({ races }: RaceListProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            transition={{ duration: 0.5 }}
           >
-            <Card className="overflow-hidden flex flex-col h-full hover:shadow-lg transition-shadow duration-300 p-0 gap-0 pb-4">
+            <Card className="overflow-hidden flex flex-col h-full p-0 gap-0 pb-4 border-0 group">
               <div className="relative">
                 <AspectRatio ratio={16 / 9}>
                   <ImageWithSkeleton
@@ -93,7 +93,7 @@ export function RaceList({ races }: RaceListProps) {
                       "https://images.unsplash.com/photo-1533560906234-8f85e186d6ea?q=80&w=1000&auto=format&fit=crop"
                     }
                     alt={race.name}
-                    className="object-cover w-full h-full"
+                    className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                   />
                 </AspectRatio>
                 <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
@@ -101,8 +101,8 @@ export function RaceList({ races }: RaceListProps) {
                     variant={race.type === "trail" ? "default" : "secondary"}
                     className={
                       race.type === "trail"
-                        ? "bg-green-600 hover:bg-green-700"
-                        : ""
+                        ? "bg-green-600/80 hover:bg-green-700/90 backdrop-blur-md border-0 text-white"
+                        : "bg-white/20 hover:bg-white/30 backdrop-blur-md border-white/10 text-white"
                     }
                   >
                     {race.type === "trail" ? "Trail" : "Calle"}
@@ -119,19 +119,19 @@ export function RaceList({ races }: RaceListProps) {
 
               <CardHeader className="pb-2 pt-4">
                 <div className="flex justify-between items-start gap-2">
-                  <h3 className="font-bold text-xl leading-tight">
+                  <h3 className="font-bold text-xl leading-tight text-white">
                     {race.name}
                   </h3>
                 </div>
-                <div className="flex items-center text-muted-foreground text-sm mt-1">
-                  <MapPin className="w-4 h-4 mr-1" />
+                <div className="flex items-center text-white/70 text-sm mt-1">
+                  <MapPin className="w-4 h-4 mr-1 text-white/50" />
                   {race.location}, {race.province}
                 </div>
               </CardHeader>
 
               <CardContent className="flex-grow">
-                <div className="flex items-center text-sm mb-4">
-                  <CalendarIcon className="w-4 h-4 mr-1 text-muted-foreground" />
+                <div className="flex items-center text-sm mb-4 text-white/90">
+                  <CalendarIcon className="w-4 h-4 mr-1 text-white/50" />
                   <span className="font-medium">
                     {format(parseISO(race.date), "d 'de' MMMM, yyyy", {
                       locale: es,
@@ -139,8 +139,8 @@ export function RaceList({ races }: RaceListProps) {
                   </span>
                 </div>
 
-                <div className="bg-muted/50 rounded-lg p-3 mb-2">
-                  <div className="text-xs text-muted-foreground mb-1 text-center uppercase tracking-wider">
+                <div className="bg-black/20 border border-white/5 rounded-lg p-3 mb-2 backdrop-blur-sm">
+                  <div className="text-xs text-white/60 mb-1 text-center uppercase tracking-wider">
                     Faltan
                   </div>
                   <div className="flex justify-center">

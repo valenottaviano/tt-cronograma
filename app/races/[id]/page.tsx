@@ -61,11 +61,10 @@ export default async function RacePage({
           >
             <Button
               asChild
-              variant="outline"
-              className="w-fit mb-6 text-white border-white hover:bg-white/20 hover:text-white bg-transparent"
+              className="w-fit mb-6 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 shadow-lg group"
             >
               <Link href="/">
-                <ArrowLeft className="mr-2 w-4 h-4" />
+                <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 Volver al listado
               </Link>
             </Button>
@@ -78,17 +77,17 @@ export default async function RacePage({
             className="flex flex-wrap gap-2 mb-4"
           >
             <Badge
-              className={`text-base px-3 py-1 ${
+              className={`text-base px-3 py-1 backdrop-blur-md border-0 ${
                 race.type === "trail"
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  ? "bg-green-600/80 hover:bg-green-700/90 text-white"
+                  : "bg-white/20 hover:bg-white/30 text-white"
               }`}
             >
               {race.type === "trail" ? "Trail Running" : "Calle"}
             </Badge>
             <Badge
               variant="outline"
-              className="text-base px-3 py-1 text-white border-white"
+              className="text-base px-3 py-1 text-white border-white/30 bg-black/20 backdrop-blur-md"
             >
               {race.province}
             </Badge>
@@ -123,24 +122,26 @@ export default async function RacePage({
             transition={{ duration: 0.6, delay: 0.5 }}
             className="lg:col-span-2 space-y-8"
           >
-            <div className="bg-card rounded-xl shadow-sm border p-6 md:p-8">
-              <h2 className="text-2xl font-bold mb-4">Sobre la carrera</h2>
-              <p className="text-muted-foreground leading-relaxed text-lg">
+            <div className="glass-panel rounded-2xl p-6 md:p-8">
+              <h2 className="text-2xl font-bold mb-4 text-white">
+                Sobre la carrera
+              </h2>
+              <p className="text-white/80 leading-relaxed text-lg">
                 {race.description ||
                   "No hay descripción disponible para esta carrera."}
               </p>
 
-              <Separator className="my-8" />
+              <Separator className="my-8 bg-white/10" />
 
-              <h3 className="text-xl font-semibold mb-4 flex items-center">
-                <Ruler className="w-5 h-5 mr-2" />
+              <h3 className="text-xl font-semibold mb-4 flex items-center text-white">
+                <Ruler className="w-5 h-5 mr-2 text-white/60" />
                 Distancias
               </h3>
               <div className="flex flex-wrap gap-3">
                 {race.distance.split(",").map((dist, i) => (
                   <div
                     key={i}
-                    className="bg-secondary/50 px-4 py-2 rounded-lg font-medium text-lg"
+                    className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/5 px-4 py-2 rounded-lg font-medium text-lg text-white transition-colors"
                   >
                     {dist.trim()}
                   </div>
@@ -155,24 +156,24 @@ export default async function RacePage({
             transition={{ duration: 0.6, delay: 0.7 }}
             className="space-y-6"
           >
-            <div className="bg-card rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <CalendarIcon className="w-5 h-5 mr-2" />
+            <div className="glass-panel rounded-2xl p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+                <CalendarIcon className="w-5 h-5 mr-2 text-white/60" />
                 Fecha y Hora
               </h3>
-              <p className="text-2xl font-bold mb-1">
+              <p className="text-2xl font-bold mb-1 text-white">
                 {format(parseISO(race.date), "d 'de' MMMM, yyyy", {
                   locale: es,
                 })}
               </p>
-              <p className="text-muted-foreground">
+              <p className="text-white/60">
                 {format(parseISO(race.date), "HH:mm 'hs'", { locale: es })}
               </p>
 
-              <Separator className="my-6" />
+              <Separator className="my-6 bg-white/10" />
 
               <div className="text-center">
-                <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">
+                <p className="text-sm text-white/50 uppercase tracking-widest mb-3">
                   Tiempo Restante
                 </p>
                 <div className="flex justify-center scale-125">
@@ -186,20 +187,15 @@ export default async function RacePage({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
-                className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl p-6 shadow-sm"
+                className="bg-yellow-500/10 backdrop-blur-md border border-yellow-500/20 rounded-2xl p-6 shadow-lg"
               >
-                <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-500 mb-2 flex items-center">
+                <h3 className="text-lg font-semibold text-yellow-200 mb-2 flex items-center">
                   <Ticket className="w-5 h-5 mr-2" />
                   ¡Código de Descuento!
                 </h3>
-                <p className="text-yellow-700 dark:text-yellow-600 mb-3 text-sm">
+                <p className="text-yellow-100/80 mb-3 text-sm">
                   Código de descuento disponible. Solicitarlo a staff TT.
                 </p>
-                {/* <div className="bg-white dark:bg-black/40 border-2 border-dashed border-yellow-300 dark:border-yellow-700 rounded-lg p-3 text-center">
-                  <span className="text-xl font-mono font-bold text-yellow-900 dark:text-yellow-400 tracking-wider select-all">
-                    {race.discountCode}
-                  </span>
-                </div> */}
               </motion.div>
             )}
 
@@ -208,7 +204,11 @@ export default async function RacePage({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Button asChild size="lg" className="w-full text-lg h-14">
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full text-lg h-14 bg-gradient-to-r from-white/10 via-white/20 to-white/10 hover:from-white/20 hover:via-white/30 hover:to-white/20 border border-white/20 hover:border-white/40 text-white backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all duration-500"
+                >
                   <a href={race.url} target="_blank" rel="noopener noreferrer">
                     Sitio Web Oficial
                     <ExternalLink className="ml-2 w-5 h-5" />

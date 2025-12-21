@@ -43,7 +43,7 @@ export function Countdown({ targetDate }: CountdownProps) {
   }, [targetDate]);
 
   if (!timeLeft) {
-    return <div className="h-6 w-24 animate-pulse bg-muted rounded" />;
+    return <div className="h-6 w-24 animate-pulse bg-white/10 rounded" />;
   }
 
   return (
@@ -51,29 +51,33 @@ export function Countdown({ targetDate }: CountdownProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center gap-2 text-sm font-medium font-mono"
+      className="flex items-center gap-2 text-sm font-medium font-mono text-white"
     >
       <div className="flex flex-col items-center">
         <span className="text-xl font-bold leading-none">{timeLeft.days}</span>
-        <span className="text-[10px] text-muted-foreground uppercase font-sans">
+        <span className="text-[10px] text-white/60 uppercase font-sans">
           Días
         </span>
       </div>
-      <span className="text-xl font-bold leading-none pb-3">:</span>
+      <span className="text-xl font-bold leading-none pb-3 text-white/40">
+        :
+      </span>
       <div className="flex flex-col items-center">
         <span className="text-xl font-bold leading-none">
           {timeLeft.hours.toString().padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-muted-foreground uppercase font-sans">
+        <span className="text-[10px] text-white/60 uppercase font-sans">
           Hs
         </span>
       </div>
-      <span className="text-xl font-bold leading-none pb-3">:</span>
+      <span className="text-xl font-bold leading-none pb-3 text-white/40">
+        :
+      </span>
       <div className="flex flex-col items-center">
         <span className="text-xl font-bold leading-none">
           {timeLeft.minutes.toString().padStart(2, "0")}
         </span>
-        <span className="text-[10px] text-muted-foreground uppercase font-sans">
+        <span className="text-[10px] text-white/60 uppercase font-sans">
           Min
         </span>
       </div>
