@@ -43,7 +43,7 @@ export default async function RacePage({
 
   return (
     <div className="min-h-screen bg-background font-sans pb-12">
-      <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden">
+      <div className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] min-h-[500px] overflow-hidden">
         <div className="absolute inset-0 bg-black/40 z-10" />
         <ImageWithSkeleton
           src={
@@ -53,7 +53,9 @@ export default async function RacePage({
           alt={race.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 z-20 container mx-auto px-4 flex flex-col justify-end pb-8 md:pb-12">
+
+        {/* Back Button - Positioned at top to avoid overlap with bottom content */}
+        <div className="absolute top-0 left-0 z-30 w-full pt-32 pl-4 md:pl-8 container mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -61,7 +63,7 @@ export default async function RacePage({
           >
             <Button
               asChild
-              className="w-fit mb-6 bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 shadow-lg group"
+              className="w-fit bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 shadow-lg group"
             >
               <Link href="/">
                 <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -69,7 +71,9 @@ export default async function RacePage({
               </Link>
             </Button>
           </motion.div>
+        </div>
 
+        <div className="absolute inset-0 z-20 container mx-auto px-4 flex flex-col justify-end pb-8 md:pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
