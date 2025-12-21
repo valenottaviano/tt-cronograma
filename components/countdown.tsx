@@ -11,14 +11,23 @@ import { motion } from "framer-motion";
 
 interface CountdownProps {
   targetDate: string;
+  isFinished?: boolean;
 }
 
-export function Countdown({ targetDate }: CountdownProps) {
+export function Countdown({ targetDate, isFinished }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
     minutes: number;
   } | null>(null);
+
+  if (isFinished) {
+    return (
+      <div className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
+        Finalizada
+      </div>
+    );
+  }
 
   useEffect(() => {
     const calculateTimeLeft = () => {
