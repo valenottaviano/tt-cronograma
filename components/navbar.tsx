@@ -14,11 +14,13 @@ export function Navbar() {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed flex flex-row-reverse items-center top-4 left-4 right-4 z-50 rounded-2xl border border-white/10 bg-black/30 backdrop-blur-xl shadow-2xl"
     >
-      <img
-        src="https://www.carreratt.com.ar/logo-tt.png"
-        alt="Logo TT"
-        className="md:hidden h-8 w-auto mr-10"
-      />
+      <Link href="/">
+        <img
+          src="https://www.carreratt.com.ar/logo-tt.png"
+          alt="Logo TT"
+          className="md:hidden h-8 w-auto mr-10"
+        />
+      </Link>
       <div className="container mx-auto py-4 flex h-14 items-center px-6">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
