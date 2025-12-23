@@ -10,7 +10,7 @@ export function InfiniteBanner({ onClick }: InfiniteBannerProps) {
   return (
     <div
       onClick={onClick}
-      className="w-full bg-orange-600 overflow-hidden py-3 relative z-10 cursor-pointer hover:bg-orange-700 transition-colors"
+      className="w-full bg-[#ec261f] overflow-hidden py-3 relative z-10 cursor-pointer hover:bg-[#c41e18] transition-colors"
     >
       <div className="flex select-none">
         <motion.div
