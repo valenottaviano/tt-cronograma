@@ -38,6 +38,12 @@ export function Navbar() {
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link
+              href="https://www.carreratt.com.ar/"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Carrera TT
+            </Link>
+            <Link
               href="/races"
               className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
@@ -76,6 +82,7 @@ export function Navbar() {
             </Link>
             <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
               <div className="flex flex-col space-y-3">
+                <Link href="https://www.carreratt.com.ar/">Carrera TT</Link>
                 <Link href="/" onClick={() => setIsOpen(false)}>
                   Inicio
                 </Link>
@@ -95,7 +102,12 @@ export function Navbar() {
             {/* Search or other controls could go here */}
           </div>
           <nav className="flex items-center">
-            {/* User auth or theme toggle could go here */}
+            <Link
+              className="md:hidden transition-colors hover:text-foreground/80 text-foreground/90"
+              href="https://carreratt.com.ar"
+            >
+              Carrera TT
+            </Link>
           </nav>
         </div>
       </div>
