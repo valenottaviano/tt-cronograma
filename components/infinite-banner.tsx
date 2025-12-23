@@ -27,7 +27,7 @@ export function InfiniteBanner({ onClick }: InfiniteBannerProps) {
               key={i}
               className="mx-8 text-white font-bold uppercase tracking-[0.2em] text-sm"
             >
-              Carrera TT
+              ¡Carrera TT 2026!
             </span>
           ))}
         </motion.div>
