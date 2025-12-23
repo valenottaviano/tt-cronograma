@@ -76,7 +76,7 @@ export function Navbar() {
               <img
                 src="https://www.carreratt.com.ar/logo-tt.png"
                 alt="Logo TT"
-                className="h-8 w-auto"
+                className="h-8 w-auto ml-10 my-5"
               />
               <span className="font-bold">Beneficios TT</span>
             </Link>
