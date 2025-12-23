@@ -7,10 +7,15 @@ import {
 } from "@/components/ui/card";
 import { Calendar, Store } from "lucide-react";
 import Link from "next/link";
+import { getNews } from "@/lib/google-sheets";
+import { NewsNotifier } from "@/components/news-notifier";
 
-export default function Home() {
+export default async function Home() {
+  const news = await getNews();
+
   return (
     <div className="min-h-screen bg-background font-sans">
+      <NewsNotifier news={news} />
       <Hero />
       <main className="container mx-auto px-4 py-16">
         <section className="max-w-4xl mx-auto text-center">

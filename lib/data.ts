@@ -23,6 +23,13 @@ export interface Benefit {
   linkCta?: string;
 }
 
+export interface News {
+  id: string;
+  title: string;
+  subtitle: string;
+  link?: string;
+}
+
 export const provinces = [
   "Buenos Aires",
   "Catamarca",

@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { Race, RaceType, Benefit } from "./data";
+import { Race, RaceType, Benefit, News } from "./data";
 
 async function fetchSheetData(url: string | undefined) {
   if (!url) {
@@ -65,6 +65,22 @@ export async function getBenefits(): Promise<Benefit[]> {
     logo: row.logo,
     linkCta: row.link_cta,
   })) as Benefit[];
+}
+
+export async function getNews(): Promise<News[]> {
+  const url = process.env.GOOGLE_SHEET_NEWS_URL;
+  const data = await fetchSheetData(url);
+  console.log("Fetched news data:", data);
+
+  return data.map((row: any) => ({
+    id: row.id || Math.random().toString(36).substr(2, 9),
+    title: row.titulo,
+    subtitle: row.subtitulo,
+    link:
+      row.link && !row.link.startsWith("http")
+        ? `https://${row.link}`
+        : row.link,
+  })) as News[];
 }
 
 export async function getRaceById(id: string): Promise<Race | undefined> {
