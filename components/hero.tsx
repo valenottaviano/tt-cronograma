@@ -54,16 +54,16 @@ export function Hero() {
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 mb-6 tracking-tight leading-tight"
         >
-          Tu Próxima Meta.
+          Beneficios TT
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-          className="text-xl md:text-3xl text-white/90 font-medium max-w-2xl mx-auto leading-relaxed"
+          className="text-xl md:text-2xl text-white/90 font-medium max-w-2xl drop-shadow-md"
         >
-          Calendario oficial del Training Team
+          Descubrí todo lo que tenemos para vos
         </motion.p>
 
         {/* Scroll Indicator */}

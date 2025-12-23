@@ -30,17 +30,23 @@ export function Navbar() {
               className="h-8 w-auto"
             />
             <span className="hidden font-bold sm:inline-block">
-              Calendario TT
+              Beneficios TT
             </span>
           </Link>
-          {/* <nav className="flex items-center space-x-6 text-sm font-medium">
+          <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link
-              href="/"
+              href="/races"
               className="transition-colors hover:text-foreground/80 text-foreground/60"
             >
-              Inicio
+              Carreras
             </Link>
-          </nav> */}
+            <Link
+              href="/benefits"
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              Beneficios
+            </Link>
+          </nav>
         </div>
         <Sheet>
           <SheetTrigger asChild>
@@ -59,11 +65,13 @@ export function Navbar() {
                 alt="Logo TT"
                 className="h-8 w-auto"
               />
-              <span className="font-bold">Cronograma TT</span>
+              <span className="font-bold">Beneficios TT</span>
             </Link>
             <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
               <div className="flex flex-col space-y-3">
                 <Link href="/">Inicio</Link>
+                <Link href="/races">Carreras</Link>
+                <Link href="/benefits">Beneficios</Link>
                 {/* Add more mobile links here */}
               </div>
             </div>

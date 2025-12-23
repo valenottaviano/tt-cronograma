@@ -14,6 +14,15 @@ export interface Race {
   discountCode?: string;
 }
 
+export interface Benefit {
+  id: string;
+  title: string;
+  description: string;
+  company: string;
+  logo?: string;
+  linkCta?: string;
+}
+
 export const provinces = [
   "Buenos Aires",
   "Catamarca",

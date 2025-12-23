@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cronograma de Carreras",
-  description: "Las mejores carreras de running y trail en Argentina",
+  title: "Beneficios TT",
+  description:
+    "Descubre carreras exclusivas con descuentos especiales para la comunidad TT. ¡Corre, ahorra y disfruta al máximo!",
 };
 
 export default function RootLayout({
