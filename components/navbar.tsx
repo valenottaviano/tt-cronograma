@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -48,7 +51,7 @@ export function Navbar() {
             </Link>
           </nav>
         </div>
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
@@ -59,7 +62,11 @@ export function Navbar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
-            <Link href="/" className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+              onClick={() => setIsOpen(false)}
+            >
               <img
                 src="https://www.carreratt.com.ar/logo-tt.png"
                 alt="Logo TT"
@@ -69,9 +76,15 @@ export function Navbar() {
             </Link>
             <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
               <div className="flex flex-col space-y-3">
-                <Link href="/">Inicio</Link>
-                <Link href="/races">Carreras</Link>
-                <Link href="/benefits">Beneficios</Link>
+                <Link href="/" onClick={() => setIsOpen(false)}>
+                  Inicio
+                </Link>
+                <Link href="/races" onClick={() => setIsOpen(false)}>
+                  Carreras
+                </Link>
+                <Link href="/benefits" onClick={() => setIsOpen(false)}>
+                  Beneficios
+                </Link>
                 {/* Add more mobile links here */}
               </div>
             </div>

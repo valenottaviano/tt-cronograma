@@ -70,7 +70,6 @@ export async function getBenefits(): Promise<Benefit[]> {
 export async function getNews(): Promise<News[]> {
   const url = process.env.GOOGLE_SHEET_NEWS_URL;
   const data = await fetchSheetData(url);
-  console.log("Fetched news data:", data);
 
   return data.map((row: any) => ({
     id: row.id || Math.random().toString(36).substr(2, 9),
