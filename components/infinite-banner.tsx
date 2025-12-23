@@ -22,7 +22,7 @@ export function InfiniteBanner({ onClick }: InfiniteBannerProps) {
             duration: 20,
           }}
         >
-          {Array.from({ length: 13 }).map((_, i) => (
+          {Array.from({ length: 10 }).map((_, i) => (
             <span
               key={i}
               className="mx-8 text-white font-bold uppercase tracking-[0.2em] text-sm"
