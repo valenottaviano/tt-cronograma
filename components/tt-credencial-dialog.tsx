@@ -26,10 +26,23 @@ export function TTCCredencialDialog() {
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
+    
+    // Check for saved DNI on mount
+    const savedDni = localStorage.getItem("tt_dni");
+    if (savedDni) {
+      setDni(savedDni);
+    }
   }, []);
 
+  // Auto-validate when dialog opens if we have a DNI and no person yet
+  useEffect(() => {
+    if (isOpen && dni && !person && !error && !loading) {
+      handleSearch(new Event("submit") as any);
+    }
+  }, [isOpen]);
+
   const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e?.preventDefault();
     if (!dni.trim()) return;
 
     setLoading(true);
@@ -41,10 +54,13 @@ export function TTCCredencialDialog() {
 
       if (!found) {
         setError("No se encontró ninguna persona con ese DNI.");
+        localStorage.removeItem("tt_dni");
       } else if (found.estado.toLowerCase() !== "activo") {
         setError("La credencial para este DNI no se encuentra activa.");
+        localStorage.removeItem("tt_dni");
       } else {
         setPerson(found);
+        localStorage.setItem("tt_dni", dni.trim());
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -57,14 +73,23 @@ export function TTCCredencialDialog() {
 
   const [isQrExpanded, setIsQrExpanded] = useState(false);
 
+  const handleReset = () => {
+    setPerson(null);
+    setDni("");
+    localStorage.removeItem("tt_dni");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       setIsOpen(open);
       if (!open) {
-        setDni("");
+        // Reset local UI state but keep saved DNI for next time
         setPerson(null);
         setError(null);
         setIsQrExpanded(false);
+        // Reload DNI from storage if it wasn't cleared by handleReset
+        const saved = localStorage.getItem("tt_dni");
+        if (saved) setDni(saved);
       }
     }}>
       <DialogTrigger asChild>
@@ -235,7 +260,7 @@ export function TTCCredencialDialog() {
                 </div>
 
                 <Button 
-                  onClick={() => setPerson(null)}
+                  onClick={handleReset}
                   variant="ghost" 
                   className="w-full text-zinc-500 hover:text-white hover:bg-zinc-900"
                 >
