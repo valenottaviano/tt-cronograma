@@ -132,7 +132,8 @@ export function TTCCredencialDialog() {
                         placeholder="Ej: 12345678"
                         value={dni}
                         onChange={(e) => setDni(e.target.value)}
-                        className="pl-10 bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-zinc-700 h-12"
+                        disabled={loading}
+                        className="pl-10 bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-zinc-700 h-12 disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
