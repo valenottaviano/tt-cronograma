@@ -100,8 +100,19 @@ export default async function ValidationPage({ params }: PageProps) {
         </div>
       </div>
 
-      <footer className="mt-12 text-zinc-700 text-[10px] uppercase tracking-widest">
-        &copy; {new Date().getFullYear()} TT Training Team - Digital ID Services
+      <footer className="mt-12 text-zinc-700 text-[10px] uppercase tracking-widest text-center space-y-2">
+        <p>&copy; {new Date().getFullYear()} TT Training Team - Digital ID Services</p>
+        <p className="normal-case tracking-normal text-zinc-800">
+          Programado con ❤️ por{" "}
+          <a 
+            href="https://wa.me/5493816003467" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-zinc-600 transition-colors underline underline-offset-4"
+          >
+            Valen
+          </a>
+        </p>
       </footer>
     </div>
   );

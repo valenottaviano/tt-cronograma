@@ -60,10 +60,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-white/5 text-center text-white/40 text-sm">
+        <div className="mt-12 pt-8 border-t border-white/5 text-center text-white/40 text-sm space-y-2">
           <p>
             &copy; {new Date().getFullYear()} TT Training Team. Todos los
             derechos reservados.
+          </p>
+          <p className="text-xs">
+            Programado con ❤️ por{" "}
+            <a 
+              href="https://wa.me/5493816003467" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors underline underline-offset-4"
+            >
+              Valen
+            </a>
           </p>
         </div>
       </div>
