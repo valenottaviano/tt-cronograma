@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useRef } from "react";
+import { TTCCredencialDialog } from "./tt-credencial-dialog";
 
 export function Hero() {
   const ref = useRef(null);
@@ -61,10 +62,19 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-          className="text-xl md:text-2xl text-white/90 font-medium max-w-2xl drop-shadow-md"
+          className="text-xl md:text-2xl text-white/90 font-medium max-w-2xl drop-shadow-md mb-8"
         >
           Descubrí todo lo que tenemos para vos
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <TTCCredencialDialog />
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div
