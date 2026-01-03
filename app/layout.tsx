@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { PWAInstallToast } from "@/components/pwa-install-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,6 +21,16 @@ export const metadata: Metadata = {
   title: "Beneficios TT",
   description:
     "Descubre carreras exclusivas con descuentos especiales para la comunidad TT. ¡Corre, ahorra y disfruta al máximo!",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "TT Cronograma",
+  },
+  icons: {
+    apple: "/ios/180.png",
+  },
 };
 
 export default function RootLayout({
@@ -42,6 +53,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <Toaster />
+          <PWAInstallToast />
         </ThemeProvider>
       </body>
     </html>
