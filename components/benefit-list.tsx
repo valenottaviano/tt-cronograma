@@ -32,7 +32,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
           className="flex flex-row md:flex-col h-full overflow-hidden hover:border-primary/50 transition-colors pt-0 group"
         >
           {benefit.logo && (
-            <div className="relative w-28 h-auto md:h-48 md:w-full p-2 md:p-4 flex-shrink-0 flex items-center justify-center border-r md:border-r-0 md:border-b transition-colors">
+            <div className="relative w-24 h-auto md:h-48 md:w-full p-2 md:p-4 flex-shrink-0 flex items-center justify-center border-r md:border-r-0 md:border-b transition-colors">
               <div className="relative w-full h-full aspect-square">
                 <Image
                   src={benefit.logo}
@@ -45,7 +45,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
           )}
           <div className="flex flex-col flex-1 min-w-0">
             <CardHeader className="p-4 pb-1 md:p-6 md:pb-2">
-              <CardTitle className="text-base md:text-xl line-clamp-1 md:line-clamp-none">
+              <CardTitle className="text-base md:text-xl">
                 {benefit.title}
               </CardTitle>
               <p className="text-xs md:text-sm text-muted-foreground font-medium">
