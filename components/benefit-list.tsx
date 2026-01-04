@@ -1,8 +1,15 @@
 import { Benefit } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface BenefitListProps {
   benefits: Benefit[];
@@ -47,17 +54,49 @@ export function BenefitList({ benefits }: BenefitListProps) {
               {benefit.description}
             </p>
 
-            {benefit.linkCta && (
-              <Button asChild variant="outline" className="w-full mt-auto">
-                <a
-                  href={benefit.linkCta}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Aprovechar beneficio <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            )}
+            {benefit.linkCta && (() => {
+              const isUrl = benefit.linkCta.startsWith('http') || benefit.linkCta.startsWith('/') || benefit.linkCta.startsWith('www');
+              
+              if (isUrl) {
+                const href = benefit.linkCta.startsWith('www') ? `https://${benefit.linkCta}` : benefit.linkCta;
+                return (
+                  <Button asChild variant="outline" className="w-full mt-auto">
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Aprovechar beneficio <ExternalLink className="ml-2 h-4 w-4" />
+                    </a>
+                  </Button>
+                );
+              }
+
+              return (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full mt-auto">
+                      Más información  <Info className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>{benefit.title}</DialogTitle>
+                      <p className="text-sm text-muted-foreground font-medium">
+                        {benefit.company}
+                      </p>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 py-4">
+                      {benefit.linkCta.split('\n').filter(line => line.trim() !== '').map((paragraph, index) => (
+                        <p key={index} className="text-sm leading-relaxed">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              );
+            })()}
           </CardContent>
         </Card>
       ))}
