@@ -1,7 +1,7 @@
 import { Benefit } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Info } from "lucide-react";
+import { ExternalLink, Info, Instagram, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import {
   Dialog,
@@ -100,6 +100,43 @@ export function BenefitList({ benefits }: BenefitListProps) {
                   </Dialog>
                 );
               })()}
+
+              {(benefit.instagramLink || benefit.whatsappLink) && (
+                <div className="flex gap-2 mt-1">
+                  {benefit.instagramLink && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs h-8 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
+                    >
+                      <a
+                        href={benefit.instagramLink.startsWith('http') ? benefit.instagramLink : `https://${benefit.instagramLink}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Instagram className="mr-2 h-3.5 w-3.5" /> Instagram
+                      </a>
+                    </Button>
+                  )}
+                  {benefit.whatsappLink && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
+                    >
+                      <a
+                        href={benefit.whatsappLink.startsWith('http') ? benefit.whatsappLink : `https://wa.me/${benefit.whatsappLink.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <MessageCircle className="mr-2 h-3.5 w-3.5" /> WhatsApp
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              )}
             </CardContent>
           </div>
         </Card>

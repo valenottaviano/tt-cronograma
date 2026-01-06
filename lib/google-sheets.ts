@@ -64,6 +64,8 @@ export async function getBenefits(): Promise<Benefit[]> {
     company: row.empresa,
     logo: row.logo,
     linkCta: row.link_cta,
+    instagramLink: row.instagram_link,
+    whatsappLink: row.whatsapp_link,
   })) as Benefit[];
 }
 

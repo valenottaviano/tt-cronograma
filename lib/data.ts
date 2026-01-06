@@ -21,6 +21,8 @@ export interface Benefit {
   company: string;
   logo?: string;
   linkCta?: string;
+  instagramLink?: string;
+  whatsappLink?: string;
 }
 
 export interface News {
