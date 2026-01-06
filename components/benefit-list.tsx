@@ -29,16 +29,16 @@ export function BenefitList({ benefits }: BenefitListProps) {
       {benefits.map((benefit) => (
         <Card
           key={benefit.id}
-          className="flex flex-row md:flex-col h-full overflow-hidden hover:border-primary/50 transition-colors pt-0 group"
+          className="flex flex-col h-full overflow-hidden hover:border-primary/50 transition-colors pt-0 group"
         >
           {benefit.logo && (
-            <div className="relative w-24 h-auto md:h-48 md:w-full p-2 md:p-4 flex-shrink-0 flex items-center justify-center border-r md:border-r-0 md:border-b transition-colors">
-              <div className="relative w-full h-full aspect-square">
+            <div className="relative w-full h-40 md:h-48 p-4 flex-shrink-0 flex items-center justify-center bg-white border-b transition-colors">
+              <div className="relative w-full h-full">
                 <Image
                   src={benefit.logo}
                   alt={benefit.company}
                   fill
-                  className="object-contain"
+                  className="object-contain p-2"
                 />
               </div>
             </div>
@@ -102,13 +102,13 @@ export function BenefitList({ benefits }: BenefitListProps) {
               })()}
 
               {(benefit.instagramLink || benefit.whatsappLink) && (
-                <div className="flex gap-2 mt-1">
+                <div className="flex flex-wrap gap-2 mt-1">
                   {benefit.instagramLink && (
                     <Button
                       asChild
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-xs h-8 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
+                      className="flex-1 min-w-[120px] text-xs h-8 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
                     >
                       <a
                         href={benefit.instagramLink.startsWith('http') ? benefit.instagramLink : `https://${benefit.instagramLink}`}
@@ -124,7 +124,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                       asChild
                       variant="outline"
                       size="sm"
-                      className="flex-1 text-xs h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
+                      className="flex-1 min-w-[120px] text-xs h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
                     >
                       <a
                         href={benefit.whatsappLink.startsWith('http') ? benefit.whatsappLink : `https://wa.me/${benefit.whatsappLink.replace(/\D/g, '')}`}
