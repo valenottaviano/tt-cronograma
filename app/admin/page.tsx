@@ -68,18 +68,6 @@ export default function AdminDashboard() {
           </div>
         </Link>
 
-        {/* Placeholder Features */}
-        <div className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 opacity-50 grayscale">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-4 bg-white/10 rounded-2xl text-white/40">
-              <Users className="w-7 h-7" />
-            </div>
-            <h3 className="text-2xl font-black text-white/40 italic uppercase tracking-tighter">Usuarios</h3>
-          </div>
-          <p className="text-white/20 text-sm font-medium leading-relaxed">
-            Gestión de corredores y perfiles de usuario (Próximamente).
-          </p>
-        </div>
       </div>
     </div>
   );
