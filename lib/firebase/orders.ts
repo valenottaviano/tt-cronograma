@@ -124,3 +124,17 @@ export async function updateOrderStatus(id: string, status: Order['status']): Pr
     throw error;
   }
 }
+
+/**
+ * Delete an order
+ */
+export async function deleteOrder(id: string): Promise<void> {
+  if (!db) throw new Error('Firestore not initialized');
+
+  try {
+    await deleteDoc(doc(db, ORDERS_COLLECTION, id));
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    throw new Error('Failed to delete order');
+  }
+}

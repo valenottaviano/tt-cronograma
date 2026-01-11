@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Order, getOrders, updateOrderStatus } from '@/lib/firebase/orders';
+import { Order, getOrders, updateOrderStatus, deleteOrder } from '@/lib/firebase/orders';
 import { formatPrice } from '@/components/navbar';
-import { Check, X, Clock, ExternalLink, ImageIcon, User, Search, Filter, Calendar, ListFilter, MessageSquare } from 'lucide-react';
+import { Check, X, Clock, ExternalLink, ImageIcon, User, Search, Filter, Calendar, ListFilter, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +37,17 @@ export default function AdminOrdersPage() {
       fetchOrders();
     } catch (error: any) {
       toast.error(error.message || 'Error al actualizar el estado');
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm('¿Estás seguro de que quieres eliminar este pedido?')) return;
+    try {
+      await deleteOrder(id);
+      toast.success('Pedido eliminado correctamente');
+      fetchOrders();
+    } catch (error: any) {
+      toast.error(error.message || 'Error al eliminar el pedido');
     }
   };
 
@@ -245,8 +256,14 @@ export default function AdminOrdersPage() {
                         </button>
                       </div>
                     )}
-                    {order.status === 'verified' && (
-                       <p className="text-[10px] text-orange-500 font-black uppercase text-center tracking-widest pt-2">Venta procesada ✅</p>
+                    {order.status !== 'pending' && (
+                       <button 
+                         onClick={() => handleDeleteOrder(order.id)}
+                         className="flex items-center justify-center gap-2 bg-white/5 hover:bg-red-600/10 text-white/20 hover:text-red-500 border border-dashed border-white/10 hover:border-red-500/20 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                       >
+                         <Trash2 className="w-4 h-4" />
+                         Eliminar Registro
+                       </button>
                     )}
                   </div>
                 </div>
