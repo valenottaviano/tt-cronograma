@@ -30,6 +30,29 @@ export async function uploadProductImage(file: File): Promise<string> {
 }
 
 /**
+ * Upload a benefit logo to Firebase Storage
+ */
+export async function uploadBenefitLogo(file: File): Promise<string> {
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized');
+  }
+
+  try {
+    const timestamp = Date.now();
+    const fileName = `benefit_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+    const storageRef = ref(storage, `benefits/${fileName}`);
+    
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    return downloadURL;
+  } catch (error) {
+    console.error('Error uploading benefit logo:', error);
+    throw new Error('Failed to upload image');
+  }
+}
+
+/**
  * Delete an image from Firebase Storage using its download URL or path
  */
 export async function deleteProductImage(imageUrl: string): Promise<void> {

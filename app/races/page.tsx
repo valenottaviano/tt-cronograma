@@ -1,10 +1,10 @@
-import { getRaces } from "@/lib/google-sheets";
+import { getFirebaseRaces } from "@/lib/firebase/races";
 import { RaceList } from "@/components/race-list";
 
 export const revalidate = 0;
 
 export default async function RacesPage() {
-  const races = await getRaces();
+  const races = await getFirebaseRaces();
 
   return (
     <div className="min-h-screen bg-background font-sans pt-24">

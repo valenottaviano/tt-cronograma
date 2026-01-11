@@ -1,4 +1,4 @@
-import { getBenefits } from "@/lib/google-sheets";
+import { getFirebaseBenefits } from "@/lib/firebase/benefits";
 import { BenefitList } from "@/components/benefit-list";
 import { TTCCredencialDialog } from "@/components/tt-credencial-dialog";
 import { AlertCircle } from "lucide-react";
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function BenefitsPage() {
-  const benefits = await getBenefits();
+  const benefits = await getFirebaseBenefits();
 
   return (
     <div className="min-h-screen bg-background font-sans pt-24">

@@ -68,6 +68,47 @@ export default function AdminDashboard() {
           </div>
         </Link>
 
+        {/* Manage Races Card */}
+        <Link
+          href="/admin/races"
+          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-blue-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors" />
+
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform duration-500">
+              <Calendar className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Carreras</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Cronograma de competencias, distancias, ubicaciones y códigos de descuento.
+          </p>
+          <div className="mt-8 flex items-center text-blue-500 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Gestionar carreras →
+          </div>
+        </Link>
+
+        {/* Manage Benefits Card */}
+        <Link
+          href="/admin/benefits"
+          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-brand-orange/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/20 transition-colors" />
+
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-brand-orange rounded-2xl text-white shadow-lg shadow-brand-orange/20 group-hover:scale-110 transition-transform duration-500">
+              <Settings className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Beneficios</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Administra los descuentos y beneficios exclusivos para los miembros del equipo.
+          </p>
+          <div className="mt-8 flex items-center text-brand-orange text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Gestionar beneficios →
+          </div>
+        </Link>
       </div>
     </div>
   );
