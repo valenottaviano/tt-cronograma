@@ -140,7 +140,7 @@ export function TTCCredencialDialog() {
                   <Button 
                     type="submit" 
                     disabled={loading || !dni}
-                    className="w-full h-12 bg-white text-black hover:bg-zinc-200 transition-colors font-bold disabled:opacity-50 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                    className="w-full h-12 bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors font-bold disabled:opacity-50 shadow-[0_0_20px_rgba(237,36,31,0.2)]"
                   >
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

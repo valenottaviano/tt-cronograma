@@ -1,0 +1,86 @@
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+import { Users, Calendar, Settings, Bell, Package, ShoppingCart } from "lucide-react";
+import Link from 'next/link';
+
+export default function AdminDashboard() {
+  const { user } = useAuth();
+
+  return (
+    <div className="space-y-12">
+      {/* Welcome Section */}
+      <div className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-10 shadow-2xl">
+        <div className="absolute top-0 right-0 p-8 opacity-10">
+           <Package className="w-32 h-32 text-brand-orange" />
+        </div>
+        <div className="relative z-10">
+          <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
+            Bienvenido, <span className="text-brand-orange">{user?.email?.split('@')[0]}</span>
+          </h2>
+          <p className="text-white/40 font-medium tracking-widest uppercase text-xs">
+            Panel de control administrativo • TT Cronograma
+          </p>
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Manage Products Card */}
+        <Link
+          href="/admin/products"
+          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-orange-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/20 transition-colors" />
+          
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-brand-orange rounded-2xl text-white shadow-lg shadow-brand-orange/20 group-hover:scale-110 transition-transform duration-500">
+              <Package className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Productos</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Gestiona el catálogo oficial, talles disponibles y niveles de stock de la tienda.
+          </p>
+          <div className="mt-8 flex items-center text-brand-orange text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Gestionar productos →
+          </div>
+        </Link>
+
+        {/* Manage Orders Card */}
+        <Link
+          href="/admin/orders"
+          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-green-600/5 rounded-full blur-2xl group-hover:bg-green-600/20 transition-colors" />
+
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-green-600 rounded-2xl text-white shadow-lg shadow-green-600/20 group-hover:scale-110 transition-transform duration-500">
+              <ShoppingCart className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Pedidos</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Verifica transferencias, revisa comprobantes y gestiona el estado de las compras.
+          </p>
+          <div className="mt-8 flex items-center text-green-500 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Ver pedidos →
+          </div>
+        </Link>
+
+        {/* Placeholder Features */}
+        <div className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 opacity-50 grayscale">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-white/10 rounded-2xl text-white/40">
+              <Users className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white/40 italic uppercase tracking-tighter">Usuarios</h3>
+          </div>
+          <p className="text-white/20 text-sm font-medium leading-relaxed">
+            Gestión de corredores y perfiles de usuario (Próximamente).
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

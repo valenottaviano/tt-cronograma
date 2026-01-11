@@ -14,9 +14,9 @@ export function Footer() {
                 alt="TT Training Team Logo"
                 className="h-12 w-auto"
               />
-              <span className="font-bold text-xl text-white tracking-tight">
+              {/* <span className="font-bold text-xl text-white tracking-tight">
                 Cronograma TT
-              </span>
+              </span> */}
             </div>
             <p className="text-white/60 text-sm max-w-xs">
               El calendario más completo de carreras de running y trail en

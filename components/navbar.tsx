@@ -11,6 +11,14 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfiniteBanner } from "@/components/infinite-banner";
 import { cn } from "@/lib/utils";
 
+export const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 0,
+  }).format(price);
+};
+
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showFlyer, setShowFlyer] = useState(false);
@@ -61,9 +69,9 @@ export function Navbar() {
                 alt="Logo TT"
                 className="h-8 w-auto"
               />
-              <span className="hidden font-bold sm:inline-block">
+              {/* <span className="hidden font-bold sm:inline-block">
                 Beneficios TT
-              </span>
+              </span> */}
             </Link>
             <nav className="flex items-center space-x-6 text-sm font-medium">
               <button
@@ -83,6 +91,12 @@ export function Navbar() {
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
               >
                 Beneficios
+              </Link>
+              <Link
+                href="/#tienda"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Tienda
               </Link>
             </nav>
           </div>
@@ -107,7 +121,7 @@ export function Navbar() {
                   alt="Logo TT"
                   className="h-8 w-auto ml-10 my-5"
                 />
-                <span className="font-bold">Beneficios TT</span>
+                {/* <span className="font-bold">Beneficios TT</span> */}
               </Link>
               <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
                 <div className="flex flex-col space-y-3">
@@ -128,6 +142,9 @@ export function Navbar() {
                   </Link>
                   <Link href="/benefits" onClick={() => setIsOpen(false)}>
                     Beneficios
+                  </Link>
+                  <Link href="/#tienda" onClick={() => setIsOpen(false)}>
+                    Tienda
                   </Link>
                   {/* Add more mobile links here */}
                 </div>
