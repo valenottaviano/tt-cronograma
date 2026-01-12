@@ -93,7 +93,7 @@ export function Navbar() {
                 Beneficios
               </Link>
               <Link
-                href="/#tienda"
+                href="/store"
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
               >
                 Tienda
@@ -143,7 +143,7 @@ export function Navbar() {
                   <Link href="/benefits" onClick={() => setIsOpen(false)}>
                     Beneficios
                   </Link>
-                  <Link href="/#tienda" onClick={() => setIsOpen(false)}>
+                  <Link href="/store" onClick={() => setIsOpen(false)}>
                     Tienda
                   </Link>
                   {/* Add more mobile links here */}

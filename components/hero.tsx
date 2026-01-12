@@ -3,7 +3,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { TTCCredencialDialog } from "./tt-credencial-dialog";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ShoppingBag } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const ref = useRef(null);
@@ -49,14 +51,14 @@ export function Hero() {
           className="h-24 w-auto mb-8 md:h-32 drop-shadow-2xl"
         />
 
-        <motion.h1
+        {/* <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 mb-6 tracking-tight leading-tight"
         >
-          Beneficios TT
-        </motion.h1>
+          Grupo TT
+        </motion.h1> */}
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -67,13 +69,22 @@ export function Hero() {
           Descubrí todo lo que tenemos para vos
         </motion.p>
 
-         <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4"
           >
             <TTCCredencialDialog />
+            <Button 
+              asChild
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
+            >
+              <Link href="/store">
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Tienda
+              </Link>
+            </Button>
           </motion.div>
 
         {/* Scroll Indicator */}

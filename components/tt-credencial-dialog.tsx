@@ -95,7 +95,7 @@ export function TTCCredencialDialog() {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg"
+          className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
         >
           <CreditCard className="mr-2 h-5 w-5" />
           Credencial TT

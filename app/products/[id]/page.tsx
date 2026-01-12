@@ -62,7 +62,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     <div className="min-h-screen bg-black text-white pt-32 pb-20 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <Link 
-          href="/#tienda" 
+          href="/store" 
           className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-12 group"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
