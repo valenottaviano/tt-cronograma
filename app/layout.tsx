@@ -31,16 +31,16 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <title>Beneficios TT</title>
+        <title>Grupo TT</title>
         <meta
           name="description"
-          content="Descubre carreras exclusivas con descuentos especiales para la comunidad TT. ¡Corre, ahorra y disfruta al máximo!"
+          content="Grupo de Entrenamiento TT - Running y Trail Running"
         />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="TT Cronograma" />
+        <meta name="apple-mobile-web-app-title" content="Grupo TT" />
         <link rel="apple-touch-icon" href="/ios/180.png" />
       </head>
       <body

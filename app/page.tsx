@@ -12,7 +12,7 @@ import { NewsNotifier } from "@/components/news-notifier";
 
 
 export default async function Home() {
-  const news = await getNews();
+  // const news = await getNews();
 
   return (
     <div className="min-h-screen bg-background font-sans">
