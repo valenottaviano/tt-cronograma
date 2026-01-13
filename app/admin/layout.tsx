@@ -73,6 +73,14 @@ export default function AdminLayout({
                   >
                     Pedidos
                   </a>
+                  <a
+                    href="https://docs.google.com/spreadsheets/d/1YVrTgtR4mY_4BudZa50kgU1UxMgC9JKwwqimJyIVRek/edit?usp=sharing"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all text-white/40 hover:text-white hover:bg-white/5"
+                  >
+                    Cronograma
+                  </a>
                 </nav>
               </div>
               <div className="flex items-center gap-6">

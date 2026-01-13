@@ -109,6 +109,29 @@ export default function AdminDashboard() {
             Gestionar beneficios →
           </div>
         </Link>
+
+        {/* Cronograma Card */}
+        <a
+          href="https://docs.google.com/spreadsheets/d/1YVrTgtR4mY_4BudZa50kgU1UxMgC9JKwwqimJyIVRek/edit?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/20 transition-colors" />
+
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-green-600 rounded-2xl text-white shadow-lg shadow-green-600/20 group-hover:scale-110 transition-transform duration-500">
+              <Calendar className="w-7 h-7" />
+            </div>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Cronograma</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Acceso directo a la planilla de Google Sheets para gestionar el cronograma general.
+          </p>
+          <div className="mt-8 flex items-center text-green-500 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Abrir planilla →
+          </div>
+        </a>
       </div>
     </div>
   );
