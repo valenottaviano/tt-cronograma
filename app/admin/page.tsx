@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
-import { Users, Calendar, Settings, Bell, Package, ShoppingCart } from "lucide-react";
+import { Users, Calendar, Settings, Bell, Package, ShoppingCart, User } from "lucide-react";
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -121,12 +121,12 @@ export default function AdminDashboard() {
 
           <div className="flex items-center gap-4 mb-6">
             <div className="p-4 bg-green-600 rounded-2xl text-white shadow-lg shadow-green-600/20 group-hover:scale-110 transition-transform duration-500">
-              <Calendar className="w-7 h-7" />
+              <User className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Cronograma</h3>
+            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Credenciales</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
-            Acceso directo a la planilla de Google Sheets para gestionar el cronograma general.
+            Acceso directo a la planilla de Google Sheets para gestionar los miembros del equipo.
           </p>
           <div className="mt-8 flex items-center text-green-500 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
             Abrir planilla →
