@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/respuestas",
+        destination: "https://docs.google.com/forms/d/1m_VGKwlS6M2ZwplZ0slV8r86Hy5k_KntTQAgYuxUAC4/edit#responses",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withSerwist(nextConfig);
