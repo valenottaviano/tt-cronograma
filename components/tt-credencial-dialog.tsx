@@ -95,7 +95,7 @@ export function TTCCredencialDialog() {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
+          className="bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-600 px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
         >
           <CreditCard className="mr-2 h-5 w-5" />
           Credencial TT
@@ -223,7 +223,7 @@ export function TTCCredencialDialog() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           onClick={() => setIsQrExpanded(false)}
-                          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-8 cursor-zoom-out"
+                          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-8 cursor-zoom-out"
                         >
                           <motion.div
                             initial={{ scale: 0.5, y: 20 }}

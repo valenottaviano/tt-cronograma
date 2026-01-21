@@ -64,7 +64,7 @@ export default async function RacePage({
           >
             <Button
               asChild
-              className="w-fit bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 shadow-lg group"
+              className="w-fit bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 hover:border-neutral-600 transition-all duration-300 shadow-lg group"
             >
               <Link href="/">
                 <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -82,7 +82,7 @@ export default async function RacePage({
             className="flex flex-wrap gap-2 mb-4"
           >
             <Badge
-              className={`text-base px-3 py-1 backdrop-blur-md border-0 ${
+              className={`text-base px-3 py-1 border-0 ${
                 race.type === "trail"
                   ? "bg-green-600/80 hover:bg-green-700/90 text-white"
                   : "bg-white/20 hover:bg-white/30 text-white"
@@ -92,7 +92,7 @@ export default async function RacePage({
             </Badge>
             <Badge
               variant="outline"
-              className="text-base px-3 py-1 text-white border-white/30 bg-black/20 backdrop-blur-md"
+              className="text-base px-3 py-1 text-white border-white/30 bg-neutral-900"
             >
               {race.province}
             </Badge>
@@ -146,7 +146,7 @@ export default async function RacePage({
                 {race.distance.split(",").map((dist, i) => (
                   <div
                     key={i}
-                    className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/5 px-4 py-2 rounded-lg font-medium text-lg text-white transition-colors"
+                    className="bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 px-4 py-2 rounded-lg font-medium text-lg text-white transition-colors"
                   >
                     {dist.trim()}
                   </div>
@@ -192,7 +192,7 @@ export default async function RacePage({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
-                className="bg-yellow-500/10 backdrop-blur-md border border-yellow-500/20 rounded-2xl p-6 shadow-lg"
+                className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6 shadow-lg"
               >
                 <h3 className="text-lg font-semibold text-yellow-200 mb-2 flex items-center">
                   <Ticket className="w-5 h-5 mr-2" />
@@ -212,7 +212,7 @@ export default async function RacePage({
                 <Button
                   asChild
                   size="lg"
-                  className="w-full text-lg h-14 bg-gradient-to-r from-white/10 via-white/20 to-white/10 hover:from-white/20 hover:via-white/30 hover:to-white/20 border border-white/20 hover:border-white/40 text-white backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all duration-500"
+                  className="w-full text-lg h-14 bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-800 hover:from-neutral-700 hover:via-neutral-600 hover:to-neutral-700 border border-neutral-600 hover:border-neutral-500 text-white shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all duration-500"
                 >
                   <a href={race.url} target="_blank" rel="noopener noreferrer">
                     Sitio Web Oficial

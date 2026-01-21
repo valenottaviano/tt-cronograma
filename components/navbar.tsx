@@ -50,7 +50,7 @@ export function Navbar() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={cn(
-          "fixed flex flex-row-reverse items-center left-4 right-4 z-50 rounded-2xl border border-white/10 bg-black/30 backdrop-blur-xl shadow-2xl transition-all duration-300",
+          "fixed flex flex-row-reverse items-center left-4 right-4 z-50 rounded-2xl border border-neutral-700 bg-neutral-900/95 shadow-2xl transition-all duration-300",
           isHome ? "top-16" : "top-4"
         )}
       >

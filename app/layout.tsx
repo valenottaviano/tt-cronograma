@@ -28,19 +28,23 @@ export default function RootLayout({
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
 
+  // Dynamic manifest and app name based on route
+  const manifestUrl = isAdminRoute ? '/manifest-admin.json' : '/manifest.json';
+  const appName = isAdminRoute ? 'TT Admin' : 'Grupo TT';
+
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <title>Grupo TT</title>
+        <title>{appName}</title>
         <meta
           name="description"
-          content="Grupo de Entrenamiento TT - Running y Trail Running"
+          content={isAdminRoute ? "Panel de administración TT" : "Grupo de Entrenamiento TT - Running y Trail Running"}
         />
-        <link rel="manifest" href="/manifest.json" />
+        <link rel="manifest" href={manifestUrl} />
         <meta name="theme-color" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Grupo TT" />
+        <meta name="apple-mobile-web-app-title" content={appName} />
         <link rel="apple-touch-icon" href="/ios/180.png" />
       </head>
       <body
@@ -57,10 +61,11 @@ export default function RootLayout({
             {children}
             {!isAdminRoute && <Footer />}
             <Toaster />
-            <PWAInstallToast />
+            {!isAdminRoute && <PWAInstallToast />}
           </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
+

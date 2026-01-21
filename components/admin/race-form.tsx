@@ -94,10 +94,10 @@ export function RaceForm({ initialData }: RaceFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 max-w-4xl mx-auto pb-20">
-      <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-10 space-y-10 shadow-2xl">
-        <div className="flex justify-between items-start border-b border-white/5 pb-8">
+      <div className="bg-neutral-900 rounded-2xl md:rounded-[2.5rem] border border-neutral-700 p-6 md:p-10 space-y-8 md:space-y-10 shadow-2xl">
+        <div className="flex flex-col sm:flex-row sm:justify-between items-start gap-4 border-b border-white/5 pb-6 md:pb-8">
           <div>
-            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+            <h2 className="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tighter">
               {initialData ? 'Editar Carrera' : 'Nueva Carrera'}
             </h2>
             <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Configuración del evento y detalles logísticos</p>
@@ -144,7 +144,7 @@ export function RaceForm({ initialData }: RaceFormProps) {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                      <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); removeImage(); }}

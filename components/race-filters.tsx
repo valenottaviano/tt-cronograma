@@ -71,7 +71,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
         <SelectTrigger className="w-full md:w-[200px] glass-input border-white/10 text-white">
           <SelectValue placeholder="Provincia" />
         </SelectTrigger>
-        <SelectContent className="glass-panel border-white/10 text-white bg-black/80 backdrop-blur-xl">
+        <SelectContent className="glass-panel border-neutral-700 text-white bg-neutral-900">
           <SelectItem value="all">Todas las provincias</SelectItem>
           {provinces.map((province) => (
             <SelectItem key={province} value={province}>
@@ -86,7 +86,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
         <SelectTrigger className="w-full md:w-[180px] glass-input border-white/10 text-white">
           <SelectValue placeholder="Modalidad" />
         </SelectTrigger>
-        <SelectContent className="glass-panel border-white/10 text-white bg-black/80 backdrop-blur-xl">
+        <SelectContent className="glass-panel border-neutral-700 text-white bg-neutral-900">
           <SelectItem value="all">Todas las modalidades</SelectItem>
           <SelectItem value="road">Calle</SelectItem>
           <SelectItem value="trail">Trail</SelectItem>
@@ -124,7 +124,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-auto p-0 glass-panel border-white/10 bg-black/80 backdrop-blur-xl"
+            className="w-auto p-0 glass-panel border-neutral-700 bg-neutral-900"
             align="start"
           >
             <Calendar

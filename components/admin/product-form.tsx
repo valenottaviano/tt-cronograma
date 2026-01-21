@@ -132,10 +132,10 @@ export function ProductForm({ initialData }: ProductFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 max-w-2xl mx-auto pb-20">
-      <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-10 space-y-10 shadow-2xl">
+      <div className="bg-neutral-900 rounded-2xl md:rounded-[2.5rem] border border-neutral-700 p-6 md:p-10 space-y-8 md:space-y-10 shadow-2xl">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+            <h2 className="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tighter">
               {initialData ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
             <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Configuración técnica del artículo</p>
@@ -160,7 +160,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                      <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); removeImage(); }}

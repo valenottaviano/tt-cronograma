@@ -47,7 +47,7 @@ export function ProductCatalog() {
           placeholder="Buscar prendas..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 focus:bg-white/10 transition-all backdrop-blur-md"
+          className="w-full bg-neutral-900 border border-neutral-700 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-orange/50 focus:bg-neutral-800 transition-all"
         />
       </div>
 
@@ -55,7 +55,7 @@ export function ProductCatalog() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl"
+          className="text-center py-20 bg-neutral-900 rounded-3xl border border-neutral-700"
         >
           <Package className="w-16 h-16 mx-auto text-white/20 mb-6" />
           <p className="text-xl text-white/40 font-medium">No se encontraron productos.</p>

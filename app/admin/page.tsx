@@ -10,12 +10,12 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-12">
       {/* Welcome Section */}
-      <div className="relative overflow-hidden bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-10 shadow-2xl">
+      <div className="relative overflow-hidden bg-neutral-900 rounded-2xl md:rounded-3xl border border-neutral-700 p-6 md:p-10 shadow-2xl">
         <div className="absolute top-0 right-0 p-8 opacity-10">
            <Package className="w-32 h-32 text-brand-orange" />
         </div>
         <div className="relative z-10">
-          <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
+          <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
             Bienvenido, <span className="text-brand-orange">{user?.email?.split('@')[0]}</span>
           </h2>
           <p className="text-white/40 font-medium tracking-widest uppercase text-xs">
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
         {/* Manage Products Card */}
         <Link
           href="/admin/products"
-          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-orange-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-orange-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
         >
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/20 transition-colors" />
           
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
             <div className="p-4 bg-brand-orange rounded-2xl text-white shadow-lg shadow-brand-orange/20 group-hover:scale-110 transition-transform duration-500">
               <Package className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Productos</h3>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Productos</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
             Gestiona el catálogo oficial, talles disponibles y niveles de stock de la tienda.
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
         {/* Manage Orders Card */}
         <Link
           href="/admin/orders"
-          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
         >
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-green-600/5 rounded-full blur-2xl group-hover:bg-green-600/20 transition-colors" />
 
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
             <div className="p-4 bg-green-600 rounded-2xl text-white shadow-lg shadow-green-600/20 group-hover:scale-110 transition-transform duration-500">
               <ShoppingCart className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Pedidos</h3>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Pedidos</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
             Verifica transferencias, revisa comprobantes y gestiona el estado de las compras.
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
         {/* Manage Races Card */}
         <Link
           href="/admin/races"
-          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-blue-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-blue-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
         >
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors" />
 
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
             <div className="p-4 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-600/20 group-hover:scale-110 transition-transform duration-500">
               <Calendar className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Carreras</h3>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Carreras</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
             Cronograma de competencias, distancias, ubicaciones y códigos de descuento.
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
         {/* Manage Benefits Card */}
         <Link
           href="/admin/benefits"
-          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-brand-orange/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-brand-orange/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
         >
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/20 transition-colors" />
 
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
             <div className="p-4 bg-brand-orange rounded-2xl text-white shadow-lg shadow-brand-orange/20 group-hover:scale-110 transition-transform duration-500">
               <Settings className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Beneficios</h3>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Beneficios</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
             Administra los descuentos y beneficios exclusivos para los miembros del equipo.
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
           href="https://docs.google.com/spreadsheets/d/1YVrTgtR4mY_4BudZa50kgU1UxMgC9JKwwqimJyIVRek/edit?usp=sharing"
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative overflow-hidden bg-white/5 backdrop-blur-xl p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-green-500/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
         >
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-green-500/5 rounded-full blur-2xl group-hover:bg-green-500/20 transition-colors" />
 
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
             <div className="p-4 bg-green-600 rounded-2xl text-white shadow-lg shadow-green-600/20 group-hover:scale-110 transition-transform duration-500">
               <User className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Credenciales</h3>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Credenciales</h3>
           </div>
           <p className="text-white/40 text-sm font-medium leading-relaxed">
             Acceso directo a la planilla de Google Sheets para gestionar los miembros del equipo.

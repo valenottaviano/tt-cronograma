@@ -29,7 +29,7 @@ export default async function Home() {
 
             <div className="grid md:grid-cols-2 gap-8">
               <Link href="/races" className="block group">
-                <Card className="h-full border-0 bg-white/5 backdrop-blur-xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/10 overflow-hidden relative">
+                <Card className="h-full border-0 bg-neutral-900 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] hover:bg-neutral-800 overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <CardHeader className="relative z-10 p-8">
                     <div className="mb-6 w-14 h-14 rounded-2xl bg-brand-orange/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
@@ -47,7 +47,7 @@ export default async function Home() {
               </Link>
 
               <Link href="/benefits" className="block group relative">
-                <Card className="h-full border-0 bg-white/5 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/10 overflow-hidden">
+                <Card className="h-full border-0 bg-neutral-900 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-neutral-800 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <CardHeader className="relative z-10 p-8">
                     <div className="mb-6 w-14 h-14 rounded-2xl bg-brand-orange/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">

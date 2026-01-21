@@ -28,7 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="block group">
-      <Card className="overflow-hidden border-0 bg-white/5 backdrop-blur-xl hover:bg-white/10 transition-all duration-500 hover:scale-[1.02] shadow-2xl py-0 flex flex-col gap-0 border-white/10">
+      <Card className="overflow-hidden border-0 bg-neutral-900 hover:bg-neutral-800 transition-all duration-500 hover:scale-[1.02] shadow-2xl py-0 flex flex-col gap-0 border-neutral-700">
         <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-900">
           {product.imageUrl ? (
             <Image
@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           
           {isOutOfStock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70">
               <span className="bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                 Sin Stock
               </span>
@@ -64,18 +64,18 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <div className="absolute top-3 right-3 flex flex-wrap gap-1 justify-end max-w-[120px]">
             {availableSizes.slice(0, 3).map(size => (
-              <span key={size} className="bg-white/10 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/20">
+              <span key={size} className="bg-neutral-800 text-white text-[10px] font-medium px-2 py-0.5 rounded-full border border-neutral-600">
                 {size}
               </span>
             ))}
             {availableSizes.length > 3 && (
-              <span className="bg-white/10 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/20">
+              <span className="bg-neutral-800 text-white text-[10px] font-medium px-2 py-0.5 rounded-full border border-neutral-600">
                 +{availableSizes.length - 3}
               </span>
             )}
           </div>
 
-          <div className="absolute bottom-3 left-3 bg-brand-orange/90 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm font-black italic shadow-xl">
+          <div className="absolute bottom-3 left-3 bg-brand-orange text-white px-3 py-1 rounded-lg text-sm font-black italic shadow-xl">
             {formatPrice(product.price || 0)}
           </div>
         </div>
