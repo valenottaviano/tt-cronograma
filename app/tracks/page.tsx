@@ -74,9 +74,6 @@ export default async function TracksPage() {
                       <p className="text-white/70 leading-relaxed text-sm md:text-lg">
                         {track.description}
                       </p>
-                      <p className="text-white/40 text-[11px] md:text-xs tracking-[0.35em] uppercase">
-                        {difficultyConfig[track.difficulty].copy}
-                      </p>
                     </div>
                     <div className="flex flex-wrap gap-3 text-sm md:grid md:grid-cols-2">
                       <div className="flex-1 min-w-[120px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3">

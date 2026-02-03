@@ -67,9 +67,6 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
             <p className="max-w-3xl text-lg md:text-xl text-white/70 leading-relaxed">
               {track.description}
             </p>
-            <p className="text-[11px] uppercase tracking-[0.35em] text-white/50">
-              {difficultyMeta.copy}
-            </p>
           </div>
         </div>
 
@@ -111,9 +108,6 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
                 >
                   Descargar GPX
                 </a>
-                <button className="w-full rounded-full border border-white/20 px-8 py-3 text-[11px] font-black uppercase tracking-[0.35em] text-white/70 hover:text-white">
-                  Compartir con TT
-                </button>
               </div>
             </div>
 

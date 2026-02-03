@@ -237,7 +237,7 @@ export function TrackPreview({
           </div>
         )}
 
-        {status === 'idle' && (
+        {/* {status === 'idle' && (
           <div
             className={cn(
               'pointer-events-none absolute flex flex-wrap gap-4 rounded-2xl border border-white/10 bg-black/40 px-5 py-3 text-[11px] font-black uppercase tracking-[0.3em] text-white/70',
@@ -249,10 +249,10 @@ export function TrackPreview({
               {displayDistance ? `${displayDistance} km` : 'distancia estimada'}
             </span>
           </div>
-        )}
+        )} */}
       </div>
 
-      {variantConfig.showMeta && (
+      {/* {variantConfig.showMeta && (
         <div className="grid grid-cols-2 gap-4 border-t border-white/10 px-6 py-5 text-sm uppercase tracking-[0.25em] text-white/40">
           <div>
             <p className="text-[10px]">Distancia</p>
@@ -267,7 +267,7 @@ export function TrackPreview({
             </p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
