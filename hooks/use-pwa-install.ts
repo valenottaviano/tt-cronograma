@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -11,60 +11,73 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+// Helper to detect iOS on initial render (avoids SSR issues)
+function getIsIOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const windowWithMsStream = typeof window !== "undefined"
+    ? (window as Window & { MSStream?: unknown })
+    : null;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !windowWithMsStream?.MSStream;
+}
+
+// Helper to detect standalone mode
+function getIsStandalone(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  const mediaQuery = window.matchMedia("(display-mode: standalone)");
+  const navigatorStandalone = (navigator as Navigator & { standalone?: boolean }).standalone;
+  return mediaQuery.matches || Boolean(navigatorStandalone);
+}
+
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+
+  // Compute static values once (safe for SSR)
+  const isIOS = getIsIOS();
+  const [isStandalone, setIsStandalone] = useState(getIsStandalone);
 
   useEffect(() => {
-    // Detect iOS
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    setIsIOS(ios);
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
 
-    // Detect if already standalone
-    const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as any).standalone;
-    setIsStandalone(standalone);
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      const navigatorStandalone = (navigator as Navigator & { standalone?: boolean }).standalone;
+      const standalone = event.matches || Boolean(navigatorStandalone);
+      setIsStandalone(standalone);
+      if (standalone) {
+        setIsInstallable(false);
+      }
+    };
 
-    const handler = (e: Event) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    const handleBeforeInstall = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
       setIsInstallable(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-
-    // Check if app is already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstallable(false);
-    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+    mediaQuery.addEventListener("change", handleMediaChange);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      mediaQuery.removeEventListener("change", handleMediaChange);
     };
   }, []);
 
-  const handleInstallClick = async () => {
+  const handleInstallClick = useCallback(async () => {
     if (!deferredPrompt) return;
 
-    // Show the install prompt
     await deferredPrompt.prompt();
-
-    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === "accepted") {
       console.log("User accepted the PWA install prompt");
     } else {
       console.log("User dismissed the PWA install prompt");
     }
 
-    // We've used the prompt, and can't use it again, throw it away
     setDeferredPrompt(null);
     setIsInstallable(false);
-  };
+  }, [deferredPrompt]);
 
   return {
     isInstallable,

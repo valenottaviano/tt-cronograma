@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Product, getProducts, deleteProduct } from '@/lib/firebase/products';
 import { deleteProductImage } from '@/lib/firebase/storage';
 import { Edit2, Trash2, Plus, Package, Layers } from 'lucide-react';
@@ -16,16 +16,19 @@ export function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     const data = await getProducts();
     setProducts(data);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchProducts]);
 
   const handleDelete = async (product: Product) => {
     if (!confirm(`¿Estás seguro de que quieres eliminar "${product.name}"?`)) {
@@ -38,7 +41,7 @@ export function ProductList() {
         await deleteProductImage(product.imageUrl);
       }
       toast.success('Producto eliminado correctamente');
-      fetchProducts();
+      void fetchProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
       toast.error('Error al eliminar el producto');
@@ -267,4 +270,3 @@ export function ProductList() {
     </div>
   );
 }
-

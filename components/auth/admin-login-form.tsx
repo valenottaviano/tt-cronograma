@@ -21,8 +21,9 @@ export function AdminLoginForm() {
     try {
       await login(email, password);
       router.push('/admin');
-    } catch (err: any) {
-      setError(err.message || 'Failed to login. Please try again.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to login. Please try again.';
+      setError(message);
     } finally {
       setIsLoading(false);
     }

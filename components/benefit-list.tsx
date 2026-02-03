@@ -25,14 +25,14 @@ export function BenefitList({ benefits }: BenefitListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
       {benefits.map((benefit) => (
         <Card
           key={benefit.id}
-          className="flex flex-col h-full overflow-hidden hover:border-primary/50 transition-colors pt-0 group"
+          className="flex flex-row md:flex-col h-full overflow-hidden hover:border-primary/50 transition-colors py-4 md:py-6 gap-4 md:gap-6"
         >
           {benefit.logo && (
-            <div className="relative w-full h-40 md:h-48 p-4 flex-shrink-0 flex items-center justify-center bg-white border-b transition-colors">
+            <div className="relative w-28 h-28 md:w-full md:h-48 p-3 md:p-4 flex-shrink-0 flex items-center justify-center bg-white border-b md:border-b transition-colors rounded-lg md:rounded-none">
               <div className="relative w-full h-full">
                 <Image
                   src={benefit.logo}
@@ -44,16 +44,16 @@ export function BenefitList({ benefits }: BenefitListProps) {
             </div>
           )}
           <div className="flex flex-col flex-1 min-w-0">
-            <CardHeader className="p-4 pb-1 md:p-6 md:pb-2">
-              <CardTitle className="text-base md:text-xl">
+            <CardHeader className="p-0 md:p-6 md:pb-2">
+              <CardTitle className="text-sm md:text-xl">
                 {benefit.title}
               </CardTitle>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium">
+              <p className="text-[11px] md:text-sm text-muted-foreground font-medium">
                 {benefit.company}
               </p>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col gap-3 p-4 pt-1 md:p-6 md:pt-0">
-              <p className="text-xs md:text-sm text-muted-foreground flex-1">
+            <CardContent className="flex-1 flex flex-col gap-2 px-0 pt-1 pb-0 md:p-6 md:pt-0">
+              <p className="text-[12px] leading-snug md:text-sm text-muted-foreground flex-1">
                 {benefit.description}
               </p>
 
@@ -63,7 +63,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                 if (isUrl) {
                   const href = benefit.linkCta.startsWith('www') ? `https://${benefit.linkCta}` : benefit.linkCta;
                   return (
-                    <Button asChild variant="outline" size="sm" className="w-full mt-2 text-xs md:text-sm md:h-10">
+                    <Button asChild variant="outline" size="sm" className="w-full mt-1 text-xs h-8 md:text-sm md:h-10">
                       <a
                         href={href}
                         target="_blank"
@@ -78,7 +78,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                 return (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="w-full mt-2 text-xs md:text-sm md:h-10">
+                      <Button variant="outline" size="sm" className="w-full mt-1 text-xs h-8 md:text-sm md:h-10">
                         Info <Info className="ml-2 h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                     </DialogTrigger>
@@ -108,7 +108,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                       asChild
                       variant="outline"
                       size="sm"
-                      className="flex-1 min-w-[120px] text-xs h-8 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
+                      className="flex-1 min-w-[120px] text-[11px] h-8 hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200 transition-colors"
                     >
                       <a
                         href={benefit.instagramLink.startsWith('http') ? benefit.instagramLink : `https://${benefit.instagramLink}`}
@@ -124,7 +124,7 @@ export function BenefitList({ benefits }: BenefitListProps) {
                       asChild
                       variant="outline"
                       size="sm"
-                      className="flex-1 min-w-[120px] text-xs h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
+                      className="flex-1 min-w-[120px] text-[11px] h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 transition-colors"
                     >
                       <a
                         href={benefit.whatsappLink.startsWith('http') ? benefit.whatsappLink : `https://wa.me/${benefit.whatsappLink.replace(/\D/g, '')}`}

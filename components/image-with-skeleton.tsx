@@ -21,15 +21,21 @@ export function ImageWithSkeleton({
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    if (imgRef.current?.complete) {
-      setIsLoading(false);
-    }
-
-    const timer = setTimeout(() => {
+    let rafId: number | null = null;
+    const timer = window.setTimeout(() => {
       setIsLoading(false);
     }, 2000);
 
-    return () => clearTimeout(timer);
+    if (imgRef.current?.complete) {
+      rafId = window.requestAnimationFrame(() => setIsLoading(false));
+    }
+
+    return () => {
+      window.clearTimeout(timer);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
   }, []);
 
   return (

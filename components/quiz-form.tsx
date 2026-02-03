@@ -6,20 +6,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
   Mail, 
-  Calendar, 
   CheckCircle2, 
   Dna, 
   Cake, 
   Activity, 
   Dumbbell, 
   MapPin, 
-  Bike, 
   Stethoscope, 
   Target,
   ArrowRight,
   ArrowLeft,
   Loader2
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,27 +26,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfC_ApbAQAhawh--5WQ6NOC77OOnd-WUyMCXz1Ac5c0GMoU9g/formResponse";
-
-const FORM_FIELDS = {
-  nombre: "entry.390991781",
-  apellido: "entry.1589512559",
-  dni: "entry.352383317",
-  correo: "entry.569965854",
-  fecha_nac: "entry.287232122",
-  edad: "entry.470008293",
-  sexo: "entry.470008293", // Note: The pre-fill URL had some dupes or I should be careful. Let's re-check the user's link
-  // Correcting based on user's pre-fill link:
-  // entry.470008293 = edad (Wait, looking at link: entry.470008293=edad&entry.470008293=sexo? No, wait)
-  // Let me re-parse the user provided URL more carefully.
-  /*
-  entry.390991781=nombre
-  entry.1589512559=apellido
-  entry.352383317=dni
-  entry.569965854=correo
-  entry.287232122=fecha_nac
-  entry.470008293=sexo (The user query says fecha_nac, then... wait)
-  */
-};
 
 // Re-parsing strictly from: 
 // entry.390991781=nombre
@@ -131,14 +109,14 @@ export function QuizForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   
-  const { register, handleSubmit, watch, formState: { errors }, trigger } = useForm();
+  const { register, handleSubmit, watch, trigger } = useForm<Record<string, string>>();
   
   const vienesHaciendoActividad = watch("vienesHaciendoActividad");
   const trabajosFortalecimiento = watch("trabajosFortalecimiento");
 
   const nextStep = async () => {
     const fields = STEPS[currentStep].fields;
-    const isValid = await trigger(fields as any);
+    const isValid = await trigger(fields);
     if (isValid) {
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
     }
@@ -148,13 +126,14 @@ export function QuizForm() {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Record<string, string>) => {
     setIsSubmitting(true);
     
     // Create form data for Google Forms
     const formData = new FormData();
-    Object.keys(ENTITY_IDS).forEach((key) => {
-      const fieldId = (ENTITY_IDS as any)[key];
+    const entityKeys = Object.keys(ENTITY_IDS) as (keyof typeof ENTITY_IDS)[];
+    entityKeys.forEach((key) => {
+      const fieldId = ENTITY_IDS[key];
       if (data[key]) {
         formData.append(fieldId, data[key]);
       }
@@ -193,7 +172,7 @@ export function QuizForm() {
           Tu encuesta ha sido enviada correctamente. Pronto nos pondremos en contacto contigo.
         </p>
         <Button asChild className="bg-brand-orange hover:bg-brand-orange/80 text-white px-8 h-12 rounded-xl">
-          <a href="/">Volver al inicio</a>
+          <Link href="/">Volver al inicio</Link>
         </Button>
       </motion.div>
     );

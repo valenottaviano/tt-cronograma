@@ -34,13 +34,14 @@ export async function signInAdmin(
     }
     
     return userCredential;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const firebaseError = error as { code?: string; message?: string };
     // Re-throw with a more friendly message
-    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+    if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password') {
       throw new Error('Invalid email or password');
-    } else if (error.code === 'auth/too-many-requests') {
+    } else if (firebaseError.code === 'auth/too-many-requests') {
       throw new Error('Too many failed login attempts. Please try again later.');
-    } else if (error.message.includes('Access denied')) {
+    } else if (firebaseError.message?.includes('Access denied')) {
       throw error; // Re-throw our custom admin error
     } else {
       throw new Error('Failed to sign in. Please try again.');

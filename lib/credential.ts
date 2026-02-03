@@ -20,12 +20,12 @@ export async function fetchCredentialData(): Promise<Person[]> {
     
     return lines.slice(1).map(line => {
       const values = line.split(",").map(v => v.trim().replace(/"/g, ""));
-      const obj: any = {};
+      const obj: Record<string, string> = {};
       headers.forEach((header, i) => {
         const key = header.toLowerCase();
         obj[key] = values[i] || "";
       });
-      return obj as Person;
+      return obj as unknown as Person;
     });
   } catch (error) {
     console.error("Error fetching credential data:", error);

@@ -25,6 +25,21 @@ export interface Benefit {
   whatsappLink?: string;
 }
 
+export type TrackDifficulty = 'easy' | 'medium' | 'hard';
+
+export interface Track {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: TrackDifficulty;
+  fileUrl: string;
+  filePath: string;
+  distanceKm?: number;
+  elevationGain?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface News {
   id: string;
   title: string;

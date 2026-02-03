@@ -5,7 +5,7 @@ import { AdminGuard } from '@/components/auth/admin-guard';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Menu, X, Home, Package, ShoppingCart, Users, Settings, Calendar, LogOut, ExternalLink, Download, Smartphone } from 'lucide-react';
+import { Menu, X, Home, Package, ShoppingCart, Users, Settings, Calendar, LogOut, ExternalLink, Download, Smartphone, MapPin } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { usePWAInstall } from '@/hooks/use-pwa-install';
 import { toast } from 'sonner';
@@ -50,6 +50,7 @@ export default function AdminLayout({
     { href: '/admin/orders', label: 'Pedidos', icon: ShoppingCart },
     { href: '/admin/races', label: 'Carreras', icon: Calendar, matchPrefix: true },
     { href: '/admin/benefits', label: 'Beneficios', icon: Settings, matchPrefix: true },
+    { href: '/admin/tracks', label: 'Tracks GPX', icon: MapPin, matchPrefix: true },
   ];
 
   const isActive = (item: typeof navItems[0]) => {
@@ -214,4 +215,3 @@ export default function AdminLayout({
     </AdminGuard>
   );
 }
-

@@ -34,7 +34,7 @@ export async function getRaces(): Promise<Race[]> {
     process.env.GOOGLE_SHEET_RACES_URL || process.env.GOOGLE_SHEET_CSV_URL;
   const data = await fetchSheetData(url);
 
-  const races = data.map((row: any) => ({
+  const races = (data as Record<string, string>[]).map((row) => ({
     id: row.id || Math.random().toString(36).substr(2, 9),
     name: row.name,
     date: row.date,
@@ -57,7 +57,7 @@ export async function getBenefits(): Promise<Benefit[]> {
   const url = process.env.GOOGLE_SHEET_BENEFITS_URL;
   const data = await fetchSheetData(url);
 
-  return data.map((row: any) => ({
+  return (data as Record<string, string>[]).map((row) => ({
     id: row.id || Math.random().toString(36).substr(2, 9),
     title: row.titulo,
     description: row.descripcion,
@@ -73,7 +73,7 @@ export async function getNews(): Promise<News[]> {
   const url = process.env.GOOGLE_SHEET_NEWS_URL;
   const data = await fetchSheetData(url);
 
-  return data.map((row: any) => ({
+  return (data as Record<string, string>[]).map((row) => ({
     id: row.id || Math.random().toString(36).substr(2, 9),
     title: row.titulo,
     subtitle: row.subtitulo,

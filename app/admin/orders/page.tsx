@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Order, getOrders, updateOrderStatus, deleteOrder } from '@/lib/firebase/orders';
 import { formatPrice } from '@/components/navbar';
-import { Check, X, Clock, ExternalLink, ImageIcon, User, Search, Filter, Calendar, ListFilter, MessageSquare, Trash2 } from 'lucide-react';
+import { Check, X, Clock, ExternalLink, ImageIcon, User, Search, Calendar, ListFilter, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -19,24 +19,28 @@ export default function AdminOrdersPage() {
     end: ''
   });
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     const data = await getOrders();
     setOrders(data);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchOrders();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchOrders]);
 
   const handleStatusUpdate = async (id: string, status: Order['status']) => {
     try {
       await updateOrderStatus(id, status);
       toast.success(`Pedido marcado como ${status === 'verified' ? 'verificado' : 'rechazado'}`);
-      fetchOrders();
-    } catch (error: any) {
-      toast.error(error.message || 'Error al actualizar el estado');
+      void fetchOrders();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Error al actualizar el estado';
+      toast.error(message);
     }
   };
 
@@ -45,9 +49,10 @@ export default function AdminOrdersPage() {
     try {
       await deleteOrder(id);
       toast.success('Pedido eliminado correctamente');
-      fetchOrders();
-    } catch (error: any) {
-      toast.error(error.message || 'Error al eliminar el pedido');
+      void fetchOrders();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Error al eliminar el pedido';
+      toast.error(message);
     }
   };
 
@@ -114,8 +119,8 @@ export default function AdminOrdersPage() {
           <div className="w-full md:w-auto md:min-w-[200px] relative">
             <ListFilter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
             <select 
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+               value={statusFilter}
+               onChange={(e) => setStatusFilter(e.target.value as 'all' | Order['status'])}
               className="w-full pl-12 pr-10 py-3 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-orange-500/50 outline-none transition-all appearance-none text-sm font-bold uppercase tracking-widest"
             >
               <option value="all" className="bg-gray-900">TODOS</option>
@@ -288,4 +293,3 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
-

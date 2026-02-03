@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   differenceInDays,
   differenceInHours,
@@ -14,12 +14,46 @@ interface CountdownProps {
   isFinished?: boolean;
 }
 
+type TimeLeft = {
+  days: number;
+  hours: number;
+  minutes: number;
+};
+
+function computeTimeLeft(targetDate: string): TimeLeft {
+  const now = new Date();
+  const target = parseISO(targetDate);
+
+  const days = Math.max(0, differenceInDays(target, now));
+  const hours = Math.max(0, differenceInHours(target, now) % 24);
+  const minutes = Math.max(0, differenceInMinutes(target, now) % 60);
+
+  return { days, hours, minutes };
+}
+
 export function Countdown({ targetDate, isFinished }: CountdownProps) {
-  const [timeLeft, setTimeLeft] = useState<{
-    days: number;
-    hours: number;
-    minutes: number;
-  } | null>(null);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    if (isFinished) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTick((prev) => prev + 1);
+    }, 1000 * 60);
+
+    return () => clearInterval(timer);
+  }, [isFinished]);
+
+  const timeLeft = useMemo<TimeLeft>(() => {
+    if (isFinished) {
+      return { days: 0, hours: 0, minutes: 0 };
+    }
+
+    return computeTimeLeft(targetDate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is needed to trigger recalc
+  }, [targetDate, isFinished, tick]);
 
   if (isFinished) {
     return (
@@ -27,32 +61,6 @@ export function Countdown({ targetDate, isFinished }: CountdownProps) {
         Finalizada
       </div>
     );
-  }
-
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const target = parseISO(targetDate);
-
-      const days = differenceInDays(target, now);
-      const hours = differenceInHours(target, now) % 24;
-      const minutes = differenceInMinutes(target, now) % 60;
-
-      if (days < 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0 });
-      } else {
-        setTimeLeft({ days, hours, minutes });
-      }
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000 * 60); // Update every minute
-
-    return () => clearInterval(timer);
-  }, [targetDate]);
-
-  if (!timeLeft) {
-    return <div className="h-6 w-24 animate-pulse bg-white/10 rounded" />;
   }
 
   return (

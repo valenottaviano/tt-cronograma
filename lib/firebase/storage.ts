@@ -52,6 +52,51 @@ export async function uploadBenefitLogo(file: File): Promise<string> {
   }
 }
 
+export async function uploadTrackFile(file: File): Promise<{ downloadUrl: string; storagePath: string; }>{
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized');
+  }
+
+  try {
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+    const fileName = `track_${timestamp}_${safeName}`;
+    const storagePath = `tracks/${fileName}`;
+    const storageRef = ref(storage, storagePath);
+
+    const snapshot = await uploadBytes(storageRef, file, {
+      contentType: file.type || 'application/gpx+xml',
+    });
+    const downloadUrl = await getDownloadURL(snapshot.ref);
+
+    return { downloadUrl, storagePath };
+  } catch (error) {
+    console.error('Error uploading track file:', error);
+    throw new Error('Failed to upload track');
+  }
+}
+
+export async function deleteTrackFile(pathOrUrl: string): Promise<void> {
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized');
+  }
+
+  try {
+    let fileRef;
+    if (pathOrUrl.startsWith('https://')) {
+      const decodedUrl = decodeURIComponent(pathOrUrl);
+      const parts = decodedUrl.split('/o/')[1].split('?')[0];
+      fileRef = ref(storage, parts);
+    } else {
+      fileRef = ref(storage, pathOrUrl);
+    }
+
+    await deleteObject(fileRef);
+  } catch (error) {
+    console.error('Error deleting track file:', error);
+  }
+}
+
 /**
  * Delete an image from Firebase Storage using its download URL or path
  */

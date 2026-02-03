@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, CreditCard, User, Hash, CheckCircle2, AlertCircle, QrCode as QrIcon } from "lucide-react";
+import { Loader2, CreditCard, Hash, CheckCircle2, AlertCircle, QrCode as QrIcon } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPersonByDni, type Person } from "@/lib/credential";
@@ -37,11 +37,12 @@ export function TTCCredencialDialog() {
   // Auto-validate when dialog opens if we have a DNI and no person yet
   useEffect(() => {
     if (isOpen && dni && !person && !error && !loading) {
-      handleSearch(new Event("submit") as any);
+      handleSearch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger on dialog open
   }, [isOpen]);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSearch = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!dni.trim()) return;
 
