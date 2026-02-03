@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getFirebaseTrack } from '@/lib/firebase/tracks';
 import { TrackPreview } from '@/components/tracks/track-preview';
 
+export const dynamic = 'force-dynamic';
+
 interface TrackDetailPageProps {
   params: Promise<{ id: string }>;
 }

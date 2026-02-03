@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getFirebaseTracks } from '@/lib/firebase/tracks';
 import { TrackPreview } from '@/components/tracks/track-preview';
 
+export const dynamic = 'force-dynamic';
+
 const difficultyConfig = {
   easy: {
     label: 'Fácil',

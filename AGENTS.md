@@ -9,130 +9,135 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
    - Next.js 16 App Router with `use client` components where needed.
    - TypeScript everywhere; strict mode is enabled in `tsconfig.json`.
    - Tailwind v4 via `@tailwindcss/postcss`; class merging handled with `cn` helper.
-   - Firebase (Firestore, Storage, Auth) for persistence plus Google Sheets ingestion utilities. Storage CORS is configured via `docs/storage-cors.md` and security rules live in `docs/firestore-rules.md` / `docs/firebase-storage.md`.
+   - Firebase (Firestore, Storage, Auth) for persistence plus Google Sheets ingestion utilities.
+   - Security: Storage CORS (`docs/storage-cors.md`), Firestore Rules (`docs/firestore-rules.md`).
 
 3. PACKAGE MANAGER & SCRIPTS
-   - Default to `pnpm`; lockfile is `pnpm-lock.yaml`.
-   - `pnpm dev` → local dev server on port 3000.
+   - **Must use `pnpm`** (lockfile is `pnpm-lock.yaml`).
+   - `pnpm dev` → local dev server on port 3000 (primary verification method).
    - `pnpm build` → production bundle (includes SW build through Serwist wrapper).
    - `pnpm start` → serve built output.
    - `pnpm lint` → run ESLint using `eslint.config.mjs` (Next core web vitals + TS config).
-   - No official test script exists; add one before introducing automated tests.
+   - `pnpm lint --fix` → auto-fix linting issues (preferred over manual fixes).
 
-4. RUNNING TESTS (OR LACK THEREOF)
-   - There is no Jest/Vitest config and no `test` script today.
-   - If you introduce tests, prefer Vitest; define `pnpm test` and ensure single-test invocation via `pnpm test path/to/file.test.ts`.
-   - Until a harness exists, manual verification via `pnpm dev` and targeted component checks is expected.
+4. DIRECTORY STRUCTURE MAP
+   - `app/` → Next.js App Router (pages/layouts).
+     - `app/admin/` → Protected admin dashboard (separate layout).
+     - `app/(marketing)/` → (Implicit) Public facing pages like `products`, `races`, `benefits`.
+     - `app/sw.ts` → Service Worker definition (Serwist).
+   - `components/` → React components.
+     - `components/ui/` → Shadcn-like primitives (Button, Card, Dialog).
+     - `components/admin/` → Admin-specific tables/forms.
+   - `lib/` → Business logic & utilities.
+     - `lib/firebase/` → Firebase config and service modules (API layer).
+     - `lib/data.ts` → Shared TypeScript interfaces (source of truth for types).
+     - `lib/utils.ts` → Helper functions (e.g., `cn` for Tailwind).
+   - `hooks/` → Custom React hooks.
+   - `docs/` → Project documentation.
 
-5. LINTING DETAILS
-   - ESLint extends `eslint-config-next` (core web vitals + TS) with default ignores overridden.
-   - Always run `pnpm lint` after touching `.ts` or `.tsx` files; fix issues before committing.
-   - Prefer ESLint auto-fixes via `pnpm lint --fix` rather than manual edits when practical.
+5. RUNNING TESTS (OR LACK THEREOF)
+   - **No test suite exists currently.**
+   - Do NOT run `npm test` or `pnpm test` unless you have implemented it.
+   - If adding tests:
+     - Use **Vitest** (compatible with Next.js/Vite ecosystem).
+     - Add `"test": "vitest"` to `package.json`.
+     - Ensure single-test runs work: `pnpm test path/to/file.test.ts`.
 
-6. FORMATTING & STYLING
-   - Project relies on Prettier defaults provided by Next tooling; keep 2-space indentation for JSON, TS.
-   - Stick to single quotes in TS/TSX unless template literals or JSX attributes require double quotes.
-   - Avoid trailing spaces and keep max line length near 100–110 chars for readability.
-   - Tailwind classes follow “most important first” ordering (layout → spacing → typography → color → effects).
-   - Use `cn()` (`lib/utils.ts`) when class names are conditional.
+6. LINTING DETAILS
+   - ESLint extends `eslint-config-next` (core web vitals + TS).
+   - **Mandatory:** Run `pnpm lint` after any `.ts` or `.tsx` modification.
+   - Fix all lint errors before committing; do not suppress them without strong reasoning.
 
-7. IMPORT RULES
-   - Absolute alias `@/` maps to repo root; prefer it over long relative paths.
-   - Import order: Node built-ins, external packages, alias imports, relative paths, then styles/assets.
-   - Group React hooks/components first, then utilities, then types.
-   - Do not use `require`; stick to ES modules.
+7. FORMATTING & STYLING
+   - Indentation: 2 spaces.
+   - Quotes: Single quotes preferred for TS/JS; double quotes for JSX attributes.
+   - Line length: ~100-110 characters.
+   - Tailwind: Order classes by importance (Layout -> Box Model -> Typography -> Visual -> Misc).
+   - **Conditional Classes:** ALWAYS use `cn()` from `@/lib/utils` for conditional styles.
 
-8. TYPESCRIPT CONVENTIONS
-   - Always type function arguments/returns; rely on interface/type aliases from `lib/data.ts` when available.
-   - Prefer `type` for unions and `interface` for object shapes shared across files.
-   - Use discriminated unions for UI states instead of `any` or `string` status flags.
-   - Enable strict null checks by guarding optional values before usage (`if (!value) return null`).
+8. IMPORT RULES
+   - Use absolute alias `@/` for all internal imports (maps to project root).
+   - Order:
+     1. Built-in Node modules
+     2. External packages (React, Next, etc.)
+     3. Internal Components (`@/components/...`)
+     4. Internal Libs/Utils (`@/lib/...`)
+     5. Types & Styles
+   - No `require()`; use ES6 `import`.
 
-9. NAMING
-   - Components: PascalCase (`BenefitList`).
-   - Hooks/utils: camelCase (`useBenefits`, `formatPrice`).
-   - Constants: SCREAMING_SNAKE_CASE when exported (`BENEFITS_COLLECTION`).
-   - File names follow kebab-case except React components which may use matching PascalCase directories.
+9. TYPESCRIPT CONVENTIONS
+   - **Strict Typing:** No implicit `any`. Explicitly type function args and returns.
+   - **Interfaces:** Define shared data models in `lib/data.ts`.
+   - **UI State:** Use discriminated unions (e.g., `type Status = 'idle' | 'loading' | 'success' | 'error'`).
+   - **Null Safety:** Use optional chaining (`?.`) and nullish coalescing (`??`) extensively.
 
-10. ERROR HANDLING
-   - Firebase calls already wrap try/catch; extend the pattern and log contextual messages (`console.error('msg', err)`).
-   - Surface user-friendly toasts via `sonner` inside client components; avoid leaking raw errors to users.
-   - When failing silently is dangerous (data loss, payments), bubble errors up via thrown exceptions and let Next error boundaries manage display.
+10. NAMING CONVENTIONS
+    - **Files:** `kebab-case.ts` / `kebab-case.tsx`.
+    - **Components:** `PascalCase` (`BenefitList`).
+    - **Functions/Hooks:** `camelCase` (`useBenefits`, `calculateTotal`).
+    - **Constants:** `SCREAMING_SNAKE_CASE` (`MAX_ITEMS_PER_PAGE`).
+    - **Directories:** `kebab-case` (matching the route or category).
 
-11. DATA FLOW
-   - Shared interfaces live in `lib/data.ts`; update them before touching UI.
-   - Firebase modules (under `lib/firebase`) should be the only place hitting the network; UI imports functions from there.
-   - For Sheets-based seeding, refer to `lib/firebase/seed-*` scripts; ensure deduplication keys stay stable.
+11. ERROR HANDLING
+    - **Firebase:** Wrap all async calls in try/catch. Log errors with context.
+    - **UI Feedback:** Use `sonner` (toast) for user-facing errors.
+    - **Critical Failures:** Throw exceptions for data integrity issues; let Error Boundaries catch them.
 
-12. UI STYLE GUARDS
-   - Public-facing pages lean heavily on bold typography, italic uppercase labels, and neon accent colors. Preserve that tone.
-   - When adding mobile layouts, prefer utility-first responsive classes (`md:`, `lg:`) inside the same component.
-   - Use Radix primitives (Dialog, Sheet, Popover) already wrapped inside `components/ui` for consistency.
-   - Motion: rely on `framer-motion` for nav transitions/entrances; keep durations ≤0.6s unless storytelling demands more.
+12. DATA FLOW & STATE
+    - **Fetching:** Centralize Firebase calls in `lib/firebase/`.
+    - **Forms:** Use `react-hook-form` + `zod` for complex inputs.
+    - **Local State:** `useState` is fine for simple UI toggles.
+    - **Global State:** Use Context (`contexts/`) sparingly (e.g., Auth).
 
-13. ACCESSIBILITY
-   - Provide `alt` text for every `Image`. When logos repeat, still include company names.
-   - Use semantic HTML (`button`, `nav`, `header`) before resorting to divs.
-   - Keyboard traps: ensure Dialog/Sheet components expose close controls and focusable elements.
+13. UI STYLE GUARDS
+    - **Identity:** Bold typography, italic uppercase labels, neon accents.
+    - **Responsiveness:** Mobile-first. Use `md:` and `lg:` overrides.
+    - **Motion:** `framer-motion` for transitions (keep < 0.6s).
+    - **Components:** Reuse `components/ui` primitives. Do not reinvent the wheel.
 
 14. AUTH & ROUTING
-   - `AuthProvider` (contexts/auth-context) wraps the app; check it before touching protected routes.
-   - Admin routes live under `/app/admin`; they share the same RootLayout but hide Navbar/Footer. Preserve that split.
-   - When adding routes, register navigation links inside `components/navbar.tsx` and admin menus as needed.
+    - `AuthProvider` wraps the app.
+    - Admin routes (`/admin`) are protected by `AdminGuard`.
+    - Register new public routes in `components/navbar.tsx`.
 
 15. ENV & SECRETS
-   - `.env` already exists locally; never commit it.
-   - Firebase config reads from environment; fall back gracefully if keys are absent.
-   - When introducing new secrets, document them in README and mention required `.env.local` entries.
+    - Config in `.env.local` (do not commit).
+    - Firebase keys are loaded from environment variables.
+    - Document new required variables in the PR description.
 
 16. BUILD FEATURES
-   - Service worker is generated via Serwist (`app/sw.ts` → `public/sw.js`). Keep `enable` flag tied to production builds.
-   - `next.config.ts` allows remote images via wildcard hostnames; no need to extend unless you block remote origins.
-   - For redirects, modify `async redirects()`; ensure they remain permanent unless there is a migration reason.
+    - Service Worker (`sw.ts`) handles PWA capabilities.
+    - Images: `next/image` requires host allowlisting in `next.config.ts`.
+    - Redirects: Managed in `next.config.ts`.
 
-17. STATE & FORMS
-   - Forms use `react-hook-form` plus Zod validators; follow that pattern for new complex forms.
-   - Keep form state local with `useState` only for simple inputs (e.g., BenefitForm currently uses `useState`).
-   - File uploads rely on Firebase Storage helper `uploadBenefitLogo`; reuse it rather than re-implementing uploads.
+17. ACCESSIBILITY
+    - Images must have `alt` text.
+    - Interactive elements must be keyboard accessible.
+    - Semantic HTML (`<main>`, `<section>`, `<nav>`) over `<div>` soup.
 
-18. STYLING RESOURCES
-   - `components/ui` contains shadcn-inspired primitives (Button, Card, Sheet, Dialog, etc.).
-   - When you need new primitives, co-locate them in `components/ui` and wire them with `data-slot` attributes.
-   - Avoid inline `style` props unless animating values; favor Tailwind utilities.
+18. GIT WORKFLOW FOR AGENTS
+    - **Atomic Commits:** One logical change per commit.
+    - **Messages:** Imperative mood ("Fix login bug", not "Fixed login bug").
+    - **Safety:** Never force push. Never commit secrets.
+    - **Review:** Self-review `git diff` before committing.
 
-19. PERFORMANCE PRACTICES
-   - Prefer `next/image` for remote assets; configure `remotePatterns` if new domains appear.
-   - Use `React.Suspense`/`loading.tsx` route segments for long data fetches (see `app/benefits/loading.tsx`).
-   - Remove unused packages promptly; smaller bundles improve PWA performance.
+19. DOCS & RULES CHECK
+    - **Status (2026-02-03):** No Cursor (`.cursor/`) or Copilot (`.github/`) rules found.
+    - **Action:** If you see these folders appear, read them immediately.
+    - **New Docs:** Place in `docs/` using Markdown. Keep it concise.
 
-20. TESTING NEW FEATURES WITHOUT A TEST SUITE
-   - Spin up `pnpm dev`; hit key routes: `/`, `/benefits`, `/races`, `/store`, `/admin` (requires auth logic).
-   - For single component validation, create temporary stories inside `app/playground` (not committed) or rely on Jest snapshot prototypes before merging.
-   - Document manual QA steps in PR descriptions until automated tests exist.
+20. TROUBLESHOOTING
+    - **Env Issues:** If build fails on missing keys, check `.env.local` vs `.env.example` (if exists).
+    - **Permissions:** Firebase "Permission Denied" usually means Rules or Auth context issues.
+    - **Styles:** If Tailwind classes aren't applying, check `tailwind.config.ts` content array or invalid class syntax.
 
-21. GIT WORKFLOW FOR AGENTS
-   - Never amend user commits; follow instructions in the system prompt when staging/committing.
-   - Keep PRs focused; multiple logical changes require separate commits unless instructed otherwise.
-   - Provide concise commit messages summarizing intent (“tweak benefit cards for mobile”) rather than raw file lists.
+21. VERIFICATION CHECKLIST (MANUAL)
+    Since there is no automated test suite, you MUST manually verify:
+    1. **Build:** Run `pnpm build` to check for TS/Lint/Build errors.
+    2. **Lint:** Run `pnpm lint` explicitly.
+    3. **Runtime:** Start `pnpm dev` and visit the affected pages.
+       - Check happy path.
+       - Check error states.
+       - Check mobile view (responsive).
 
-22. DOCS & RULES CHECK
-   - There are no Cursor rule files or Copilot instruction files in this repo as of 2026-02-03.
-   - Re-run `ls .cursor` and `ls .github` before assuming this statement is still true.
-
-23. WHEN ADDING NEW DOCS
-   - Use Markdown with 80–90 char lines for readability.
-   - Reference files with inline code formatting (e.g., `components/benefit-list.tsx`).
-   - Provide actionable steps; agent docs should avoid fluff.
-
-24. TROUBLESHOOTING QUICK NOTES
-   - If `pnpm dev` fails due to missing env vars, create `.env.local` mirroring `.env` keys and set placeholders.
-   - Firebase permission errors: ensure service account credentials match emulator or production settings.
-   - Tailwind build errors likely stem from invalid class names; double-check dynamic strings.
-
-25. FINAL REMINDERS
-   - Maintain the bold TT visual identity; gradients + uppercase microcopy are part of the brand.
-   - Keep mobile-first mindset; every new component should define sensible base styles before `md:` overrides.
-   - Document notable architectural decisions inside new PR descriptions or inline comments where ambiguity would slow future agents.
-   - Before handing work back, run `pnpm lint` (mandatory) and `pnpm build` if the change touches build/runtime config.
-
-END OF GUIDE (~150 lines)
+END OF GUIDE

@@ -3,7 +3,7 @@ import { BenefitList } from "@/components/benefit-list";
 import { TTCCredencialDialog } from "@/components/tt-credencial-dialog";
 import { AlertCircle } from "lucide-react";
 
-export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: "Beneficios | TT Cronograma",
