@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/hooks/use-auth';
 import { Users, Calendar, Settings, Bell, Package, ShoppingCart, User } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -107,6 +108,27 @@ export default function AdminDashboard() {
           </p>
           <div className="mt-8 flex items-center text-brand-orange text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
             Gestionar beneficios →
+          </div>
+        </Link>
+
+        {/* Manage Tracks Card */}
+        <Link
+          href="/admin/tracks"
+          className="group relative overflow-hidden bg-neutral-900 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-neutral-700 hover:border-emerald-400/50 transition-all duration-500 hover:scale-[1.02] shadow-xl"
+        >
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-colors" />
+
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-4 bg-emerald-500 rounded-2xl text-white shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition-transform duration-500">
+              <MapPin className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter">Tracks</h3>
+          </div>
+          <p className="text-white/40 text-sm font-medium leading-relaxed">
+            Subí y administrá archivos GPX, metadatos de recorrido y vistas previas.
+          </p>
+          <div className="mt-8 flex items-center text-emerald-400 text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Gestionar tracks →
           </div>
         </Link>
 

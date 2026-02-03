@@ -87,6 +87,12 @@ export function Navbar() {
                 Carreras
               </Link>
               <Link
+                href="/tracks"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Tracks
+              </Link>
+              <Link
                 href="/benefits"
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
               >

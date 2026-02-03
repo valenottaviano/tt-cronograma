@@ -46,6 +46,23 @@ export default async function Home() {
                 </Card>
               </Link>
 
+              <Link href="/tracks" className="block group relative">
+                <Card className="h-full border-0 bg-neutral-900 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] hover:bg-neutral-800 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <CardHeader className="relative z-10 p-8">
+                    <div className="mb-6 w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                      <Calendar className="w-7 h-7 text-emerald-500" />
+                    </div>
+                    <CardTitle className="text-3xl font-bold tracking-tight text-white mb-2 italic">
+                      TRACKS
+                    </CardTitle>
+                    <CardDescription className="text-lg text-white/60 leading-relaxed">
+                      Descargá recorridos GPX oficiales para tus entrenamientos.
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+
               <Link href="/benefits" className="block group relative">
                 <Card className="h-full border-0 bg-neutral-900 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-neutral-800 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
