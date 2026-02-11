@@ -10,7 +10,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, CreditCard, Hash, CheckCircle2, AlertCircle, QrCode as QrIcon } from "lucide-react";
+import {
+  Loader2,
+  CreditCard,
+  Hash,
+  CheckCircle2,
+  AlertCircle,
+  QrCode as QrIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { getPersonByDni, type Person } from "@/lib/credential";
@@ -26,7 +33,7 @@ export function TTCCredencialDialog() {
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
-    
+
     // Check for saved DNI on mount
     const savedDni = localStorage.getItem("tt_dni");
     if (savedDni) {
@@ -65,7 +72,9 @@ export function TTCCredencialDialog() {
       }
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError("Ocurrió un error al consultar los datos. Por favor reintenta luego.");
+      setError(
+        "Ocurrió un error al consultar los datos. Por favor reintenta luego.",
+      );
       toast.error("Error de conexión");
     } finally {
       setLoading(false);
@@ -81,21 +90,24 @@ export function TTCCredencialDialog() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-      if (!open) {
-        // Reset local UI state but keep saved DNI for next time
-        setPerson(null);
-        setError(null);
-        setIsQrExpanded(false);
-        // Reload DNI from storage if it wasn't cleared by handleReset
-        const saved = localStorage.getItem("tt_dni");
-        if (saved) setDni(saved);
-      }
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          // Reset local UI state but keep saved DNI for next time
+          setPerson(null);
+          setError(null);
+          setIsQrExpanded(false);
+          // Reload DNI from storage if it wasn't cleared by handleReset
+          const saved = localStorage.getItem("tt_dni");
+          if (saved) setDni(saved);
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-600 px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
         >
           <CreditCard className="mr-2 h-5 w-5" />
@@ -104,7 +116,7 @@ export function TTCCredencialDialog() {
       </DialogTrigger>
       <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 shadow-2xl rounded-3xl">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/50 to-black/50 pointer-events-none" />
-        
+
         <div className="relative p-5 sm:p-6">
           <DialogHeader className="mb-4 sm:mb-6">
             <DialogTitle className="text-xl sm:text-2xl font-bold text-center tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400">
@@ -123,7 +135,10 @@ export function TTCCredencialDialog() {
               >
                 <form onSubmit={handleSearch} className="space-y-4">
                   <div className="space-y-2">
-                    <label htmlFor="dni" className="text-sm font-medium text-zinc-400 ml-1">
+                    <label
+                      htmlFor="dni"
+                      className="text-sm font-medium text-zinc-400 ml-1"
+                    >
                       Número de DNI
                     </label>
                     <div className="relative">
@@ -138,8 +153,8 @@ export function TTCCredencialDialog() {
                       />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={loading || !dni}
                     className="w-full h-12 bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors font-bold disabled:opacity-50 shadow-[0_0_20px_rgba(237,36,31,0.2)]"
                   >
@@ -152,7 +167,7 @@ export function TTCCredencialDialog() {
                 </form>
 
                 {error && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex items-center gap-2 p-4 bg-red-950/20 border border-red-900/50 rounded-xl text-red-200 text-sm"
@@ -173,11 +188,11 @@ export function TTCCredencialDialog() {
                 <div className="relative w-full bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl p-5 sm:p-6 flex flex-col justify-between min-h-[200px] sm:aspect-[1.6/1]">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,#ffffff10,transparent)] pointer-events-none" />
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
-                  
+
                   <div className="flex justify-between items-start z-10 mb-4 sm:mb-0">
-                    <img 
-                      src="https://www.carreratt.com.ar/logo-tt.png" 
-                      alt="TT Logo" 
+                    <img
+                      src="logo-tt.png"
+                      alt="TT Logo"
                       className="h-8 sm:h-10 opacity-90"
                     />
                     <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider">
@@ -189,14 +204,18 @@ export function TTCCredencialDialog() {
                   <div className="flex justify-between items-end z-10 gap-2">
                     <div className="space-y-3 sm:space-y-4 min-w-0 flex-1">
                       <div>
-                        <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5 sm:mb-1">Nombre y Apellido</p>
+                        <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5 sm:mb-1">
+                          Nombre y Apellido
+                        </p>
                         <p className="text-lg sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent truncate">
                           {person.nombre} {person.apellido}
                         </p>
                       </div>
-                      
+
                       <div>
-                        <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5 sm:mb-1">DNI</p>
+                        <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5 sm:mb-1">
+                          DNI
+                        </p>
                         <p className="text-base sm:text-xl font-mono text-zinc-300">
                           {person.dni}
                         </p>
@@ -204,7 +223,7 @@ export function TTCCredencialDialog() {
                     </div>
 
                     {/* QR Code Section */}
-                    <div 
+                    <div
                       onClick={() => setIsQrExpanded(!isQrExpanded)}
                       className="bg-white p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl shadow-lg hover:scale-105 transition-transform cursor-pointer group relative overflow-hidden shrink-0"
                     >
@@ -212,7 +231,11 @@ export function TTCCredencialDialog() {
                         size={Math.min(60, 80)} // Dynamic size fallback but keeping it readable
                         value={`${baseUrl}/card/${person.dni}`}
                         viewBox={`0 0 256 256`}
-                        style={{ height: "auto", maxWidth: "60px", width: "100%" }}
+                        style={{
+                          height: "auto",
+                          maxWidth: "60px",
+                          width: "100%",
+                        }}
                         className="sm:!max-w-[80px]"
                       />
                     </div>
@@ -237,13 +260,17 @@ export function TTCCredencialDialog() {
                               size={280}
                               value={`${baseUrl}/card/${person.dni}`}
                               viewBox={`0 0 256 256`}
-                              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                              style={{
+                                height: "auto",
+                                maxWidth: "100%",
+                                width: "100%",
+                              }}
                             />
                             <div className="mt-6 text-center text-black font-semibold uppercase tracking-widest text-sm">
                               Escanear Credencial
                             </div>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               className="absolute top-4 right-4 text-black hover:bg-black/5 rounded-full h-8 w-8 p-0"
                               onClick={() => setIsQrExpanded(false)}
                             >
@@ -261,9 +288,9 @@ export function TTCCredencialDialog() {
                   <span>Escaneá para validar</span>
                 </div>
 
-                <Button 
+                <Button
                   onClick={handleReset}
-                  variant="ghost" 
+                  variant="ghost"
                   className="w-full text-zinc-500 hover:text-white hover:bg-zinc-900"
                 >
                   Consultar otro DNI

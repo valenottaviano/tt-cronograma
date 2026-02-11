@@ -12,9 +12,9 @@ import { InfiniteBanner } from "@/components/infinite-banner";
 import { cn } from "@/lib/utils";
 
 export const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
     minimumFractionDigits: 0,
   }).format(price);
 };
@@ -51,12 +51,12 @@ export function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={cn(
           "fixed flex flex-row-reverse items-center left-4 right-4 z-50 rounded-2xl border border-neutral-700 bg-neutral-900/95 shadow-2xl transition-all duration-300",
-          isHome ? "top-16" : "top-4"
+          isHome ? "top-16" : "top-4",
         )}
       >
         <Link href="/">
           <img
-            src="https://www.carreratt.com.ar/logo-tt.png"
+            src="logo-tt.png"
             alt="Logo TT"
             className="md:hidden h-8 w-auto mr-10"
           />
@@ -64,11 +64,7 @@ export function Navbar() {
         <div className="container mx-auto py-4 flex h-14 items-center px-6">
           <div className="mr-4 hidden md:flex">
             <Link href="/" className="mr-6 flex items-center space-x-2">
-              <img
-                src="https://www.carreratt.com.ar/logo-tt.png"
-                alt="Logo TT"
-                className="h-8 w-auto"
-              />
+              <img src="logo-tt.png" alt="Logo TT" className="h-8 w-auto" />
               {/* <span className="hidden font-bold sm:inline-block">
                 Beneficios TT
               </span> */}
@@ -123,7 +119,7 @@ export function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 <img
-                  src="https://www.carreratt.com.ar/logo-tt.png"
+                  src="logo-tt.png"
                   alt="Logo TT"
                   className="h-8 w-auto ml-10 my-5"
                 />

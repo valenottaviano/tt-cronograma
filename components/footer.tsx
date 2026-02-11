@@ -10,7 +10,7 @@ export function Footer() {
           <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
             <div className="flex items-center space-x-2">
               <img
-                src="https://www.carreratt.com.ar/logo-tt.png"
+                src="logo-tt.png"
                 alt="TT Training Team Logo"
                 className="h-12 w-auto"
               />
@@ -67,9 +67,9 @@ export function Footer() {
           </p>
           <p className="text-xs">
             Programado con ❤️ por{" "}
-            <a 
-              href="https://wa.me/5493816003467" 
-              target="_blank" 
+            <a
+              href="https://wa.me/5493816003467"
+              target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors underline underline-offset-4"
             >

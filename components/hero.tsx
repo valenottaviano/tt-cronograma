@@ -46,7 +46,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          src="https://www.carreratt.com.ar/logo-tt.png"
+          src="logo-tt.png"
           alt="TT Training Team Logo"
           className="h-24 w-auto mb-8 md:h-32 drop-shadow-2xl"
         />
@@ -69,23 +69,23 @@ export function Hero() {
           Descubrí todo lo que tenemos para vos
         </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4"
+        >
+          <TTCCredencialDialog />
+          <Button
+            asChild
+            className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
           >
-            <TTCCredencialDialog />
-            <Button 
-              asChild
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
-            >
-              <Link href="/store">
-                <ShoppingBag className="mr-2 h-5 w-5" />
-                Tienda
-              </Link>
-            </Button>
-          </motion.div>
+            <Link href="/store">
+              <ShoppingBag className="mr-2 h-5 w-5" />
+              Tienda
+            </Link>
+          </Button>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div
