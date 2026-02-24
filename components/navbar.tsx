@@ -32,7 +32,7 @@ export function Navbar() {
           <DialogTitle className="sr-only">Carrera TT Flyer</DialogTitle>
           <div className="relative w-full h-full flex items-center justify-center">
             <img
-              src="https://i.ibb.co/wN0gRVs9/Whats-App-Image-2025-12-22-at-11-44-05.jpg"
+              src="https://i.ibb.co/KxWpsNCS/carrera-tt.jpg"
               alt="Carrera TT"
               className="w-full h-auto rounded-lg shadow-2xl"
             />
