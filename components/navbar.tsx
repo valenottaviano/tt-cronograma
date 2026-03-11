@@ -42,7 +42,7 @@ export function Navbar() {
 
       {isHome && (
         <div className="fixed top-0 left-0 right-0 z-40">
-          <InfiniteBanner onClick={() => setShowFlyer(true)} />
+          <InfiniteBanner onClick={() => window.open('https://www.carreratt.com.ar/', '_blank')} />
         </div>
       )}
       <motion.nav
