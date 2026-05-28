@@ -14,45 +14,46 @@ import {
   Moon,
   User,
 } from "lucide-react";
-import { format, addDays, parseISO } from "date-fns";
+import { format, addDays, parseISO, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
 
 function dayLabel(date: Date) {
   return format(date, "eee", { locale: es });
 }
 
-// Flat 7-day view — each biweekly schedule produces 2 of these
+// One Mon–Sun calendar week view
 interface WeekView {
   schedule: Schedule;
-  startDate: Date;        // first day of this 7-day window
-  endDate: Date;          // last day of this 7-day window
-  dayIndices: number[];   // e.g. [0..6] or [7..13]
+  weekStart: Date;        // always Monday
+  weekEnd: Date;          // always Sunday
+  scheduleStart: Date;    // for dayIndex calculation
+  totalDays: number;      // 7 or 14
+}
+
+function mondayOf(date: Date): Date {
+  return startOfISOWeek(date); // ISO week always starts Monday
 }
 
 function buildViews(schedules: Schedule[]): WeekView[] {
   const views: WeekView[] = [];
   for (const s of schedules) {
-    const base = parseISO(s.period.startDate);
-    if (s.period.type === "BIWEEKLY") {
+    const scheduleStart = parseISO(s.period.startDate);
+    const totalDays = s.period.type === "BIWEEKLY" ? 14 : 7;
+    const scheduleEnd = addDays(scheduleStart, totalDays - 1);
+
+    // Generate one Mon–Sun view per calendar week covered by the schedule
+    let weekStart = mondayOf(scheduleStart);
+    const lastWeekStart = mondayOf(scheduleEnd);
+
+    while (weekStart <= lastWeekStart) {
       views.push({
         schedule: s,
-        startDate: base,
-        endDate: addDays(base, 6),
-        dayIndices: [0, 1, 2, 3, 4, 5, 6],
+        weekStart,
+        weekEnd: endOfISOWeek(weekStart),
+        scheduleStart,
+        totalDays,
       });
-      views.push({
-        schedule: s,
-        startDate: addDays(base, 7),
-        endDate: addDays(base, 13),
-        dayIndices: [7, 8, 9, 10, 11, 12, 13],
-      });
-    } else {
-      views.push({
-        schedule: s,
-        startDate: base,
-        endDate: addDays(base, 6),
-        dayIndices: [0, 1, 2, 3, 4, 5, 6],
-      });
+      weekStart = addWeeks(weekStart, 1);
     }
   }
   return views;
@@ -61,7 +62,7 @@ function buildViews(schedules: Schedule[]): WeekView[] {
 function findCurrentViewIndex(views: WeekView[]): number {
   const today = new Date();
   for (let i = 0; i < views.length; i++) {
-    if (today >= views[i].startDate && today <= views[i].endDate) return i;
+    if (today >= views[i].weekStart && today <= views[i].weekEnd) return i;
   }
   return views.length - 1;
 }
@@ -98,7 +99,7 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
   }
 
   const view = views[viewIndex];
-  const { schedule, startDate, endDate, dayIndices } = view;
+  const { schedule, weekStart, weekEnd, scheduleStart, totalDays } = view;
 
   const dayMap: Record<number, Day> = {};
   schedule.days.forEach((d) => { dayMap[d.dayIndex] = d; });
@@ -147,7 +148,7 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
           </Button>
           <div className="text-center min-w-0">
             <p className="font-semibold text-sm">
-              {format(startDate, "d MMM", { locale: es })} — {format(endDate, "d MMM yyyy", { locale: es })}
+              {format(weekStart, "d MMM", { locale: es })} — {format(weekEnd, "d MMM yyyy", { locale: es })}
             </p>
           </div>
           <Button
@@ -176,24 +177,26 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
 
         {/* Mobile: vertical list */}
         <div className="flex flex-col gap-2 md:hidden">
-          {dayIndices.map((dayIndex) => (
-            <MobileDayCard
-              key={dayIndex}
-              date={addDays(startDate, dayIndex - dayIndices[0])}
-              day={dayMap[dayIndex]}
-            />
-          ))}
+          {Array.from({ length: 7 }, (_, i) => {
+            const date = addDays(weekStart, i);
+            const idx = differenceInCalendarDays(date, scheduleStart);
+            const inSchedule = idx >= 0 && idx < totalDays;
+            return (
+              <MobileDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
+            );
+          })}
         </div>
 
         {/* Desktop: 7-col grid */}
         <div className="hidden md:grid md:grid-cols-7 gap-2">
-          {dayIndices.map((dayIndex) => (
-            <DesktopDayCard
-              key={dayIndex}
-              date={addDays(startDate, dayIndex - dayIndices[0])}
-              day={dayMap[dayIndex]}
-            />
-          ))}
+          {Array.from({ length: 7 }, (_, i) => {
+            const date = addDays(weekStart, i);
+            const idx = differenceInCalendarDays(date, scheduleStart);
+            const inSchedule = idx >= 0 && idx < totalDays;
+            return (
+              <DesktopDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
+            );
+          })}
         </div>
       </main>
     </div>
@@ -268,15 +271,15 @@ function AttachmentDots({ fileUrl, variantFileUrl, workoutLink, variantLink }: A
 
 // ── Mobile card ───────────────────────────────────────────────────────────────
 
-function MobileDayCard({ date, day }: { date: Date; day: Day | undefined }) {
+function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
   const isRest = !day || day.isRest;
   const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
 
   return (
     <div
-      className={`rounded-2xl border flex items-stretch overflow-hidden ${
-        isToday ? "border-brand-orange" : "border-border"
-      } ${isRest ? "bg-neutral-950/60" : "bg-neutral-900"}`}
+      className={`rounded-2xl border flex items-stretch overflow-hidden transition-opacity ${
+        dimmed ? "opacity-30" : ""
+      } ${isToday ? "border-brand-orange" : "border-border"} ${isRest ? "bg-neutral-950/60" : "bg-neutral-900"}`}
     >
       <div
         className={`flex flex-col items-center justify-center px-3 py-3 shrink-0 min-w-[56px] ${
@@ -338,15 +341,15 @@ function MobileDayCard({ date, day }: { date: Date; day: Day | undefined }) {
 
 // ── Desktop card ──────────────────────────────────────────────────────────────
 
-function DesktopDayCard({ date, day }: { date: Date; day: Day | undefined }) {
+function DesktopDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
   const isRest = !day || day.isRest;
   const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
 
   return (
     <div
-      className={`rounded-xl border p-2 flex flex-col gap-1 min-h-[110px] ${
-        isToday ? "border-brand-orange bg-brand-orange/5" : "border-border bg-neutral-900"
-      }`}
+      className={`rounded-xl border p-2 flex flex-col gap-1 min-h-[110px] transition-opacity ${
+        dimmed ? "opacity-30" : ""
+      } ${isToday ? "border-brand-orange bg-brand-orange/5" : "border-border bg-neutral-900"}`}
     >
       <div className="flex flex-col items-center">
         <span className={`text-[9px] font-bold uppercase tracking-wider ${isToday ? "text-brand-orange" : "text-muted-foreground"}`}>
