@@ -163,10 +163,9 @@ export function PlanillaDialog() {
                 id="dialog-dni"
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
                 placeholder="12345678"
                 value={dni}
-                onChange={(e) => setDni(e.target.value)}
+                onChange={(e) => setDni(e.target.value.replace(/\D/g, ""))}
                 required
                 autoFocus
                 className="mt-1"
