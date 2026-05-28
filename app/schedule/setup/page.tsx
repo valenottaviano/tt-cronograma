@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,14 @@ import Image from "next/image";
 type Step = "details" | "avatar";
 
 export default function SetupPage() {
+  return (
+    <Suspense>
+      <SetupContent />
+    </Suspense>
+  );
+}
+
+function SetupContent() {
   const router = useRouter();
   const params = useSearchParams();
   const dni = params.get("dni") ?? "";
