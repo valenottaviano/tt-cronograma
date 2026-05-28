@@ -3,9 +3,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { TTCCredencialDialog } from "./tt-credencial-dialog";
-import { ChevronDown, ShoppingBag } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { PlanillaDialog } from "./planilla-dialog";
 
 export function Hero() {
   const ref = useRef(null);
@@ -76,15 +75,7 @@ export function Hero() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4"
         >
           <TTCCredencialDialog />
-          <Button
-            asChild
-            className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
-          >
-            <Link href="/store">
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              Tienda
-            </Link>
-          </Button>
+          <PlanillaDialog />
         </motion.div>
 
         {/* Scroll Indicator */}

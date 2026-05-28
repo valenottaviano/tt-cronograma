@@ -158,6 +158,12 @@ All API routes return `{ data }` on success and `{ error: string }` on failure. 
 | GET | `/api/client/[dni]` | Get client info + all APPROVED schedule copies with resolved workouts and presigned file URLs. Used by `/schedule/[dni]`. Returns 404 if DNI not found. |
 | POST | `/api/client/[dni]/comments` | Add a comment to a day on behalf of the athlete. Body: `{ copyId, dayIndex, content }`. |
 
+### Public lookup (no auth required)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/client/[dni]/info` | Lightweight lookup by DNI. Returns `{ name, isActive }`. Returns 404 if DNI not found or athlete is soft-deleted. No sensitive data exposed. |
+
 ---
 
 ## Middleware

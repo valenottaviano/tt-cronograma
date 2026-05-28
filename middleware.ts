@@ -4,23 +4,25 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow access to login page
   if (pathname === '/admin/login') {
     return NextResponse.next();
   }
 
-  // Protect all /admin/* routes (except login)
   if (pathname.startsWith('/admin')) {
-    // Note: We can't check Firebase auth in middleware (runs on Edge)
-    // Auth verification happens client-side in AdminGuard component
-    // This middleware just ensures a consistent structure
     return NextResponse.next();
   }
 
-  // Allow all other routes
+  // Protect /schedule/[dni] — public sub-paths (setup, login) are excluded by matcher
+  if (pathname.startsWith('/schedule/') && !pathname.startsWith('/schedule/setup') && !pathname.startsWith('/schedule/login')) {
+    const session = request.cookies.get('athlete_session');
+    if (!session) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/schedule/:path*'],
 };
