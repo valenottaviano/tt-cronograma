@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -23,7 +23,56 @@ export function PlanillaDialog() {
   const [dni, setDni] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
+
+  // Pre-fill cached DNI (shared with Credencial TT dialog)
+  useEffect(() => {
+    const saved = localStorage.getItem("tt_dni");
+    if (saved) setDni(saved);
+  }, []);
+
+  async function handleButtonClick() {
+    setChecking(true);
+    try {
+      // 1. Active session → go directly
+      const meRes = await fetch("/api/client/auth/me");
+      if (meRes.ok) {
+        const json = await meRes.json();
+        router.push(`/schedule/${json.data.dni}`);
+        return;
+      }
+
+      // 2. Cached DNI → skip DNI step, jump to password (or setup)
+      const cachedDni = localStorage.getItem("tt_dni");
+      if (cachedDni) {
+        setDni(cachedDni);
+        const checkRes = await fetch("/api/client/auth/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dni: cachedDni }),
+        });
+        const checkJson = await checkRes.json();
+        if (checkJson.data?.exists) {
+          if (!checkJson.data.hasAccount) {
+            router.push(`/schedule/setup?dni=${encodeURIComponent(cachedDni)}`);
+            return;
+          }
+          setStep("password");
+          setOpen(true);
+          return;
+        }
+        // DNI no longer valid — clear cache and show dialog from scratch
+        localStorage.removeItem("tt_dni");
+        setDni("");
+      }
+    } catch {
+      // fall through
+    } finally {
+      setChecking(false);
+    }
+    setOpen(true);
+  }
 
   function reset() {
     setStep("dni");
@@ -51,6 +100,7 @@ export function PlanillaDialog() {
         setError("DNI no encontrado. Verificá que estés registrado en el equipo.");
         return;
       }
+      localStorage.setItem("tt_dni", dni.trim());
       if (!hasAccount) {
         setOpen(false);
         router.push(`/schedule/setup?dni=${encodeURIComponent(dni.trim())}`);
@@ -87,12 +137,16 @@ export function PlanillaDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
-      <DialogTrigger asChild>
-        <Button className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]">
-          <ClipboardList className="mr-2 h-5 w-5" />
-          Planilla
-        </Button>
-      </DialogTrigger>
+      <Button
+        onClick={handleButtonClick}
+        disabled={checking}
+        className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
+      >
+        {checking
+          ? <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          : <ClipboardList className="mr-2 h-5 w-5" />}
+        Planilla
+      </Button>
 
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>

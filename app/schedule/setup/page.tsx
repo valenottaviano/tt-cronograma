@@ -81,16 +81,13 @@ export default function SetupPage() {
     setUploadingAvatar(true);
     setAvatarError("");
     try {
-      const presignRes = await fetch("/api/client/auth/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      });
-      const presignJson = await presignRes.json();
-      if (!presignRes.ok) throw new Error(presignJson.error);
-      const { uploadUrl, key } = presignJson.data;
-
-      await fetch(uploadUrl, { method: "PUT", body: file });
+      // Upload via server proxy to avoid CORS with MinIO
+      const fd = new FormData();
+      fd.append("file", file);
+      const uploadRes = await fetch("/api/client/auth/upload", { method: "POST", body: fd });
+      const uploadJson = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadJson.error);
+      const { key } = uploadJson.data;
 
       // Save avatar key to profile
       setSavingAvatar(true);

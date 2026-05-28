@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAthleteSession } from "@/lib/session";
+import { getMe } from "@/lib/coachApi";
 
 export async function GET() {
   const session = await getAthleteSession();
   if (!session.token) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
-  return NextResponse.json({ data: { dni: session.dni, name: session.name } });
+
+  try {
+    const profile = await getMe(session.token);
+    return NextResponse.json({ data: profile });
+  } catch {
+    // Fall back to session data if external call fails
+    return NextResponse.json({ data: { dni: session.dni, name: session.name } });
+  }
 }
 
 export async function PATCH(req: NextRequest) {
@@ -26,5 +34,5 @@ export async function PATCH(req: NextRequest) {
   });
   const json = await res.json();
   if (!res.ok) return NextResponse.json({ error: json.error ?? "Error inesperado" }, { status: res.status });
-  return NextResponse.json({ data: json.data ?? json });
+  return NextResponse.json({ data: json.data !== undefined ? json.data : json });
 }

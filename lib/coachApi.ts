@@ -45,6 +45,19 @@ export interface PresignResult {
   key: string;
 }
 
+export interface AthleteProfile {
+  name: string;
+  dni: string;
+  email: string | null;
+  phone: string | null;
+  avatarKey: string | null;
+  avatarUrl: string | null;
+}
+
+export function getMe(token: string) {
+  return get<AthleteProfile>("/api/client/auth/me", token);
+}
+
 export function checkDni(dni: string) {
   return post<CheckResult>("/api/client/auth/check", { dni });
 }
