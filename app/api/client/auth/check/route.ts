@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPersonByDni } from "@/lib/credential";
-import { checkDni } from "@/lib/coachApi";
+import { getClientInfo, checkDni } from "@/lib/coachApi";
 
 export async function POST(req: NextRequest) {
   const { dni } = await req.json();
   if (!dni) return NextResponse.json({ error: "DNI requerido" }, { status: 400 });
 
-  const person = await getPersonByDni(dni);
-  if (!person) {
+  const info = await getClientInfo(dni);
+  if (!info) {
     return NextResponse.json({ data: { exists: false, hasAccount: false } });
   }
 

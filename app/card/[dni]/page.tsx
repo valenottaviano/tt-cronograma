@@ -1,10 +1,8 @@
-import { getPersonByDni } from "@/lib/credential";
+import { getClientInfo } from "@/lib/coachApi";
 import {
   CheckCircle2,
   XCircle,
   ShieldCheck,
-  MapPin,
-  Calendar,
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,8 +14,7 @@ interface PageProps {
 
 export default async function ValidationPage({ params }: PageProps) {
   const { dni } = await params;
-  const person = await getPersonByDni(dni);
-  const isActive = person?.estado.toLowerCase() === "activo";
+  const info = await getClientInfo(dni);
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
@@ -28,9 +25,6 @@ export default async function ValidationPage({ params }: PageProps) {
       </div>
 
       <div className="relative w-full max-w-md bg-zinc-950 border border-zinc-900 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
-        {/* Header decoration */}
-        {/* <div className={`absolute top-0 left-0 w-full h-1.5 ${isActive ? 'bg-green-500' : 'bg-red-500'}`} /> */}
-
         <div className="flex flex-col items-center text-center space-y-6">
           <div className="flex justify-center mb-2">
             <img
@@ -49,12 +43,12 @@ export default async function ValidationPage({ params }: PageProps) {
             </p>
           </div>
 
-          {person ? (
+          {info ? (
             <div className="w-full space-y-8 py-4">
               <div
-                className={`p-6 rounded-3xl border ${isActive ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"} flex flex-col items-center gap-3 transition-all animate-in fade-in zoom-in duration-500`}
+                className={`p-6 rounded-3xl border ${info.isActive ? "bg-green-500/10 border-green-500/20 text-green-400" : "bg-red-500/10 border-red-500/20 text-red-400"} flex flex-col items-center gap-3 transition-all animate-in fade-in zoom-in duration-500`}
               >
-                {isActive ? (
+                {info.isActive ? (
                   <>
                     <div className="bg-green-500/20 p-3 rounded-full">
                       <ShieldCheck className="h-10 w-10" />
@@ -78,25 +72,23 @@ export default async function ValidationPage({ params }: PageProps) {
               <div className="space-y-4 text-left bg-zinc-900/50 p-6 rounded-3xl border border-zinc-800/50">
                 <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
                   <span className="text-zinc-500 text-sm">Socio</span>
-                  <span className="font-semibold">
-                    {person.nombre} {person.apellido}
-                  </span>
+                  <span className="font-semibold">{info.name}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
                   <span className="text-zinc-500 text-sm">Documento</span>
-                  <span className="font-mono font-medium">{person.dni}</span>
+                  <span className="font-mono font-medium">{dni}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-zinc-500 text-sm">Estado</span>
                   <span
-                    className={`flex items-center gap-1.5 font-bold ${isActive ? "text-green-400" : "text-red-400"}`}
+                    className={`flex items-center gap-1.5 font-bold ${info.isActive ? "text-green-400" : "text-red-400"}`}
                   >
-                    {isActive ? (
+                    {info.isActive ? (
                       <CheckCircle2 className="h-4 w-4" />
                     ) : (
                       <XCircle className="h-4 w-4" />
                     )}
-                    {person.estado}
+                    {info.isActive ? "Activo" : "Inactivo"}
                   </span>
                 </div>
               </div>

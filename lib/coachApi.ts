@@ -54,6 +54,19 @@ export interface AthleteProfile {
   avatarUrl: string | null;
 }
 
+export interface ClientInfo {
+  name: string;
+  isActive: boolean;
+}
+
+export async function getClientInfo(dni: string): Promise<ClientInfo | null> {
+  const res = await fetch(`${BASE}/api/client/${dni}/info`);
+  if (res.status === 404) return null;
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error ?? "Error inesperado");
+  return json.data ?? json;
+}
+
 export function getMe(token: string) {
   return get<AthleteProfile>("/api/client/auth/me", token);
 }

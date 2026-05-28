@@ -20,13 +20,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { getPersonByDni, type Person } from "@/lib/credential";
 import QRCode from "react-qr-code";
 
 export function TTCCredencialDialog() {
   const [dni, setDni] = useState("");
   const [loading, setLoading] = useState(false);
-  const [person, setPerson] = useState<Person | null>(null);
+  const [person, setPerson] = useState<{ name: string; isActive: boolean; dni: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState("");
@@ -58,17 +57,23 @@ export function TTCCredencialDialog() {
     setPerson(null);
 
     try {
-      const found = await getPersonByDni(dni.trim());
+      const res = await fetch(`/api/client/${dni.trim()}/info`);
 
-      if (!found) {
+      if (res.status === 404) {
         setError("No se encontró ninguna persona con ese DNI.");
         localStorage.removeItem("tt_dni");
-      } else if (found.estado.toLowerCase() !== "activo") {
-        setError("La credencial para este DNI no se encuentra activa.");
-        localStorage.removeItem("tt_dni");
+      } else if (!res.ok) {
+        throw new Error("Error de servidor");
       } else {
-        setPerson(found);
-        localStorage.setItem("tt_dni", dni.trim());
+        const json = await res.json();
+        const info = json.data ?? json;
+        if (!info.isActive) {
+          setError("La credencial para este DNI no se encuentra activa.");
+          localStorage.removeItem("tt_dni");
+        } else {
+          setPerson({ ...info, dni: dni.trim() });
+          localStorage.setItem("tt_dni", dni.trim());
+        }
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -208,7 +213,7 @@ export function TTCCredencialDialog() {
                           Nombre y Apellido
                         </p>
                         <p className="text-lg sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent truncate">
-                          {person.nombre} {person.apellido}
+                          {person.name}
                         </p>
                       </div>
 
