@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAthleteSession } from "@/lib/session";
-import { getSchedules, Schedule } from "@/lib/coachApi";
+import { getSchedules, Schedule, ApiError } from "@/lib/coachApi";
 import { ScheduleView } from "@/components/schedule-view";
 
 interface Props {
@@ -19,9 +19,12 @@ export default async function SchedulePage({ params }: Props) {
   try {
     const data = await getSchedules(session.token);
     schedules = data.schedules;
-  } catch {
-    await session.destroy();
-    redirect("/");
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      await session.destroy();
+      redirect("/");
+    }
+    // Other errors (5xx, network): show empty state
   }
 
   return (

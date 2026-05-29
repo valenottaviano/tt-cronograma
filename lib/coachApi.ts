@@ -24,8 +24,12 @@ async function get<T>(path: string, token: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+  if (!res.ok) {
+    let message = "Error inesperado";
+    try { const j = await res.json(); message = j.error ?? message; } catch { /* non-JSON body */ }
+    throw new ApiError(message, res.status);
+  }
   const json = await res.json();
-  if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
   return json.data ?? json;
 }
 
