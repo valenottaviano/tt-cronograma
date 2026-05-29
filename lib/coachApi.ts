@@ -124,7 +124,8 @@ export interface Schedule {
   coachNoteExternal: string | null;
   period: {
     startDate: string;
-    type: "WEEKLY" | "BIWEEKLY";
+    type: "WEEKLY" | "BIWEEKLY" | "MERGED";
+    totalDays?: number;
   };
   comments: Comment[];
   days: Day[];

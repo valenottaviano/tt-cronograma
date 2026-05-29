@@ -35,16 +35,16 @@ function mondayOf(date: Date): Date {
   return startOfISOWeek(date); // ISO week always starts Monday
 }
 
-// Parse a YYYY-MM-DD string as local midnight (avoids UTC offset shifting the day)
+// Treat any startDate as local midnight regardless of timezone info
 function parseLocalDate(dateStr: string): Date {
-  return parseISO(dateStr + "T00:00:00");
+  return parseISO(dateStr.slice(0, 10) + "T00:00:00");
 }
 
 function buildViews(schedules: Schedule[]): WeekView[] {
   const views: WeekView[] = [];
   for (const s of schedules) {
     const scheduleStart = parseLocalDate(s.period.startDate);
-    const totalDays = s.period.type === "BIWEEKLY" ? 14 : 7;
+    const totalDays = s.period.totalDays ?? (s.period.type === "BIWEEKLY" ? 14 : 7);
     const scheduleEnd = addDays(scheduleStart, totalDays - 1);
 
     // Generate one Mon–Sun view per calendar week covered by the schedule
@@ -290,7 +290,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
     day?.variantFileUrl ||
     day?.workout?.link ||
     day?.variant?.link ||
-    (day?.optionals && day.optionals.length > 0)
+    (day?.optionals && day.optionals.some(o => o.workout))
   );
 
   return (
@@ -368,12 +368,12 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
             workoutLink={day?.workout?.link}
             variantLink={day?.variant?.link}
           />
-          {day?.optionals && day.optionals.length > 0 && (
+          {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
             <div className="pt-2 border-t border-border/40 mt-1">
               <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-1.5">Opcionales</p>
-              {day.optionals.map((opt, i) => (
+              {day.optionals.filter(o => o.workout).map((opt, i) => (
                 <div key={i} className="mb-1">
-                  <p className="text-xs text-muted-foreground">{opt.workout.name}</p>
+                  <p className="text-xs text-muted-foreground">{opt.workout!.name}</p>
                   {opt.variant?.notes && (
                     <p className="text-xs text-muted-foreground/60 leading-relaxed">{opt.variant.notes}</p>
                   )}
