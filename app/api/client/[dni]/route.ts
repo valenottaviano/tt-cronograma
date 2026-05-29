@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSchedules } from "@/lib/coachApi";
+import { getSchedules, ApiError } from "@/lib/coachApi";
 import { getAthleteSession } from "@/lib/session";
 
 export async function GET() {
@@ -12,6 +12,10 @@ export async function GET() {
     const data = await getSchedules(session.token);
     return NextResponse.json({ data });
   } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      await session.destroy();
+      return NextResponse.json({ error: "Sesión expirada" }, { status: 401 });
+    }
     const message = err instanceof Error ? err.message : "Error inesperado";
     return NextResponse.json({ error: message }, { status: 500 });
   }

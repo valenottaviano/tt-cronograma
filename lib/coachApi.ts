@@ -14,12 +14,18 @@ async function post<T>(path: string, body: unknown, token?: string): Promise<T> 
   return json.data ?? json;
 }
 
+export class ApiError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+  }
+}
+
 async function get<T>(path: string, token: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const json = await res.json();
-  if (!res.ok) throw new Error(json.error ?? "Error inesperado");
+  if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
   return json.data ?? json;
 }
 
