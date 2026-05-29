@@ -35,10 +35,15 @@ function mondayOf(date: Date): Date {
   return startOfISOWeek(date); // ISO week always starts Monday
 }
 
+// Parse a YYYY-MM-DD string as local midnight (avoids UTC offset shifting the day)
+function parseLocalDate(dateStr: string): Date {
+  return parseISO(dateStr + "T00:00:00");
+}
+
 function buildViews(schedules: Schedule[]): WeekView[] {
   const views: WeekView[] = [];
   for (const s of schedules) {
-    const scheduleStart = parseISO(s.period.startDate);
+    const scheduleStart = parseLocalDate(s.period.startDate);
     const totalDays = s.period.type === "BIWEEKLY" ? 14 : 7;
     const scheduleEnd = addDays(scheduleStart, totalDays - 1);
 
