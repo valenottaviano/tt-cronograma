@@ -212,14 +212,18 @@ interface AttachmentProps {
   variantLink?: string | null;
 }
 
+function gpxProxyUrl(url: string) {
+  return `/api/client/gpx-download?url=${encodeURIComponent(url)}`;
+}
+
 // Full pill buttons — used in the mobile card
 function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
   const items = [
-    fileUrl        && { href: fileUrl,        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar",  cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
-    variantFileUrl && { href: variantFileUrl,  icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido",  cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
-    workoutLink    && { href: workoutLink,     icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver más", cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
-    variantLink    && { href: variantLink,     icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver variante", cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
-  ].filter(Boolean) as { href: string; icon: React.ReactNode; label: string; cls: string }[];
+    fileUrl        && { href: gpxProxyUrl(fileUrl),        download: true, icon: <Download className="w-3.5 h-3.5" />, label: "Descargar",     cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
+    variantFileUrl && { href: gpxProxyUrl(variantFileUrl), download: true, icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido",     cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
+    workoutLink    && { href: workoutLink,     download: false, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver más",       cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
+    variantLink    && { href: variantLink,     download: false, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver variante",  cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
+  ].filter(Boolean) as { href: string; download: boolean; icon: React.ReactNode; label: string; cls: string }[];
 
   if (items.length === 0) return null;
 
@@ -229,8 +233,7 @@ function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: 
         <a
           key={item.href}
           href={item.href}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(item.download ? {} : { target: "_blank", rel: "noopener noreferrer" })}
           className={`inline-flex items-center gap-1.5 px-3 h-[36px] rounded-full border text-xs font-medium transition-colors ${item.cls}`}
         >
           {item.icon}
@@ -244,10 +247,10 @@ function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: 
 // Compact dot indicators — used in the desktop grid cell
 function AttachmentDots({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
   const items = [
-    fileUrl        && { href: fileUrl,        icon: <Download className="w-2.5 h-2.5" />, cls: "text-brand-orange" },
-    variantFileUrl && { href: variantFileUrl,  icon: <Map className="w-2.5 h-2.5" />,      cls: "text-emerald-400" },
-    (workoutLink || variantLink) && { href: (workoutLink || variantLink)!, icon: <ExternalLink className="w-2.5 h-2.5" />, cls: "text-blue-400" },
-  ].filter(Boolean) as { href: string; icon: React.ReactNode; cls: string }[];
+    fileUrl        && { href: gpxProxyUrl(fileUrl),        download: true,  icon: <Download className="w-2.5 h-2.5" />, cls: "text-brand-orange" },
+    variantFileUrl && { href: gpxProxyUrl(variantFileUrl), download: true,  icon: <Map className="w-2.5 h-2.5" />,      cls: "text-emerald-400" },
+    (workoutLink || variantLink) && { href: (workoutLink || variantLink)!, download: false, icon: <ExternalLink className="w-2.5 h-2.5" />, cls: "text-blue-400" },
+  ].filter(Boolean) as { href: string; download: boolean; icon: React.ReactNode; cls: string }[];
 
   if (items.length === 0) return null;
 
@@ -257,8 +260,7 @@ function AttachmentDots({ fileUrl, variantFileUrl, workoutLink, variantLink }: A
         <a
           key={item.href}
           href={item.href}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(item.download ? {} : { target: "_blank", rel: "noopener noreferrer" })}
           className={`flex items-center justify-center w-5 h-5 rounded-full bg-white/5 hover:bg-white/10 transition-colors ${item.cls}`}
           title={item.href}
         >
