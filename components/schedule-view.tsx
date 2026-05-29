@@ -333,11 +333,11 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
             </div>
           ) : (
             <>
-              <p className="font-semibold text-sm leading-tight text-white truncate">
+              <p className={`font-semibold text-sm leading-tight text-white ${open ? "" : "truncate"}`}>
                 {day?.workout?.name ?? "—"}
               </p>
               {day?.variant?.notes && (
-                <p className="text-xs text-muted-foreground/60 leading-snug mt-0.5 truncate">
+                <p className={`text-xs text-muted-foreground/60 leading-snug mt-0.5 ${open ? "" : "truncate"}`}>
                   {day.variant.notes}
                 </p>
               )}
