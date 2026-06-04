@@ -7,7 +7,6 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfiniteBanner } from "@/components/infinite-banner";
 import { cn } from "@/lib/utils";
 
@@ -21,31 +20,17 @@ export const formatPrice = (price: number) => {
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showFlyer, setShowFlyer] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
 
   return (
     <>
-      <Dialog open={showFlyer} onOpenChange={setShowFlyer}>
-        <DialogContent className="p-0 border-none bg-transparent shadow-none max-w-[90vw] md:max-w-3xl w-full">
-          <DialogTitle className="sr-only">Carrera TT Flyer</DialogTitle>
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img
-              src="https://i.ibb.co/KxWpsNCS/carrera-tt.jpg"
-              alt="Carrera TT"
-              className="w-full h-auto rounded-lg shadow-2xl"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {isHome && (
         <div className="fixed top-0 left-0 right-0 z-40">
           <InfiniteBanner
             onClick={() =>
               window.open(
-                "https://www.cronobottiming.com/form-inscripcion-2?id=125",
+                "https://carreratt.com.ar",
                 "_blank",
               )
             }
@@ -77,12 +62,6 @@ export function Navbar() {
               </span> */}
             </Link>
             <nav className="flex items-center space-x-6 text-sm font-medium">
-              <button
-                onClick={() => setShowFlyer(true)}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                Carrera TT
-              </button>
               <Link
                 href="/races"
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
@@ -134,15 +113,6 @@ export function Navbar() {
               </Link>
               <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
                 <div className="flex flex-col space-y-3">
-                  <button
-                    onClick={() => {
-                      setIsOpen(false);
-                      setShowFlyer(true);
-                    }}
-                    className="text-left"
-                  >
-                    Carrera TT
-                  </button>
                   <Link href="/" onClick={() => setIsOpen(false)}>
                     Inicio
                   </Link>
@@ -165,12 +135,6 @@ export function Navbar() {
               {/* Search or other controls could go here */}
             </div>
             <nav className="flex items-center">
-              <button
-                className="md:hidden transition-colors hover:text-foreground/80 text-foreground/90"
-                onClick={() => setShowFlyer(true)}
-              >
-                Carrera TT
-              </button>
             </nav>
           </div>
         </div>
