@@ -214,7 +214,7 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
       </div>
 
       {/* ── Main content ── */}
-      <main className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-4 pb-8">
+      <main className="flex-1 px-4 py-4 max-w-3xl mx-auto w-full space-y-4 pb-4">
         {/* Coach note */}
         {schedule.coachNoteExternal && (
           <div className="rounded-xl bg-brand-orange/10 border border-brand-orange/30 px-4 py-3">
@@ -249,6 +249,21 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
           })}
         </div>
       </main>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-border py-4 px-4">
+        <p className="text-center text-xs text-muted-foreground/50">
+          Desarrollado por{" "}
+          <a
+            href="https://wa.me/5493816003467"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-muted-foreground transition-colors underline underline-offset-2"
+          >
+            Valentín Ottaviano
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
