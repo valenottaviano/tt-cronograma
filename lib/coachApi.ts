@@ -1,5 +1,17 @@
 const BASE = process.env.COACH_API_URL;
 
+async function del(path: string, token: string): Promise<void> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    let message = "Error inesperado";
+    try { const j = await res.json(); message = j.error ?? message; } catch { /* non-JSON body */ }
+    throw new ApiError(message, res.status);
+  }
+}
+
 async function post<T>(path: string, body: unknown, token?: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
@@ -175,4 +187,27 @@ export interface OptionalDay {
   variant: Variant | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+}
+
+// ─── Race types ───────────────────────────────────────────────────────────────
+
+export interface Race {
+  id: string;
+  name: string;
+  date: string;
+  location: string | null;
+  description: string | null;
+  enrolled: boolean;
+}
+
+export function getRaces(token: string) {
+  return get<Race[]>("/api/v1/athlete/races", token);
+}
+
+export function enrollRace(raceId: string, token: string) {
+  return post<unknown>(`/api/v1/athlete/races/${raceId}/enroll`, {}, token);
+}
+
+export function unenrollRace(raceId: string, token: string) {
+  return del(`/api/v1/athlete/races/${raceId}/enroll`, token);
 }

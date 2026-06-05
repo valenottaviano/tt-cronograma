@@ -10,11 +10,20 @@ import {
   ChevronRight,
   Download,
   ExternalLink,
+  Flag,
   LogOut,
   Map,
   Moon,
   User,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { RacesSection } from "@/components/races-section";
 import { format, addDays, parseISO, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -97,9 +106,24 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
         <p className="text-muted-foreground text-center max-w-sm">
           Tu entrenador aún no publicó ninguna planilla. Volvé pronto.
         </p>
-        <Button variant="outline" onClick={handleLogout} className="gap-2 min-h-[44px]">
-          <LogOut className="w-4 h-4" /> Salir
-        </Button>
+        <div className="flex flex-col gap-2 w-full max-w-xs">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="gap-2 min-h-[44px] bg-red-600 hover:bg-red-700 text-white border-0">
+                <Flag className="w-4 h-4" /> Mis Carreras
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+              <SheetHeader className="mb-4">
+                <SheetTitle>Mis Carreras</SheetTitle>
+              </SheetHeader>
+              <RacesSection />
+            </SheetContent>
+          </Sheet>
+          <Button variant="outline" onClick={handleLogout} className="gap-2 min-h-[44px]">
+            <LogOut className="w-4 h-4" /> Salir
+          </Button>
+        </div>
       </div>
     );
   }
@@ -139,6 +163,26 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
           </div>
         </div>
       </header>
+
+      {/* ── Mis Carreras ── */}
+      <div className="border-b border-border bg-neutral-950">
+        <div className="px-4 py-2 max-w-3xl mx-auto w-full">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold gap-2 border-0">
+                <Flag className="w-4 h-4" />
+                Mis Carreras
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+              <SheetHeader className="mb-4">
+                <SheetTitle>Mis Carreras</SheetTitle>
+              </SheetHeader>
+              <RacesSection />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
 
       {/* ── Week navigator ── */}
       <div className="border-b border-border bg-neutral-950">
