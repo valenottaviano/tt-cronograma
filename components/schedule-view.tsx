@@ -16,6 +16,7 @@ import {
   Moon,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import {
   Sheet,
   SheetContent,
@@ -86,9 +87,26 @@ interface Props {
   schedules: Schedule[];
   athleteName: string;
   dni: string;
+  avatarKey?: string | null;
 }
 
-export function ScheduleView({ schedules, athleteName, dni }: Props) {
+function AvatarButton({ avatarKey, dni, router }: { avatarKey?: string | null; dni: string; router: ReturnType<typeof useRouter> }) {
+  return (
+    <button
+      type="button"
+      onClick={() => router.push(`/schedule/${dni}/profile`)}
+      className="relative w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 overflow-hidden shrink-0 hover:border-brand-orange transition-colors"
+    >
+      {avatarKey ? (
+        <Image src="/api/client/auth/avatar" alt="Mi perfil" fill className="object-cover" unoptimized />
+      ) : (
+        <User className="w-4 h-4 text-muted-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      )}
+    </button>
+  );
+}
+
+export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) {
   const router = useRouter();
   const views = buildViews(schedules);
   const [viewIndex, setViewIndex] = useState(() => findCurrentViewIndex(views));
@@ -100,7 +118,10 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
 
   if (views.length === 0) {
     return (
-      <div className="min-h-dvh bg-background flex flex-col items-center justify-center gap-6 px-4">
+      <div className="relative min-h-dvh bg-background flex flex-col items-center justify-center gap-6 px-4">
+        <div className="absolute top-4 right-4">
+          <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />
+        </div>
         <img src="/logo-tt.png" alt="TT" className="h-16 w-auto" />
         <h1 className="text-2xl font-bold text-center">Hola, {athleteName}</h1>
         <p className="text-muted-foreground text-center max-w-sm">
@@ -151,15 +172,8 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
               <p className="font-semibold text-sm leading-tight truncate">{athleteName}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => router.push(`/schedule/${dni}/profile`)}
-            >
-              <User className="w-4 h-4" />
-            </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleLogout}>
               <LogOut className="w-4 h-4" />
             </Button>

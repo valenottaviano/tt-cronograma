@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAthleteSession } from "@/lib/session";
-import { getSchedules, Schedule, ApiError } from "@/lib/coachApi";
+import { getSchedules, getMe, Schedule, ApiError } from "@/lib/coachApi";
 import { ScheduleView } from "@/components/schedule-view";
 
 interface Props {
@@ -16,9 +16,14 @@ export default async function SchedulePage({ params }: Props) {
   }
 
   let schedules: Schedule[] = [];
+  let avatarKey: string | null = null;
   try {
-    const data = await getSchedules(session.token);
+    const [data, profile] = await Promise.all([
+      getSchedules(session.token),
+      getMe(session.token),
+    ]);
     schedules = data.schedules;
+    avatarKey = profile.avatarKey;
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {
       await session.destroy();
@@ -32,6 +37,7 @@ export default async function SchedulePage({ params }: Props) {
       schedules={schedules}
       athleteName={session.name}
       dni={dni}
+      avatarKey={avatarKey}
     />
   );
 }
