@@ -141,7 +141,7 @@ export function ProfileView({ initialProfile, dni }: Props) {
             className="relative w-24 h-24 rounded-full bg-neutral-800 border-2 border-neutral-700 hover:border-brand-orange transition-colors overflow-hidden group disabled:opacity-60"
           >
             {avatarSrc ? (
-              <Image src={avatarSrc} alt="Avatar" fill className="object-cover" />
+              <Image src={avatarSrc} alt="Avatar" fill className="object-cover" unoptimized />
             ) : (
               <User className="w-10 h-10 text-muted-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
             )}
