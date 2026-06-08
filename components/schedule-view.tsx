@@ -396,7 +396,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
                 {day?.workout?.name ?? "—"}
               </p>
               {day?.variant?.notes && (
-                <p className={`text-xs text-muted-foreground/60 leading-snug mt-0.5 ${open ? "" : "truncate"}`}>
+                <p className={`text-xs text-muted-foreground leading-snug mt-0.5 ${open ? "" : "truncate"}`}>
                   {day.variant.notes}
                 </p>
               )}
@@ -407,7 +407,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
         {hasDetails && (
           <div className="flex items-center pr-3">
             <ChevronDown
-              className={`w-4 h-4 text-muted-foreground/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+              className={`w-4 h-4 text-muted-foreground/70 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             />
           </div>
         )}
@@ -417,7 +417,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
       {hasDetails && open && (
         <div className="px-3 pb-3 space-y-1 border-t border-border/30">
           {day?.workout?.description && (
-            <p className="text-xs text-muted-foreground/70 leading-relaxed pt-2">
+            <p className="text-xs text-neutral-300 leading-relaxed pt-2">
               {day.workout.description}
             </p>
           )}
@@ -429,15 +429,15 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
           />
           {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
             <div className="pt-2 border-t border-border/40 mt-1">
-              <p className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-widest mb-1.5">Opcionales</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Opcionales</p>
               {day.optionals.filter(o => o.workout).map((opt, i) => (
                 <div key={i} className="mb-1">
-                  <p className="text-xs text-muted-foreground">{opt.workout!.name}</p>
+                  <p className="text-xs text-neutral-200 font-medium">{opt.workout!.name}</p>
                   {opt.variant?.notes && (
-                    <p className="text-xs text-muted-foreground/60 leading-relaxed">{opt.variant.notes}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{opt.variant.notes}</p>
                   )}
                   {opt.workout.description && (
-                    <p className="text-xs text-muted-foreground/60 leading-relaxed">{opt.workout.description}</p>
+                    <p className="text-xs text-neutral-300 leading-relaxed">{opt.workout.description}</p>
                   )}
                   <AttachmentLinks
                     fileUrl={opt.fileUrl}
