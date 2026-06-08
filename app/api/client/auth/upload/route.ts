@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAthleteSession } from "@/lib/session";
-import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
   const session = await getAthleteSession();
@@ -20,14 +19,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Archivo requerido" }, { status: 400 });
   }
 
-  // Auto-rotate based on EXIF orientation so mobile photos aren't sideways
-  const inputBuffer = Buffer.from(await file.arrayBuffer());
-  const rotatedBuffer = await sharp(inputBuffer).rotate().toBuffer();
-  const correctedFile = new File([rotatedBuffer], file.name, { type: file.type });
-
   // Forward to plan.grupott.com.ar — it reaches MinIO internally
   const fd = new FormData();
-  fd.append("file", correctedFile, correctedFile.name);
+  fd.append("file", file, file.name);
 
   const res = await fetch(`${process.env.COACH_API_URL}/api/client/auth/upload`, {
     method: "POST",
