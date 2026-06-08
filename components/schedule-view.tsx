@@ -120,6 +120,9 @@ export function ScheduleView({ schedules, athleteName, dni }: Props) {
               <RacesSection />
             </SheetContent>
           </Sheet>
+          <Button variant="outline" onClick={() => router.push(`/schedule/${dni}/profile`)} className="gap-2 min-h-[44px]">
+            <User className="w-4 h-4" /> Mi Perfil
+          </Button>
           <Button variant="outline" onClick={handleLogout} className="gap-2 min-h-[44px]">
             <LogOut className="w-4 h-4" /> Salir
           </Button>
