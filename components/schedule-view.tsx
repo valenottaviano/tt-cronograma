@@ -656,19 +656,19 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
         onClick={() => hasDetails && setOpen(o => !o)}
       >
         <div
-          className={`flex flex-col items-center justify-center px-3 py-3 shrink-0 min-w-[56px] ${
+          className={`flex flex-col items-center justify-center px-3 py-4 shrink-0 min-w-[64px] ${
             isToday ? "bg-brand-orange/15" : "bg-neutral-800/50"
           }`}
         >
           <span
-            className={`text-[10px] font-bold uppercase tracking-widest ${
-              isToday ? "text-brand-orange" : "text-muted-foreground"
+            className={`text-xs font-bold uppercase tracking-widest ${
+              isToday ? "text-brand-orange" : "text-neutral-400"
             }`}
           >
             {dayLabel(date)}
           </span>
           <span
-            className={`text-xl font-bold leading-tight ${
+            className={`text-2xl font-bold leading-tight ${
               isToday ? "text-brand-orange" : "text-white"
             }`}
           >
@@ -676,19 +676,19 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
           </span>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center px-3 py-3 min-w-0">
+        <div className="flex-1 flex flex-col justify-center px-4 py-4 min-w-0">
           {isRest ? (
             <div className="flex items-center gap-2">
-              <Moon className="w-4 h-4 text-muted-foreground/40 shrink-0" />
-              <span className="text-sm text-muted-foreground/60">Descanso</span>
+              <Moon className="w-4 h-4 text-neutral-500 shrink-0" />
+              <span className="text-sm text-neutral-400">Descanso</span>
             </div>
           ) : (
             <>
-              <p className={`font-semibold text-sm leading-tight text-white ${open ? "" : "truncate"}`}>
+              <p className={`font-semibold text-base leading-snug text-white ${open ? "" : "truncate"}`}>
                 {day?.workout?.name ?? "—"}
               </p>
               {day?.variant?.notes && (
-                <p className={`text-xs text-muted-foreground leading-snug mt-0.5 ${open ? "" : "truncate"}`}>
+                <p className={`text-sm text-neutral-300 leading-snug mt-1 ${open ? "" : "truncate"}`}>
                   {day.variant.notes}
                 </p>
               )}
@@ -699,7 +699,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
         {hasDetails && (
           <div className="flex items-center pr-3">
             <ChevronDown
-              className={`w-4 h-4 text-muted-foreground/70 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+              className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             />
           </div>
         )}
@@ -707,9 +707,9 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
 
       {/* Expandable details */}
       {hasDetails && open && (
-        <div className="px-3 pb-3 space-y-1 border-t border-border/30">
+        <div className="px-4 pb-4 space-y-2 border-t border-border/30">
           {day?.workout?.description && (
-            <p className="text-xs text-neutral-300 leading-relaxed pt-2">
+            <p className="text-sm text-neutral-200 leading-relaxed pt-3">
               {day.workout.description}
             </p>
           )}
@@ -720,16 +720,16 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
             variantLink={day?.variant?.link}
           />
           {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
-            <div className="pt-2 border-t border-border/40 mt-1">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Opcionales</p>
+            <div className="pt-3 border-t border-border/40">
+              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">Opcionales</p>
               {day.optionals.filter(o => o.workout).map((opt, i) => (
-                <div key={i} className="mb-1">
-                  <p className="text-xs text-neutral-200 font-medium">{opt.workout!.name}</p>
+                <div key={i} className="mb-3">
+                  <p className="text-sm text-white font-semibold">{opt.workout!.name}</p>
                   {opt.variant?.notes && (
-                    <p className="text-xs text-muted-foreground leading-relaxed">{opt.variant.notes}</p>
+                    <p className="text-sm text-neutral-300 leading-snug mt-0.5">{opt.variant.notes}</p>
                   )}
                   {opt.workout.description && (
-                    <p className="text-xs text-neutral-300 leading-relaxed">{opt.workout.description}</p>
+                    <p className="text-sm text-neutral-200 leading-relaxed mt-1">{opt.workout.description}</p>
                   )}
                   <AttachmentLinks
                     fileUrl={opt.fileUrl}
