@@ -364,25 +364,65 @@ function gpxProxyUrl(url: string) {
   return `/api/client/gpx-download?url=${encodeURIComponent(url)}`;
 }
 
+// Safari iOS ignores Content-Disposition: attachment and navigates away when clicking
+// a plain anchor. Fetching as a blob and using createObjectURL keeps the user on the page.
+async function downloadGpxBlob(proxyUrl: string) {
+  try {
+    const res = await fetch(proxyUrl);
+    if (!res.ok) return;
+    const cd = res.headers.get("content-disposition") ?? "";
+    const match = cd.match(/filename[^;=\n]*=["']?([^"'\n;]+)["']?/);
+    const filename = match ? match[1].trim() : "track.gpx";
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+  } catch (err) {
+    console.error("GPX download failed", err);
+  }
+}
+
 // Full pill buttons — used in the mobile card
 function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
-  const items = [
-    fileUrl        && { href: gpxProxyUrl(fileUrl),        download: true, icon: <Download className="w-3.5 h-3.5" />, label: "Descargar",     cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
-    variantFileUrl && { href: gpxProxyUrl(variantFileUrl), download: true, icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido",     cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
-    workoutLink    && { href: workoutLink,     download: false, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver más",       cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
-    variantLink    && { href: variantLink,     download: false, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Más info",     cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
-  ].filter(Boolean) as { href: string; download: boolean; icon: React.ReactNode; label: string; cls: string }[];
+  const downloads = [
+    fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
+    variantFileUrl && { proxyUrl: gpxProxyUrl(variantFileUrl), icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
+  ].filter(Boolean) as { proxyUrl: string; icon: React.ReactNode; label: string; cls: string }[];
 
-  if (items.length === 0) return null;
+  const links = [
+    workoutLink && { href: workoutLink, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Ver más",  cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
+    variantLink && { href: variantLink, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Más info", cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
+  ].filter(Boolean) as { href: string; icon: React.ReactNode; label: string; cls: string }[];
+
+  if (downloads.length === 0 && links.length === 0) return null;
+
+  const pillCls = "inline-flex items-center gap-1.5 px-3 h-[36px] rounded-full border text-xs font-medium transition-colors";
 
   return (
     <div className="flex flex-wrap gap-2 pt-2">
-      {items.map((item) => (
+      {downloads.map((item) => (
+        <button
+          key={item.proxyUrl}
+          type="button"
+          onClick={() => downloadGpxBlob(item.proxyUrl)}
+          className={`${pillCls} ${item.cls}`}
+        >
+          {item.icon}
+          {item.label}
+        </button>
+      ))}
+      {links.map((item) => (
         <a
           key={item.href}
           href={item.href}
-          {...(item.download ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-          className={`inline-flex items-center gap-1.5 px-3 h-[36px] rounded-full border text-xs font-medium transition-colors ${item.cls}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${pillCls} ${item.cls}`}
         >
           {item.icon}
           {item.label}
