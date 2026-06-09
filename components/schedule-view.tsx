@@ -253,42 +253,44 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
 
       {/* ── Week navigator ── */}
       <div className="border-b border-border bg-neutral-950">
-        <div className="px-4 py-3 flex items-center justify-between gap-3 max-w-3xl mx-auto w-full">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 shrink-0"
-            onClick={() => setViewIndex((i) => i - 1)}
-            disabled={viewIndex === 0}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <div className="text-center min-w-0">
-            <p className="font-semibold text-sm">
-              {format(weekStart, "d MMM", { locale: es })} — {format(weekEnd, "d MMM yyyy", { locale: es })}
-            </p>
+        <div className="px-4 pt-3 pb-2 max-w-3xl mx-auto w-full space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              onClick={() => setViewIndex((i) => i - 1)}
+              disabled={viewIndex === 0}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <div className="text-center min-w-0">
+              <p className="font-semibold text-sm">
+                {format(weekStart, "d MMM", { locale: es })} — {format(weekEnd, "d MMM yyyy", { locale: es })}
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 shrink-0"
+              onClick={() => setViewIndex((i) => i + 1)}
+              disabled={viewIndex === views.length - 1}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 shrink-0"
-            onClick={() => setViewIndex((i) => i + 1)}
-            disabled={viewIndex === views.length - 1}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9 shrink-0"
-            onClick={handleDownloadImage}
-            disabled={isExporting}
-            title="Descargar semana como imagen"
-          >
-            {isExporting
-              ? <Loader2 className="w-4 h-4 animate-spin" />
-              : <ImageDown className="w-4 h-4" />}
-          </Button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleDownloadImage}
+              disabled={isExporting}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 py-0.5"
+            >
+              {isExporting
+                ? <Loader2 className="w-3 h-3 animate-spin" />
+                : <ImageDown className="w-3 h-3" />}
+              Descargar semana
+            </button>
+          </div>
         </div>
       </div>
 
@@ -304,20 +306,8 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
           </div>
         )}
 
-        {/* Mobile: vertical list */}
-        <div className="flex flex-col gap-2 md:hidden">
-          {Array.from({ length: 7 }, (_, i) => {
-            const date = addDays(weekStart, i);
-            const idx = differenceInCalendarDays(date, scheduleStart);
-            const inSchedule = idx >= 0 && idx < totalDays;
-            return (
-              <MobileDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
-            );
-          })}
-        </div>
-
-        {/* Desktop: 2-col grid with same full cards */}
-        <div className="hidden md:grid md:grid-cols-2 gap-2">
+        {/* Day cards — single column on all screen sizes */}
+        <div className="flex flex-col gap-2">
           {Array.from({ length: 7 }, (_, i) => {
             const date = addDays(weekStart, i);
             const idx = differenceInCalendarDays(date, scheduleStart);
