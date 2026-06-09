@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getAthleteSession } from "@/lib/session";
 import { getSchedules, getMe, Schedule, ApiError } from "@/lib/coachApi";
 import { ScheduleView } from "@/components/schedule-view";
+import { AutoRefresh } from "@/components/auto-refresh";
 
 interface Props {
   params: Promise<{ dni: string }>;
@@ -33,11 +34,14 @@ export default async function SchedulePage({ params }: Props) {
   }
 
   return (
-    <ScheduleView
-      schedules={schedules}
-      athleteName={session.name}
-      dni={dni}
-      avatarKey={avatarKey}
-    />
+    <>
+      <AutoRefresh />
+      <ScheduleView
+        schedules={schedules}
+        athleteName={session.name}
+        dni={dni}
+        avatarKey={avatarKey}
+      />
+    </>
   );
 }
