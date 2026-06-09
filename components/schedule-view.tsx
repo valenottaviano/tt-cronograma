@@ -152,7 +152,8 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
     );
   }
 
-  const view = views[viewIndex];
+  const safeViewIndex = Math.min(viewIndex, views.length - 1);
+  const view = views[safeViewIndex];
   const { schedule, weekStart, weekEnd, scheduleStart, totalDays } = view;
 
   const dayMap: Record<number, Day> = {};
