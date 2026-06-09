@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Schedule, Day } from "@/lib/coachApi";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import {
   Download,
   ExternalLink,
   Flag,
+  ImageDown,
+  Loader2,
   LogOut,
   Map,
   Moon,
@@ -27,6 +29,28 @@ import {
 import { RacesSection } from "@/components/races-section";
 import { format, addDays, parseISO, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
+
+// Hex equivalents of CSS oklch() vars — used in the off-screen export surface where
+// css custom properties aren't serializable by html-to-image's canvas renderer.
+const EX = {
+  bg:            "#171717",
+  card:          "#262626",
+  cardRest:      "#0d0d0d",
+  border:        "rgba(255,255,255,0.1)",
+  borderToday:   "#ED241F",
+  orange:        "#ED241F",
+  orangeBg:      "rgba(237,36,31,0.10)",
+  orangeBorder:  "rgba(237,36,31,0.30)",
+  textWhite:     "#fafafa",
+  textMuted:     "#b3b3b3",
+  textDim:       "rgba(255,255,255,0.35)",
+  emeraldText:   "#34d399",
+  emeraldBg:     "rgba(52,211,153,0.10)",
+  emeraldBorder: "rgba(52,211,153,0.30)",
+  blueText:      "#60a5fa",
+  blueBg:        "rgba(96,165,250,0.10)",
+  blueBorder:    "rgba(96,165,250,0.30)",
+} as const;
 
 function dayLabel(date: Date) {
   return format(date, "eee", { locale: es });
@@ -152,12 +176,37 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
     );
   }
 
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
   const safeViewIndex = Math.min(viewIndex, views.length - 1);
   const view = views[safeViewIndex];
   const { schedule, weekStart, weekEnd, scheduleStart, totalDays } = view;
 
   const dayMap: Record<number, Day> = {};
   schedule.days.forEach((d) => { dayMap[d.dayIndex] = d; });
+
+  async function handleDownloadImage() {
+    if (isExporting || !exportRef.current) return;
+    setIsExporting(true);
+    try {
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(exportRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: EX.bg,
+        width: 640,
+      });
+      const link = document.createElement("a");
+      link.download = `semana-${format(weekStart, "yyyy-MM-dd")}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Export failed", err);
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
@@ -228,6 +277,18 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 shrink-0"
+            onClick={handleDownloadImage}
+            disabled={isExporting}
+            title="Descargar semana como imagen"
+          >
+            {isExporting
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <ImageDown className="w-4 h-4" />}
+          </Button>
         </div>
       </div>
 
@@ -255,14 +316,14 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
           })}
         </div>
 
-        {/* Desktop: 7-col grid */}
-        <div className="hidden md:grid md:grid-cols-7 gap-2">
+        {/* Desktop: 2-col grid with same full cards */}
+        <div className="hidden md:grid md:grid-cols-2 gap-2">
           {Array.from({ length: 7 }, (_, i) => {
             const date = addDays(weekStart, i);
             const idx = differenceInCalendarDays(date, scheduleStart);
             const inSchedule = idx >= 0 && idx < totalDays;
             return (
-              <DesktopDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
+              <MobileDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
             );
           })}
         </div>
@@ -282,6 +343,20 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
           </a>
         </p>
       </footer>
+
+      {/* Off-screen export surface — always mounted for html-to-image capture */}
+      <div aria-hidden="true" style={{ position: "absolute", left: -9999, top: 0, overflow: "hidden", pointerEvents: "none", zIndex: -1 }}>
+        <WeekExportView
+          exportRef={exportRef}
+          weekStart={weekStart}
+          weekEnd={weekEnd}
+          scheduleStart={scheduleStart}
+          totalDays={totalDays}
+          dayMap={dayMap}
+          coachNote={schedule.coachNoteExternal}
+          athleteName={athleteName}
+        />
+      </div>
     </div>
   );
 }
@@ -327,34 +402,203 @@ function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: 
   );
 }
 
-// Compact dot indicators — used in the desktop grid cell
-function AttachmentDots({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
+// ── Export components (off-screen, inline styles only, no oklch) ──────────────
+
+interface ExportAttachmentProps {
+  fileUrl?: string | null;
+  variantFileUrl?: string | null;
+  workoutLink?: string | null;
+  variantLink?: string | null;
+}
+
+function ExportAttachmentBadges({ fileUrl, variantFileUrl, workoutLink, variantLink }: ExportAttachmentProps) {
   const items = [
-    fileUrl        && { href: gpxProxyUrl(fileUrl),        download: true,  icon: <Download className="w-2.5 h-2.5" />, cls: "text-brand-orange" },
-    variantFileUrl && { href: gpxProxyUrl(variantFileUrl), download: true,  icon: <Map className="w-2.5 h-2.5" />,      cls: "text-emerald-400" },
-    (workoutLink || variantLink) && { href: (workoutLink || variantLink)!, download: false, icon: <ExternalLink className="w-2.5 h-2.5" />, cls: "text-blue-400" },
-  ].filter(Boolean) as { href: string; download: boolean; icon: React.ReactNode; cls: string }[];
+    fileUrl        && { href: gpxProxyUrl(fileUrl),        label: "Descargar", color: EX.orange,      bg: EX.orangeBg,   border: EX.orangeBorder },
+    variantFileUrl && { href: gpxProxyUrl(variantFileUrl), label: "Recorrido", color: EX.emeraldText, bg: EX.emeraldBg,  border: EX.emeraldBorder },
+    workoutLink    && { href: workoutLink,                  label: "Ver más",   color: EX.blueText,    bg: EX.blueBg,     border: EX.blueBorder },
+    variantLink    && { href: variantLink,                  label: "Más info",  color: EX.blueText,    bg: EX.blueBg,     border: EX.blueBorder },
+  ].filter(Boolean) as { href: string; label: string; color: string; bg: string; border: string }[];
 
   if (items.length === 0) return null;
 
   return (
-    <div className="flex gap-1 mt-auto">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, paddingTop: 6 }}>
       {items.map((item) => (
-        <a
+        <span
           key={item.href}
-          href={item.href}
-          {...(item.download ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-          className={`flex items-center justify-center w-5 h-5 rounded-full bg-white/5 hover:bg-white/10 transition-colors ${item.cls}`}
-          title={item.href}
+          style={{
+            display: "inline-flex", alignItems: "center",
+            padding: "2px 10px", borderRadius: 999,
+            border: `1px solid ${item.border}`,
+            background: item.bg, color: item.color,
+            fontSize: 10, fontWeight: 500,
+          }}
         >
-          {item.icon}
-        </a>
+          {item.label}
+        </span>
       ))}
     </div>
   );
 }
 
-// ── Mobile card ───────────────────────────────────────────────────────────────
+function ExportDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
+  const isRest = !day || day.isRest;
+  const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+  const dayLabelStr = format(date, "eee", { locale: es }).toUpperCase();
+  const dayNum = format(date, "d");
+
+  const sidebarBg = isToday ? "rgba(237,36,31,0.15)" : "rgba(38,38,38,0.5)";
+  const labelColor = isToday ? EX.orange : EX.textMuted;
+  const numColor = isToday ? EX.orange : EX.textWhite;
+  const cardBg = isRest ? EX.cardRest : EX.card;
+  const borderColor = isToday ? EX.borderToday : EX.border;
+
+  return (
+    <div style={{
+      borderRadius: 16, border: `1px solid ${borderColor}`,
+      overflow: "hidden", background: cardBg,
+      opacity: dimmed ? 0.3 : 1,
+    }}>
+      {/* Header row */}
+      <div style={{ display: "flex" }}>
+        <div style={{
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          padding: "10px 12px", minWidth: 56, background: sidebarBg,
+        }}>
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", color: labelColor }}>{dayLabelStr}</span>
+          <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: numColor }}>{dayNum}</span>
+        </div>
+
+        <div style={{ flex: 1, padding: "10px 12px" }}>
+          {isRest ? (
+            <span style={{ fontSize: 13, color: EX.textMuted }}>Descanso</span>
+          ) : (
+            <>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: EX.textWhite, lineHeight: 1.3 }}>
+                {day?.workout?.name ?? "—"}
+              </p>
+              {day?.variant?.notes && (
+                <p style={{ margin: "2px 0 0", fontSize: 11, color: EX.textMuted, lineHeight: 1.4 }}>
+                  {day.variant.notes}
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Details */}
+      {!isRest && (
+        <div style={{ padding: "0 12px 10px 12px", borderTop: `1px solid rgba(255,255,255,0.06)` }}>
+          {day?.workout?.description && (
+            <p style={{ margin: "8px 0 0", fontSize: 11, color: "#d4d4d4", lineHeight: 1.5 }}>
+              {day.workout.description}
+            </p>
+          )}
+          <ExportAttachmentBadges
+            fileUrl={day?.fileUrl}
+            variantFileUrl={day?.variantFileUrl}
+            workoutLink={day?.workout?.link}
+            variantLink={day?.variant?.link}
+          />
+          {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
+            <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid rgba(255,255,255,0.08)` }}>
+              <p style={{ margin: "0 0 6px", fontSize: 9, fontWeight: 700, color: EX.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                Opcionales
+              </p>
+              {day.optionals.filter(o => o.workout).map((opt, i) => (
+                <div key={i} style={{ marginBottom: i < day.optionals.filter(o => o.workout).length - 1 ? 8 : 0 }}>
+                  <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: "#e5e5e5" }}>{opt.workout!.name}</p>
+                  {opt.variant?.notes && (
+                    <p style={{ margin: "1px 0 0", fontSize: 10, color: EX.textMuted }}>{opt.variant.notes}</p>
+                  )}
+                  {opt.workout.description && (
+                    <p style={{ margin: "2px 0 0", fontSize: 10, color: "#d4d4d4", lineHeight: 1.4 }}>{opt.workout.description}</p>
+                  )}
+                  <ExportAttachmentBadges
+                    fileUrl={opt.fileUrl}
+                    variantFileUrl={opt.variantFileUrl}
+                    workoutLink={opt.workout.link}
+                    variantLink={opt.variant?.link}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface WeekExportViewProps {
+  exportRef: React.RefObject<HTMLDivElement | null>;
+  weekStart: Date;
+  weekEnd: Date;
+  scheduleStart: Date;
+  totalDays: number;
+  dayMap: Record<number, Day>;
+  coachNote: string | null;
+  athleteName: string;
+}
+
+function WeekExportView({ exportRef, weekStart, weekEnd, scheduleStart, totalDays, dayMap, coachNote, athleteName }: WeekExportViewProps) {
+  const weekRange = `${format(weekStart, "d MMM", { locale: es })} — ${format(weekEnd, "d MMM yyyy", { locale: es })}`;
+
+  return (
+    <div
+      ref={exportRef}
+      style={{
+        width: 640, background: EX.bg,
+        fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        padding: "24px 20px", boxSizing: "border-box",
+        color: EX.textWhite,
+      }}
+    >
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-tt.png" alt="TT" crossOrigin="anonymous" style={{ height: 36, width: "auto" }} />
+        <div style={{ textAlign: "right" }}>
+          <p style={{ margin: 0, fontSize: 11, color: EX.textMuted }}>{athleteName}</p>
+          <p style={{ margin: "2px 0 0", fontSize: 13, fontWeight: 600, color: EX.textWhite }}>{weekRange}</p>
+        </div>
+      </div>
+
+      {/* Coach note */}
+      {coachNote && (
+        <div style={{
+          background: EX.orangeBg, border: `1px solid ${EX.orangeBorder}`,
+          borderRadius: 12, padding: "10px 14px", marginBottom: 14,
+        }}>
+          <p style={{ margin: "0 0 4px", fontSize: 9, fontWeight: 700, color: EX.orange, textTransform: "uppercase", letterSpacing: "0.12em" }}>
+            Mensaje de Rober
+          </p>
+          <p style={{ margin: 0, fontSize: 12, color: EX.textWhite, lineHeight: 1.5 }}>{coachNote}</p>
+        </div>
+      )}
+
+      {/* Day cards */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {Array.from({ length: 7 }, (_, i) => {
+          const date = addDays(weekStart, i);
+          const idx = differenceInCalendarDays(date, scheduleStart);
+          const inSchedule = idx >= 0 && idx < totalDays;
+          return (
+            <ExportDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
+          );
+        })}
+      </div>
+
+      {/* Watermark */}
+      <p style={{ margin: "16px 0 0", fontSize: 10, color: EX.textDim, textAlign: "center" }}>
+        Grupo TT — grupott.com.ar
+      </p>
+    </div>
+  );
+}
+
+// ── Day card ──────────────────────────────────────────────────────────────────
 
 function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
   const isRest = !day || day.isRest;
@@ -473,48 +717,3 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
   );
 }
 
-// ── Desktop card ──────────────────────────────────────────────────────────────
-
-function DesktopDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
-  const isRest = !day || day.isRest;
-  const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-
-  return (
-    <div
-      className={`rounded-xl border p-2 flex flex-col gap-1 min-h-[110px] transition-opacity ${
-        dimmed ? "opacity-30" : ""
-      } ${isToday ? "border-brand-orange bg-brand-orange/5" : "border-border bg-neutral-900"}`}
-    >
-      <div className="flex flex-col items-center">
-        <span className={`text-[9px] font-bold uppercase tracking-wider ${isToday ? "text-brand-orange" : "text-muted-foreground"}`}>
-          {dayLabel(date)}
-        </span>
-        <span className={`text-sm font-bold ${isToday ? "text-brand-orange" : "text-white"}`}>
-          {format(date, "d")}
-        </span>
-      </div>
-
-      {isRest ? (
-        <div className="flex flex-col items-center justify-center flex-1 gap-1">
-          <Moon className="w-3.5 h-3.5 text-muted-foreground/40" />
-          <span className="text-[9px] text-muted-foreground/50">Descanso</span>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-0.5 flex-1">
-          <p className="text-[10px] font-semibold leading-tight line-clamp-2 text-white">{day?.workout?.name}</p>
-          {day?.variant?.notes && (
-            <p className="text-[9px] text-muted-foreground leading-tight line-clamp-2">
-              {day.variant.notes}
-            </p>
-          )}
-          <AttachmentDots
-            fileUrl={day?.fileUrl}
-            variantFileUrl={day?.variantFileUrl}
-            workoutLink={day?.workout?.link}
-            variantLink={day?.variant?.link}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
