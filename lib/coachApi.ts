@@ -141,7 +141,7 @@ export interface Video {
 }
 
 export function getVideos(token: string): Promise<Video[]> {
-  return get<Video[]>("/api/client/videos", token);
+  return get<Video[]>("/api/v1/athlete/videos", token);
 }
 
 // ─── Schedule types ───────────────────────────────────────────────────────────

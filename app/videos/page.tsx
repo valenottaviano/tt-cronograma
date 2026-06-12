@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
 import { redirect } from "next/navigation";
-import { getVideos, ApiError, Video } from "@/lib/coachApi";
+import { getVideos, Video } from "@/lib/coachApi";
 import { getAthleteSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -19,10 +19,8 @@ export default async function VideosPage() {
   let videos: Video[] = [];
   try {
     videos = await getVideos(session.token);
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
-      redirect("/");
-    }
+  } catch {
+    // API error — show empty list, don't kick the user out
   }
 
   return (
