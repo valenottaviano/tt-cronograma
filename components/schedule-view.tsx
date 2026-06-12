@@ -16,6 +16,7 @@ import {
   LogOut,
   Map,
   Moon,
+  Play,
   User,
 } from "lucide-react";
 import Image from "next/image";
@@ -165,6 +166,9 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
               <RacesSection />
             </SheetContent>
           </Sheet>
+          <Button variant="outline" onClick={() => router.push("/videos")} className="gap-2 min-h-[44px]">
+            <Play className="w-4 h-4" /> Videos
+          </Button>
           <Button variant="outline" onClick={() => router.push(`/schedule/${dni}/profile`)} className="gap-2 min-h-[44px]">
             <User className="w-4 h-4" /> Mi Perfil
           </Button>
@@ -231,9 +235,9 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
         </div>
       </header>
 
-      {/* ── Mis Carreras ── */}
+      {/* ── Mis Carreras + Videos ── */}
       <div className="border-b border-border bg-neutral-950">
-        <div className="px-4 py-2 max-w-3xl mx-auto w-full">
+        <div className="px-4 py-2 max-w-3xl mx-auto w-full space-y-2">
           <Sheet>
             <SheetTrigger asChild>
               <Button className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold gap-2 border-0">
@@ -248,6 +252,14 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
               <RacesSection />
             </SheetContent>
           </Sheet>
+          <Button
+            variant="outline"
+            className="w-full h-10 font-semibold gap-2"
+            onClick={() => router.push("/videos")}
+          >
+            <Play className="w-4 h-4" />
+            Videos
+          </Button>
         </div>
       </div>
 
