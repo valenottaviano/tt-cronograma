@@ -32,7 +32,7 @@ export default async function VideosPage() {
             Videos de entrenamiento
           </h1>
           <p className="text-white/60 max-w-2xl">
-            Recursos audiovisuales del cuerpo técnico TT para mejorar tu técnica y rendimiento.
+            Recursos audiovisuales de Rober
           </p>
         </div>
 
