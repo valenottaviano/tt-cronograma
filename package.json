@@ -25,6 +25,7 @@
     "fast-xml-parser": "^5.3.4",
     "firebase": "^12.7.0",
     "framer-motion": "^12.23.26",
+    "html-to-image": "^1.11.13",
     "iron-session": "^8.0.4",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
