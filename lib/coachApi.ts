@@ -140,11 +140,8 @@ export interface Video {
   updatedAt: string;
 }
 
-export async function getVideos(): Promise<Video[]> {
-  const res = await fetch(`${BASE}/api/client/videos`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Error al obtener los videos");
-  const json = await res.json();
-  return json.data ?? [];
+export function getVideos(token: string): Promise<Video[]> {
+  return get<Video[]>("/api/client/videos", token);
 }
 
 // ─── Schedule types ───────────────────────────────────────────────────────────

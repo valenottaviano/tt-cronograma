@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft, Play } from "lucide-react";
-import { getVideos } from "@/lib/coachApi";
+import { redirect } from "next/navigation";
+import { getVideos, ApiError, Video } from "@/lib/coachApi";
+import { getAthleteSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,18 @@ function formatDate(iso: string) {
 }
 
 export default async function VideosPage() {
-  let videos = await getVideos().catch(() => []);
+  const session = await getAthleteSession();
+  if (!session.token) redirect("/");
+
+  let videos: Video[] = [];
+  try {
+    videos = await getVideos(session.token);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      await session.destroy();
+      redirect("/");
+    }
+  }
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -19,7 +32,7 @@ export default async function VideosPage() {
         {/* Header */}
         <div className="space-y-4">
           <Link
-            href="/"
+            href={`/schedule/${session.dni}`}
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white/70 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
