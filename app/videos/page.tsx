@@ -21,7 +21,6 @@ export default async function VideosPage() {
     videos = await getVideos(session.token);
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {
-      await session.destroy();
       redirect("/");
     }
   }
