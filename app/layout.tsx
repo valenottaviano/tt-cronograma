@@ -28,6 +28,7 @@ export default function RootLayout({
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
   const isScheduleRoute = pathname?.startsWith('/schedule');
+  const isVideosRoute = pathname?.startsWith('/videos');
 
   // Dynamic manifest and app name based on route
   const manifestUrl = isAdminRoute ? '/manifest-admin.json' : '/manifest.json';
@@ -58,11 +59,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {!isAdminRoute && !isScheduleRoute && <Navbar />}
+            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Navbar />}
             {children}
-            {!isAdminRoute && !isScheduleRoute && <Footer />}
+            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Footer />}
             <Toaster />
-            {!isAdminRoute && !isScheduleRoute && <PWAInstallToast />}
+            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <PWAInstallToast />}
           </AuthProvider>
         </ThemeProvider>
       </body>

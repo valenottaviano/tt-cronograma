@@ -3,10 +3,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { TTCCredencialDialog } from "./tt-credencial-dialog";
-import { ChevronDown, Play } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { PlanillaDialog } from "./planilla-dialog";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const ref = useRef(null);
@@ -74,21 +72,10 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-          className="flex flex-col gap-4 items-center mt-4"
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4"
         >
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <TTCCredencialDialog />
-            <PlanillaDialog />
-          </div>
-          <Link href="/videos">
-            <Button
-              variant="outline"
-              className="bg-neutral-800/60 hover:bg-neutral-700 text-white/80 border-neutral-600/50 px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 hover:text-white shadow-lg min-w-[200px]"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Videos
-            </Button>
-          </Link>
+          <TTCCredencialDialog />
+          <PlanillaDialog />
         </motion.div>
 
         {/* Scroll Indicator */}
