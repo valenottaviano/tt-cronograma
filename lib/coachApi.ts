@@ -117,6 +117,24 @@ export function getPresignUrl(
   );
 }
 
+// ─── Video types ─────────────────────────────────────────────────────────────
+
+export interface Video {
+  id: string;
+  title: string;
+  description: string | null;
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getVideos(): Promise<Video[]> {
+  const res = await fetch(`${BASE}/api/client/videos`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Error al obtener los videos");
+  const json = await res.json();
+  return json.data ?? [];
+}
+
 // ─── Schedule types ───────────────────────────────────────────────────────────
 
 export interface Schedule {
