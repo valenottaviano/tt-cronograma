@@ -28,6 +28,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { RacesSection } from "@/components/races-section";
+import { PaymentReminder } from "@/components/payment-reminder";
 import { format, addDays, parseISO, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -113,6 +114,7 @@ interface Props {
   athleteName: string;
   dni: string;
   avatarKey?: string | null;
+  payment?: { year: number; month: number; monthLabel: string } | null;
 }
 
 function AvatarButton({ avatarKey, dni, router }: { avatarKey?: string | null; dni: string; router: ReturnType<typeof useRouter> }) {
@@ -131,7 +133,7 @@ function AvatarButton({ avatarKey, dni, router }: { avatarKey?: string | null; d
   );
 }
 
-export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) {
+export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }: Props) {
   const router = useRouter();
   const views = buildViews(schedules);
   const [viewIndex, setViewIndex] = useState(() => findCurrentViewIndex(views));
@@ -144,7 +146,14 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
   if (views.length === 0) {
     return (
       <div className="relative min-h-dvh bg-background flex flex-col items-center justify-center gap-6 px-4">
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          {payment && (
+            <PaymentReminder
+              year={payment.year}
+              month={payment.month}
+              monthLabel={payment.monthLabel}
+            />
+          )}
           <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />
         </div>
         <img src="/logo-tt.png" alt="TT" className="h-16 w-auto" />
@@ -227,6 +236,13 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey }: Props) 
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {payment && (
+              <PaymentReminder
+                year={payment.year}
+                month={payment.month}
+                monthLabel={payment.monthLabel}
+              />
+            )}
             <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleLogout}>
               <LogOut className="w-4 h-4" />

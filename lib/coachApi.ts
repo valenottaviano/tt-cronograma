@@ -21,8 +21,8 @@ async function post<T>(path: string, body: unknown, token?: string): Promise<T> 
     },
     body: JSON.stringify(body),
   });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error ?? "Error inesperado");
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
   return json.data ?? json;
 }
 
@@ -217,6 +217,54 @@ export interface Race {
 
 export function getRaces(token: string) {
   return get<Race[]>("/api/v1/athlete/races", token);
+}
+
+// ─── Payment types ──────────────────────────────────────────────────────────
+
+export type PaymentMethod = "CASH" | "TRANSFER";
+
+export interface Payment {
+  id: string;
+  clientId: string;
+  year: number;
+  month: number; // 1–12
+  amount: string; // decimal serializado, ej. "15000"
+  currency: string;
+  method: PaymentMethod;
+  note: string | null;
+  receiptKey: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MonthStatus {
+  paid: boolean;
+  payment: Payment | null;
+}
+
+export interface ReportPaymentInput {
+  year: number;
+  month: number;
+  amount: number;
+  method?: PaymentMethod;
+  currency?: string;
+  note?: string;
+  receiptKey?: string;
+}
+
+export function getMonthStatus(year: number, month: number, token: string) {
+  return get<MonthStatus>(
+    `/api/v1/athlete/payments?year=${year}&month=${month}`,
+    token
+  );
+}
+
+export function getPayments(token: string) {
+  return get<Payment[]>("/api/v1/athlete/payments", token);
+}
+
+export function reportPayment(input: ReportPaymentInput, token: string) {
+  return post<Payment>("/api/v1/athlete/payments", input, token);
 }
 
 export function enrollRace(raceId: string, token: string) {
