@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { format, subMonths } from "date-fns";
+import { addMonths, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { toast } from "sonner";
-import { Banknote, CircleAlert, CreditCard, Loader2, Paperclip, X } from "lucide-react";
+import { Banknote, Check, CircleAlert, CreditCard, DollarSign, Loader2, Paperclip, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -48,11 +48,12 @@ interface Props {
   year: number;
   month: number;
   monthLabel: string;
+  paid?: boolean;
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function PaymentReminder({ year, month, monthLabel }: Props) {
+export function PaymentReminder({ year, month, monthLabel, paid = false }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [planId, setPlanId] = useState<string>("");
@@ -65,11 +66,11 @@ export function PaymentReminder({ year, month, monthLabel }: Props) {
 
   const plan = PLANS.find((p) => p.id === planId) ?? null;
 
-  // Últimos 12 meses, del actual hacia atrás.
+  // Mes anterior, actual y siguiente (izquierda, centro, derecha).
   const months = useMemo(() => {
     const base = new Date(year, month - 1, 1);
-    return Array.from({ length: 12 }, (_, i) => {
-      const d = subMonths(base, i);
+    return [-1, 0, 1].map((offset) => {
+      const d = addMonths(base, offset);
       const y = d.getFullYear();
       const m = d.getMonth() + 1;
       return {
@@ -77,11 +78,12 @@ export function PaymentReminder({ year, month, monthLabel }: Props) {
         year: y,
         month: m,
         label: cap(format(d, "MMMM yyyy", { locale: es })),
+        monthName: cap(format(d, "MMMM", { locale: es })),
       };
     });
   }, [year, month]);
 
-  const selectedMonth = months.find((m) => m.key === monthKey) ?? months[0];
+  const selectedMonth = months.find((m) => m.key === monthKey) ?? months[1];
 
   // Al abrir, traemos el historial para marcar los meses ya notificados.
   useEffect(() => {
@@ -162,17 +164,27 @@ export function PaymentReminder({ year, month, monthLabel }: Props) {
   return (
     <Dialog open={open} onOpenChange={(v) => !submitting && setOpen(v)}>
       <DialogTrigger asChild>
-        <button
-          type="button"
-          aria-label={`Pagar cuota de ${monthLabel}`}
-          className="relative flex items-center justify-center h-9 w-9 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors shrink-0"
-        >
-          <CircleAlert className="w-4 h-4 shrink-0" />
-          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
-          </span>
-        </button>
+        {paid ? (
+          <button
+            type="button"
+            aria-label={`Cuota de ${monthLabel} al día — notificar otro mes`}
+            className="flex items-center justify-center h-9 w-9 rounded-full border border-border bg-neutral-900 text-muted-foreground hover:bg-neutral-800 hover:text-white transition-colors shrink-0"
+          >
+            <DollarSign className="w-4 h-4 shrink-0" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label={`Pagar cuota de ${monthLabel}`}
+            className="relative flex items-center justify-center h-9 w-9 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors shrink-0"
+          >
+            <CircleAlert className="w-4 h-4 shrink-0" />
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+            </span>
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="border-red-600/30">
         <DialogHeader>
@@ -186,22 +198,38 @@ export function PaymentReminder({ year, month, monthLabel }: Props) {
           {/* Mes */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-white">Mes</label>
-            <Select value={monthKey} onValueChange={setMonthKey}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {months.map((m) => {
-                  const paid = paidKeys?.has(m.key) ?? false;
-                  return (
-                    <SelectItem key={m.key} value={m.key} disabled={paid}>
-                      {m.label}
-                      {paid && " · notificado"}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-3 gap-2">
+              {months.map((m) => {
+                const paid = paidKeys?.has(m.key) ?? false;
+                const selected = m.key === monthKey;
+                return (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => !paid && setMonthKey(m.key)}
+                    disabled={paid}
+                    aria-pressed={selected}
+                    className={`relative flex flex-col items-center justify-center gap-0.5 h-14 rounded-lg border text-center transition-colors ${
+                      paid
+                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400 cursor-default"
+                        : selected
+                          ? "border-red-600/50 bg-red-600/10 text-white"
+                          : "border-border bg-neutral-900 text-muted-foreground hover:bg-neutral-800"
+                    }`}
+                  >
+                    {paid && (
+                      <Check className="absolute top-1 right-1 w-3.5 h-3.5" />
+                    )}
+                    <span className="text-sm font-medium leading-none">
+                      {m.monthName}
+                    </span>
+                    <span className="text-[10px] leading-none opacity-70">
+                      {m.year}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Plan */}

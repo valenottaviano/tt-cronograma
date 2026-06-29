@@ -114,7 +114,7 @@ interface Props {
   athleteName: string;
   dni: string;
   avatarKey?: string | null;
-  payment?: { year: number; month: number; monthLabel: string } | null;
+  payment?: { year: number; month: number; monthLabel: string; paid: boolean } | null;
 }
 
 function AvatarButton({ avatarKey, dni, router }: { avatarKey?: string | null; dni: string; router: ReturnType<typeof useRouter> }) {
@@ -152,6 +152,7 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }
               year={payment.year}
               month={payment.month}
               monthLabel={payment.monthLabel}
+              paid={payment.paid}
             />
           )}
           <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />
@@ -241,6 +242,7 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }
                 year={payment.year}
                 month={payment.month}
                 monthLabel={payment.monthLabel}
+                paid={payment.paid}
               />
             )}
             <AvatarButton avatarKey={avatarKey} dni={dni} router={router} />

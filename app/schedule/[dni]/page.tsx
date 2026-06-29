@@ -24,7 +24,8 @@ export default async function SchedulePage({ params }: Props) {
 
   let schedules: Schedule[] = [];
   let avatarKey: string | null = null;
-  let owesCurrentMonth = false;
+  // null = no pudimos determinar el estado (no mostramos nada de pagos)
+  let currentMonthPaid: boolean | null = null;
   let shouldLogout = false;
   try {
     const [data, profile, monthStatus] = await Promise.all([
@@ -35,7 +36,7 @@ export default async function SchedulePage({ params }: Props) {
     ]);
     schedules = data.schedules;
     avatarKey = profile.avatarKey;
-    owesCurrentMonth = monthStatus ? !monthStatus.paid : false;
+    currentMonthPaid = monthStatus ? monthStatus.paid : null;
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {
       await session.destroy();
@@ -59,7 +60,11 @@ export default async function SchedulePage({ params }: Props) {
         athleteName={session.name}
         dni={dni}
         avatarKey={avatarKey}
-        payment={owesCurrentMonth ? { year, month, monthLabel } : null}
+        payment={
+          currentMonthPaid === null
+            ? null
+            : { year, month, monthLabel, paid: currentMonthPaid }
+        }
       />
     </>
   );
