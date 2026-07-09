@@ -1,4 +1,7 @@
-import { Benefit } from "@/lib/data";
+"use client";
+
+import { useState } from "react";
+import { Benefit, benefitCategories } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Info, Instagram, MessageCircle } from "lucide-react";
@@ -10,12 +13,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BenefitListProps {
   benefits: Benefit[];
 }
 
 export function BenefitList({ benefits }: BenefitListProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
   if (benefits.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -24,9 +36,41 @@ export function BenefitList({ benefits }: BenefitListProps) {
     );
   }
 
+  // Solo mostramos en el filtro las categorías que tienen al menos un beneficio
+  const availableCategories = benefitCategories.filter((category) =>
+    benefits.some((benefit) => benefit.category === category)
+  );
+
+  const filteredBenefits =
+    selectedCategory === "all"
+      ? benefits
+      : benefits.filter((benefit) => benefit.category === selectedCategory);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-      {benefits.map((benefit) => (
+    <div className="space-y-6">
+      <div className="flex justify-end">
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-full sm:w-[240px]">
+            <SelectValue placeholder="Categoría" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas las categorías</SelectItem>
+            {availableCategories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {filteredBenefits.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          No hay beneficios en esta categoría.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          {filteredBenefits.map((benefit) => (
         <Card
           key={benefit.id}
           className="flex flex-row md:flex-col h-full overflow-hidden hover:border-primary/50 transition-colors py-4 md:py-6 gap-4 md:gap-6"
@@ -140,7 +184,9 @@ export function BenefitList({ benefits }: BenefitListProps) {
             </CardContent>
           </div>
         </Card>
-      ))}
+          ))}
+        </div>
+      )}
     </div>
   );
 }

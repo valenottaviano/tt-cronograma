@@ -14,11 +14,25 @@ export interface Race {
   discountCode?: string;
 }
 
+export const benefitCategories = [
+  "Indumentaria y Calzado",
+  "Nutrición y Suplementos",
+  "Salud y Bienestar",
+  "Tecnología",
+  "Gastronomía",
+  "Servicios",
+  "Viajes y Turismo",
+  "Otros",
+] as const;
+
+export type BenefitCategory = (typeof benefitCategories)[number];
+
 export interface Benefit {
   id: string;
   title: string;
   description: string;
   company: string;
+  category: BenefitCategory;
   logo?: string;
   linkCta?: string;
   instagramLink?: string;

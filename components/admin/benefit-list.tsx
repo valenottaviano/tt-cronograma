@@ -49,6 +49,7 @@ export function BenefitList() {
             title: benefit.title,
             description: benefit.description,
             company: benefit.company,
+            category: 'Otros',
             logo: benefit.logo || '',
             linkCta: benefit.linkCta || '',
             instagramLink: benefit.instagramLink || '',
@@ -149,6 +150,7 @@ export function BenefitList() {
                     <div className="flex-1 min-w-0">
                       <p className="font-black text-base text-white italic uppercase tracking-tighter leading-tight truncate">{benefit.company}</p>
                       <p className="text-[10px] font-bold text-brand-orange truncate mt-0.5 uppercase">{benefit.title}</p>
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-white/50 uppercase tracking-wider">{benefit.category}</span>
                       <p className="text-[11px] text-white/40 line-clamp-2 mt-1">{benefit.description}</p>
                     </div>
                   </div>
@@ -227,6 +229,7 @@ export function BenefitList() {
                             <p className="text-[10px] font-bold text-brand-orange truncate mt-1 tracking-wider uppercase">
                               {benefit.title}
                             </p>
+                            <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold text-white/50 uppercase tracking-wider">{benefit.category}</span>
                           </div>
                         </div>
                       </td>

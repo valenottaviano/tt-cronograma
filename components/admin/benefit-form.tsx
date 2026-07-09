@@ -1,9 +1,16 @@
 'use client';
 
 import { useState, FormEvent, useRef } from 'react';
-import { Benefit } from '@/lib/data';
+import { Benefit, benefitCategories } from '@/lib/data';
 import { BenefitInput, createBenefit, updateBenefit } from '@/lib/firebase/benefits';
 import { uploadBenefitLogo } from '@/lib/firebase/storage';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Upload, X, Loader2, Save, Trash2, Instagram, MessageCircle, Link as LinkIcon, Gift } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -21,6 +28,7 @@ export function BenefitForm({ initialData }: BenefitFormProps) {
     title: initialData?.title || '',
     description: initialData?.description || '',
     company: initialData?.company || '',
+    category: initialData?.category || 'Otros',
     logo: initialData?.logo || '',
     linkCta: initialData?.linkCta || '',
     instagramLink: initialData?.instagramLink || '',
@@ -185,6 +193,30 @@ export function BenefitForm({ initialData }: BenefitFormProps) {
               placeholder="Ej: 20% DE DESCUENTO"
             />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="category" className="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">
+            Categoría
+          </label>
+          <Select
+            value={formData.category}
+            onValueChange={(value) => setFormData({ ...formData, category: value as Benefit['category'] })}
+          >
+            <SelectTrigger
+              id="category"
+              className="w-full !h-auto px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-brand-orange/50 outline-none transition-all font-bold text-sm"
+            >
+              <SelectValue placeholder="Seleccionar categoría" />
+            </SelectTrigger>
+            <SelectContent className="bg-neutral-900 border-neutral-700 text-white">
+              {benefitCategories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
