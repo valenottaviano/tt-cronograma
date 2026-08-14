@@ -15,8 +15,10 @@ import {
   Loader2,
   LogOut,
   Map,
+  MessageSquare,
   Moon,
   Play,
+  Plus,
   User,
 } from "lucide-react";
 import Image from "next/image";
@@ -56,6 +58,19 @@ const EX = {
 
 function dayLabel(date: Date) {
   return format(date, "eee", { locale: es });
+}
+
+// ── Ejercicios adicionales ────────────────────────────────────────────────────
+// `extras` son parte de la misma sesión que el principal, así que el día se
+// titula "Fondo + Movilidad" y se muestran encadenados, no como bloque aparte.
+
+function dayExtras(day: Day | undefined) {
+  return (day?.extras ?? []).filter(e => e.workout);
+}
+
+function sessionTitle(day: Day | undefined) {
+  const names = [day?.workout?.name, ...dayExtras(day).map(e => e.workout.name)].filter(Boolean);
+  return names.length > 0 ? names.join(" + ") : "—";
 }
 
 // One Mon–Sun calendar week view
@@ -418,6 +433,19 @@ async function downloadGpxBlob(proxyUrl: string) {
 }
 
 // Full pill buttons — used in the mobile card
+/** Comentario que el coach dejó sobre un ejercicio puntual. */
+function CoachNote({ note }: { note: string }) {
+  return (
+    <div className="flex items-start gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 mt-2">
+      <MessageSquare className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+      <div className="min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-widest text-blue-400">Nota del coach</p>
+        <p className="text-sm text-neutral-100 leading-relaxed whitespace-pre-line break-words">{note}</p>
+      </div>
+    </div>
+  );
+}
+
 function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
   const downloads = [
     fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
@@ -469,6 +497,23 @@ interface ExportAttachmentProps {
   variantFileUrl?: string | null;
   workoutLink?: string | null;
   variantLink?: string | null;
+}
+
+/** Igual que CoachNote pero con estilos inline, para la exportación a imagen. */
+function ExportCoachNote({ note }: { note: string }) {
+  return (
+    <div style={{
+      marginTop: 8, padding: "6px 8px", borderRadius: 8,
+      background: EX.blueBg, border: `1px solid ${EX.blueBorder}`,
+    }}>
+      <p style={{ margin: 0, fontSize: 8, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: EX.blueText }}>
+        Nota del coach
+      </p>
+      <p style={{ margin: "2px 0 0", fontSize: 10, color: "#e5e5e5", lineHeight: 1.4, whiteSpace: "pre-line" }}>
+        {note}
+      </p>
+    </div>
+  );
 }
 
 function ExportAttachmentBadges({ fileUrl, variantFileUrl, workoutLink, variantLink }: ExportAttachmentProps) {
@@ -535,7 +580,7 @@ function ExportDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
           ) : (
             <>
               <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: EX.textWhite, lineHeight: 1.3 }}>
-                {day?.workout?.name ?? "—"}
+                {sessionTitle(day)}
               </p>
               {day?.variant?.notes && (
                 <p style={{ margin: "2px 0 0", fontSize: 11, color: EX.textMuted, lineHeight: 1.4 }}>
@@ -555,12 +600,31 @@ function ExportDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
               {day.workout.description}
             </p>
           )}
+          {day?.note && <ExportCoachNote note={day.note} />}
           <ExportAttachmentBadges
             fileUrl={day?.fileUrl}
             variantFileUrl={day?.variantFileUrl}
             workoutLink={day?.workout?.link}
             variantLink={day?.variant?.link}
           />
+          {dayExtras(day).map((extra, i) => (
+            <div key={i} style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid rgba(255,255,255,0.08)` }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: "#e5e5e5" }}>+ {extra.workout.name}</p>
+              {extra.variant?.notes && (
+                <p style={{ margin: "1px 0 0", fontSize: 10, color: EX.textMuted }}>{extra.variant.notes}</p>
+              )}
+              {extra.workout.description && (
+                <p style={{ margin: "2px 0 0", fontSize: 10, color: "#d4d4d4", lineHeight: 1.4 }}>{extra.workout.description}</p>
+              )}
+              {extra.note && <ExportCoachNote note={extra.note} />}
+              <ExportAttachmentBadges
+                fileUrl={extra.fileUrl}
+                variantFileUrl={extra.variantFileUrl}
+                workoutLink={extra.workout.link}
+                variantLink={extra.variant?.link}
+              />
+            </div>
+          ))}
           {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
             <div style={{ marginTop: 10, paddingTop: 8, borderTop: `1px solid rgba(255,255,255,0.08)` }}>
               <p style={{ margin: "0 0 6px", fontSize: 9, fontWeight: 700, color: EX.textMuted, textTransform: "uppercase", letterSpacing: "0.12em" }}>
@@ -575,6 +639,7 @@ function ExportDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
                   {opt.workout.description && (
                     <p style={{ margin: "2px 0 0", fontSize: 10, color: "#d4d4d4", lineHeight: 1.4 }}>{opt.workout.description}</p>
                   )}
+                  {opt.note && <ExportCoachNote note={opt.note} />}
                   <ExportAttachmentBadges
                     fileUrl={opt.fileUrl}
                     variantFileUrl={opt.variantFileUrl}
@@ -665,12 +730,15 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
   const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
   const [open, setOpen] = useState(isToday);
 
+  const extras = dayExtras(day);
   const hasDetails = !isRest && (
     day?.variant?.notes ||
+    day?.note ||
     day?.fileUrl ||
     day?.variantFileUrl ||
     day?.workout?.link ||
     day?.variant?.link ||
+    extras.length > 0 ||
     (day?.optionals && day.optionals.some(o => o.workout))
   );
 
@@ -715,7 +783,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
           ) : (
             <>
               <p className={`font-semibold text-base leading-snug text-white ${open ? "" : "truncate"}`}>
-                {day?.workout?.name ?? "—"}
+                {sessionTitle(day)}
               </p>
               {day?.variant?.notes && (
                 <p className={`text-sm text-neutral-300 leading-snug mt-1 ${open ? "" : "truncate"}`}>
@@ -743,12 +811,34 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
               {day.workout.description}
             </p>
           )}
+          {day?.note && <CoachNote note={day.note} />}
           <AttachmentLinks
             fileUrl={day?.fileUrl}
             variantFileUrl={day?.variantFileUrl}
             workoutLink={day?.workout?.link}
             variantLink={day?.variant?.link}
           />
+          {extras.map((extra, i) => (
+            <div key={i} className="pt-3 border-t border-border/40">
+              <div className="flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-brand-orange shrink-0" />
+                <p className="text-sm text-white font-semibold">{extra.workout.name}</p>
+              </div>
+              {extra.variant?.notes && (
+                <p className="text-sm text-neutral-300 leading-snug mt-0.5">{extra.variant.notes}</p>
+              )}
+              {extra.workout.description && (
+                <p className="text-sm text-neutral-200 leading-relaxed mt-1">{extra.workout.description}</p>
+              )}
+              {extra.note && <CoachNote note={extra.note} />}
+              <AttachmentLinks
+                fileUrl={extra.fileUrl}
+                variantFileUrl={extra.variantFileUrl}
+                workoutLink={extra.workout.link}
+                variantLink={extra.variant?.link}
+              />
+            </div>
+          ))}
           {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
             <div className="pt-3 border-t border-border/40">
               <p className="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">Opcionales</p>
@@ -761,6 +851,7 @@ function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined
                   {opt.workout.description && (
                     <p className="text-sm text-neutral-200 leading-relaxed mt-1">{opt.workout.description}</p>
                   )}
+                  {opt.note && <CoachNote note={opt.note} />}
                   <AttachmentLinks
                     fileUrl={opt.fileUrl}
                     variantFileUrl={opt.variantFileUrl}

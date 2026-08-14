@@ -193,6 +193,18 @@ Authorization: Bearer <token>
             },
             "fileUrl": "https://minio.../workouts/abc.pdf?X-Amz-Signature=...",
             "variantFileUrl": "https://minio.../route1.gpx?X-Amz-Signature=...",
+            "note": "Arrancá los primeros 10 min bien suave.",
+            "extras": [
+              {
+                "workoutId": "clextra...",
+                "variantId": null,
+                "workout": { "id": "clextra...", "name": "Movilidad", "description": "...", "fileKey": null, "link": null, "variants": [] },
+                "variant": null,
+                "fileUrl": null,
+                "variantFileUrl": null,
+                "note": null
+              }
+            ],
             "optionals": [
               {
                 "workoutId": "clopt...",
@@ -200,7 +212,8 @@ Authorization: Bearer <token>
                 "workout": { "id": "clopt...", "name": "Gimnasio", "description": "...", "fileKey": null, "link": "https://...", "variants": [] },
                 "variant": null,
                 "fileUrl": null,
-                "variantFileUrl": null
+                "variantFileUrl": null,
+                "note": null
               }
             ]
           },
@@ -213,6 +226,8 @@ Authorization: Bearer <token>
             "variant": null,
             "fileUrl": null,
             "variantFileUrl": null,
+            "note": null,
+            "extras": [],
             "optionals": []
           }
         ]
@@ -221,6 +236,16 @@ Authorization: Bearer <token>
   }
 }
 ```
+
+### `note`, `extras` y `optionals`
+
+Tres campos agregados en agosto 2026. El cambio es **aditivo**: un cliente que los ignore sigue funcionando igual que antes.
+
+- **`note`** (en el día y en cada slot) — comentario que el coach escribió sobre *ese ejercicio puntual* durante la revisión. Es visible para el atleta, a diferencia de la nota interna. `null` si no hay.
+- **`extras`** — ejercicios que son parte de la **misma sesión** que el principal. "Fondo + Movilidad" es un solo entrenamiento, no dos: el día se titula con los nombres unidos por `+` y los adicionales se muestran encadenados dentro de la misma tarjeta.
+- **`optionals`** — los decide el atleta. Se muestran como bloque aparte, bajo el título "Opcionales".
+
+`extras` y `optionals` comparten la misma forma (`OptionalDay` en `lib/coachApi.ts`), pero significan lo contrario, así que no hay que renderizarlos igual. En el tipo, `extras` está marcado como opcional para tolerar respuestas viejas de la API.
 
 **Field reference**
 
