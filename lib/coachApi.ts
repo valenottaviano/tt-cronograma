@@ -174,6 +174,14 @@ export interface Day {
   variant: Variant | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+  /** Comentario del coach sobre este ejercicio puntual. */
+  note?: string | null;
+  /**
+   * Ejercicios que son parte de la MISMA sesión que el principal
+   * ("Fondo + Movilidad"). A diferencia de `optionals`, no son opcionales.
+   * Opcional en el tipo porque las respuestas viejas de la API no lo traen.
+   */
+  extras?: OptionalDay[];
   optionals: OptionalDay[];
 }
 
@@ -195,6 +203,7 @@ export interface Variant {
   gpxKey: string | null;
 }
 
+/** Slot de ejercicio: se usa tanto para `optionals` como para `extras`. */
 export interface OptionalDay {
   workoutId: string;
   variantId: string | null;
@@ -202,6 +211,8 @@ export interface OptionalDay {
   variant: Variant | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+  /** Comentario del coach sobre este ejercicio puntual. */
+  note?: string | null;
 }
 
 // ─── Race types ───────────────────────────────────────────────────────────────
