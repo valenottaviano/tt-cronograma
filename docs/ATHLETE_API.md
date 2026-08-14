@@ -237,6 +237,32 @@ Authorization: Bearer <token>
 }
 ```
 
+### Cuidado con `dayIndex` al postear comentarios
+
+Cuando el atleta tiene varias planillas aprobadas, este endpoint las **fusiona en un timeline único** (`period.type: "MERGED"`). En esa respuesta:
+
+- `days[].dayIndex` cuenta desde el inicio de la copia **más vieja**. En producción es normal que un atleta tenga 8 copias, así que el timeline llega a ~56 días.
+- El `id` de arriba de todo es el de la copia **más nueva**, no el de la copia a la que pertenece cada día.
+
+Los comentarios, en cambio, se guardan **por copia** (`clientScheduleId` + `dayIndex` relativo a esa copia). Postear el par `{ copyId: schedule.id, dayIndex: day.dayIndex }` es incorrecto: mezcla el id de una copia con el índice de otra. El endpoint valida el rango y responde `400 dayIndex out of range`.
+
+Para hacerlo bien, cada día trae el par correcto:
+
+```json
+{
+  "dayIndex": 37,        // posición en el timeline fusionado — solo para mostrar
+  "copyId": "clxyz...",  // copia a la que pertenece este día
+  "copyDayIndex": 2      // índice del día DENTRO de esa copia
+}
+```
+
+```ts
+// Correcto
+await postComment({ copyId: day.copyId, dayIndex: day.copyDayIndex, content });
+```
+
+`copyId` y `copyDayIndex` son `null` cuando la fecha cae en un hueco entre períodos: ahí no hay nada que comentar.
+
 ### `note`, `extras` y `optionals`
 
 Tres campos agregados en agosto 2026. El cambio es **aditivo**: un cliente que los ignore sigue funcionando igual que antes.

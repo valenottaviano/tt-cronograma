@@ -166,7 +166,20 @@ export interface Comment {
 }
 
 export interface Day {
+  /**
+   * Índice dentro del timeline FUSIONADO: cuenta desde el inicio de la copia
+   * más vieja, no desde el inicio de la copia a la que pertenece este día.
+   * No sirve para postear un comentario — para eso está `copyDayIndex`.
+   */
   dayIndex: number;
+  /**
+   * Copia a la que pertenece este día. `null` si la fecha cae en un hueco
+   * entre períodos. Los comentarios se guardan por copia: hay que postear
+   * este `copyId` junto con `copyDayIndex`, nunca `dayIndex`.
+   */
+  copyId?: string | null;
+  /** Índice del día DENTRO de su copia. Ver `copyId`. */
+  copyDayIndex?: number | null;
   isRest: boolean;
   workoutId: string | null;
   variantId: string | null;
