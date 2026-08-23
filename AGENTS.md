@@ -30,6 +30,8 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
      - `components/admin/` → Admin-specific tables/forms.
    - `lib/` → Business logic & utilities.
      - `lib/firebase/` → Firebase config and service modules (API layer).
+     - `lib/coachApi.ts` → Client for the coach backend (roberto-parodi).
+     - `lib/join-form.ts` / `lib/join-info.ts` → Content of the `/sumate` join flow.
      - `lib/data.ts` → Shared TypeScript interfaces (source of truth for types).
      - `lib/utils.ts` → Helper functions (e.g., `cn` for Tailwind).
    - `hooks/` → Custom React hooks.
@@ -89,6 +91,18 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
     - **Local State:** `useState` is fine for simple UI toggles.
     - **Global State:** Use Context (`contexts/`) sparingly (e.g., Auth).
 
+12b. JOIN FLOW (`/sumate`)
+    - Questions live in `lib/join-form.ts`; the coach backend stores them
+      verbatim as `{ id, label, value }`. Editing that file is enough — no
+      migration, no backend change. See `docs/sumate.md`.
+    - `/quiz` (Google Form) is **legacy**: it does not reach the coach panel.
+    - Stage transitions use an enter-only keyed `motion.div` on purpose. With
+      `AnimatePresence` + `mode="wait"` the next stage waits for the exit
+      animation, which stalls whenever the tab is backgrounded (the browser
+      freezes `requestAnimationFrame`). See `docs/sumate.md`.
+    - Debugging in a background tab: no framer-motion animation advances, so
+      elements sit at their `initial` opacity. That is the harness, not a bug.
+
 13. UI STYLE GUARDS
     - **Identity:** Bold typography, italic uppercase labels, neon accents.
     - **Responsiveness:** Mobile-first. Use `md:` and `lg:` overrides.
@@ -103,6 +117,8 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
 15. ENV & SECRETS
     - Config in `.env.local` (do not commit).
     - Firebase keys are loaded from environment variables.
+    - `COACH_API_URL` + `COACH_PUBLIC_API_KEY` reach the coach backend. Both are
+      server-only: never expose them with a `NEXT_PUBLIC_` prefix.
     - Document new required variables in the PR description.
 
 16. BUILD FEATURES
