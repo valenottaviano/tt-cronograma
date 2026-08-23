@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:e2e": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON scripts/e2e-sumate.mts"
+    "test:e2e": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON scripts/e2e-sumate.mts",
+    "typecheck:scripts": "tsc -p tsconfig.scripts.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

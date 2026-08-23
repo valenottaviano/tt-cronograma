@@ -57,20 +57,42 @@ function skip(msg: string) {
   console.log(`${C.yellow}⊘${C.reset} ${msg}`);
 }
 function check(condition: boolean, msg: string, detail?: unknown) {
-  condition ? ok(msg) : fail(msg, detail);
+  if (condition) ok(msg);
+  else fail(msg, detail);
   return condition;
 }
 
 // ── helpers HTTP ──────────────────────────────────────────────────────────────
 
-interface Res { status: number; json: any; text: string; networkError?: string }
+interface Res<T> { status: number; json: T | null; text: string; networkError?: string }
+
+/** Forma de una solicitud tal como la devuelve la API del panel. */
+interface ApplicationRow {
+  id: string;
+  firstName: string;
+  lastName: string;
+  dni: string;
+  email: string;
+  phone: string;
+  birthDate: string | null;
+  gender: string | null;
+  answers: { id: string; label: string; value: string }[];
+  status: string;
+  clientId: string | null;
+}
+
+type ErrorBody = { error?: string };
+type ListBody = { data?: ApplicationRow[] };
+type StatsBody = { data?: { newApplicationCount?: number } };
+type CreatedBody = { data?: { id?: string } };
+type HealthBody = { checks?: { database?: string; redis?: string } };
 
 /**
  * Un host caído o un DNS que no resuelve hace que `fetch` tire una excepción.
  * Se traduce a `status: 0` para que el runner lo reporte como un fallo más y
  * siga con el resto de los checks, en vez de morir con un stack trace.
  */
-async function req(url: string, init?: RequestInit): Promise<Res> {
+async function req<T = unknown>(url: string, init?: RequestInit): Promise<Res<T>> {
   let res: Response;
   try {
     res = await fetch(url, init);
@@ -79,8 +101,8 @@ async function req(url: string, init?: RequestInit): Promise<Res> {
     return { status: 0, json: null, text: "", networkError: msg };
   }
   const text = await res.text();
-  let json: any = null;
-  try { json = JSON.parse(text); } catch { /* respuesta no-JSON */ }
+  let json: T | null = null;
+  try { json = JSON.parse(text) as T; } catch { /* respuesta no-JSON */ }
   return { status: res.status, json, text };
 }
 
@@ -156,7 +178,7 @@ const authed = (jar: string): RequestInit => ({ headers: { Cookie: jar } });
 async function smokeChecks() {
   section("Infraestructura");
 
-  const health = await req(`${COACH}/api/health`);
+  const health = await req<HealthBody>(`${COACH}/api/health`);
   check(health.status === 200, "el panel del coach responde", health.networkError ?? health.status);
   check(health.json?.checks?.database === "ok", "Postgres alcanzable", health.json?.checks);
   check(health.json?.checks?.redis === "ok", "Redis alcanzable", health.json?.checks);
@@ -186,7 +208,7 @@ async function smokeChecks() {
 
   section("Validación");
 
-  const incompleto = await req(`${SITE}/api/public/applications`, {
+  const incompleto = await req<ErrorBody>(`${SITE}/api/public/applications`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ firstName: "Solo", lastName: "Nombre" }),
@@ -202,7 +224,7 @@ async function smokeChecks() {
   // validación, lo que prueba que la clave compartida coincide en ambos lados
   // sin llegar a escribir una fila.
   const conEmailMalo = { ...buildValues(), email: "NO-ES-UN-EMAIL" };
-  const cadena = await req(`${SITE}/api/public/applications`, {
+  const cadena = await req<ErrorBody>(`${SITE}/api/public/applications`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(conEmailMalo),
@@ -228,12 +250,12 @@ async function smokeChecks() {
 
 /** Nunca pisar una solicitud real: si el DNI de prueba ya está en uso, abortar. */
 async function guardDni(jar: string): Promise<boolean> {
-  const res = await req(`${COACH}/api/applications`, authed(jar));
+  const res = await req<ListBody>(`${COACH}/api/applications`, authed(jar));
   if (res.status !== 200) {
     fail("no se pudo listar solicitudes para el chequeo previo", res.status);
     return false;
   }
-  const choque = (res.json.data ?? []).find((a: any) => a.dni === TEST_DNI);
+  const choque = (res.json?.data ?? []).find((a) => a.dni === TEST_DNI);
   if (choque) {
     fail(
       `ya existe una solicitud con el DNI de prueba ${TEST_DNI} — se aborta para no pisarla`,
@@ -257,7 +279,7 @@ async function fullCycle() {
 
   if (!(await guardDni(jar))) return;
 
-  const antes = await req(`${COACH}/api/dashboard/stats`, authed(jar));
+  const antes = await req<StatsBody>(`${COACH}/api/dashboard/stats`, authed(jar));
   const contadorAntes = antes.json?.data?.newApplicationCount ?? 0;
 
   // "Sí" en actividad revela el campo condicional; "No" en fortalecimiento lo
@@ -271,7 +293,7 @@ async function fullCycle() {
 
   let id: string | null = null;
   try {
-    const creada = await req(`${SITE}/api/public/applications`, {
+    const creada = await req<CreatedBody & ErrorBody>(`${SITE}/api/public/applications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
@@ -292,9 +314,15 @@ async function fullCycle() {
       creada.json?.data,
     );
 
-    const lista = await req(`${COACH}/api/applications`, authed(jar));
-    const encontrada = (lista.json?.data ?? []).find((a: any) => a.id === id);
-    if (!check(!!encontrada, "la solicitud aparece en el panel del coach")) return;
+    const lista = await req<ListBody>(`${COACH}/api/applications`, authed(jar));
+    const encontrada = (lista.json?.data ?? []).find((a) => a.id === id);
+    // Comprobación explícita en vez de `check(!!encontrada)`: así el compilador
+    // también sabe que a partir de acá la solicitud existe.
+    if (!encontrada) {
+      fail("la solicitud aparece en el panel del coach", { buscado: id });
+      return;
+    }
+    ok("la solicitud aparece en el panel del coach");
 
     check(encontrada.status === "NEW", 'llega con estado "Nueva"', encontrada.status);
     check(encontrada.dni === TEST_DNI, "el DNI viajó intacto", encontrada.dni);
@@ -302,7 +330,7 @@ async function fullCycle() {
     check(encontrada.email === values.email, "el email viajó intacto", encontrada.email);
     check(!!encontrada.birthDate, "la fecha de nacimiento se guardó");
 
-    const ids = (encontrada.answers ?? []).map((r: any) => r.id);
+    const ids = (encontrada.answers ?? []).map((r) => r.id);
     const esperadas = visibles.filter(
       (fid) => !["firstName", "lastName", "dni", "email", "phone", "birthDate", "gender"].includes(fid),
     );
@@ -312,7 +340,7 @@ async function fullCycle() {
       { esperadas, recibidas: ids },
     );
     check(
-      (encontrada.answers ?? []).every((r: any) => r.label && r.value),
+      (encontrada.answers ?? []).every((r) => r.label && r.value),
       "cada respuesta trae su enunciado (autodescriptiva)",
     );
     if (reveladoOk) {
@@ -320,7 +348,7 @@ async function fullCycle() {
       check(!ids.includes("strengthDays"), "el campo condicional oculto no viajó");
     }
 
-    const stats = await req(`${COACH}/api/dashboard/stats`, authed(jar));
+    const stats = await req<StatsBody>(`${COACH}/api/dashboard/stats`, authed(jar));
     check(
       (stats.json?.data?.newApplicationCount ?? 0) === contadorAntes + 1,
       "el contador de solicitudes sin abrir subió en 1",
@@ -332,11 +360,11 @@ async function fullCycle() {
       const del = await req(`${COACH}/api/applications/${id}`, { method: "DELETE", ...authed(jar) });
       check(del.status === 200, "la solicitud de prueba se eliminó");
 
-      const verif = await req(`${COACH}/api/applications`, authed(jar));
-      const sigue = (verif.json?.data ?? []).some((a: any) => a.id === id);
+      const verif = await req<ListBody>(`${COACH}/api/applications`, authed(jar));
+      const sigue = (verif.json?.data ?? []).some((a) => a.id === id);
       check(!sigue, "no quedó ningún rastro en el panel");
 
-      const stats = await req(`${COACH}/api/dashboard/stats`, authed(jar));
+      const stats = await req<StatsBody>(`${COACH}/api/dashboard/stats`, authed(jar));
       check(
         (stats.json?.data?.newApplicationCount ?? 0) === contadorAntes,
         "el contador volvió a su valor original",

@@ -107,6 +107,12 @@ Detalles que importan:
   escribir, aborta si ese DNI ya tiene una solicitud.
 - **La limpieza corre en un `finally`**: aunque falle una aserción a mitad de
   camino, la solicitud de prueba se borra igual.
+- **Vive fuera del build.** `scripts/` está excluido de `tsconfig.json` porque
+  Node ejecuta estos archivos directamente y exige la extensión explícita en los
+  imports relativos (`../lib/join-form.ts`), cosa que la config de la app no
+  permite — y habilitarla ahí sería un problema, porque Turbopack no resuelve
+  imports con extensión. Se chequean aparte con `npm run typecheck:scripts`.
+  **Corré ese comando si tocás el script**: el build de Next ya no lo cubre.
 - **Códigos de salida** para CI: `0` si no hubo fallos, `1` si hubo alguno. Un
   host caído se reporta como fallo normal, no revienta con un stack trace.
 - Si aparece un check **omitido** (amarillo), la corrida no falla pero esa

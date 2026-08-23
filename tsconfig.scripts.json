@@ -1,0 +1,20 @@
+{
+  // Los scripts de `scripts/` los ejecuta Node directamente (type stripping),
+  // no el bundler. Node exige la extensión explícita en los imports relativos,
+  // cosa que la config de la app no permite — y habilitarla ahí sería un
+  // problema, porque Turbopack no resuelve imports con extensión `.ts`.
+  // Por eso viven fuera del build y se chequean con esta config aparte:
+  //   npm run typecheck:scripts
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  },
+  // Sólo lo que los scripts importan de verdad. Traer `lib/**` entero mete
+  // módulos que usan extensiones de `fetch` propias de Next, que no existen
+  // fuera del runtime de la app.
+  "include": ["scripts/**/*.mts", "lib/join-form.ts"],
+  "exclude": ["node_modules"]
+}
