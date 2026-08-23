@@ -1,3 +1,5 @@
+import type { ApplicationPayload } from "./join-form";
+
 const BASE = process.env.COACH_API_URL;
 
 async function del(path: string, token: string): Promise<void> {
@@ -297,4 +299,35 @@ export function enrollRace(raceId: string, token: string) {
 
 export function unenrollRace(raceId: string, token: string) {
   return del(`/api/v1/athlete/races/${raceId}/enroll`, token);
+}
+
+// ─── Solicitudes de ingreso ──────────────────────────────────────────────────
+
+/**
+ * Envía una solicitud de ingreso al panel del coach. Es server-to-server: usa un
+ * secreto compartido en vez de JWT porque quien completa el formulario todavía
+ * no es atleta y no tiene cuenta.
+ */
+export async function submitApplication(
+  payload: ApplicationPayload,
+  clientIp?: string
+): Promise<{ id: string }> {
+  const apiKey = process.env.COACH_PUBLIC_API_KEY;
+  if (!apiKey) throw new ApiError("Servicio no disponible", 503);
+
+  const res = await fetch(`${BASE}/api/v1/public/applications`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Api-Key": apiKey,
+      // Sin esto el coach vería siempre la IP de Vercel y su rate limit
+      // pasaría a ser global en vez de por visitante.
+      ...(clientIp ? { "X-Client-Ip": clientIp } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
+  return json.data ?? json;
 }

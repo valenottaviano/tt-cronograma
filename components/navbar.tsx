@@ -86,6 +86,12 @@ export function Navbar() {
               >
                 Tienda
               </Link>
+              <Link
+                href="/sumate"
+                className="transition-colors text-brand-orange hover:text-brand-orange/80"
+              >
+                Sumate
+              </Link>
             </nav>
           </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -124,6 +130,13 @@ export function Navbar() {
                   </Link>
                   <Link href="/store" onClick={() => setIsOpen(false)}>
                     Tienda
+                  </Link>
+                  <Link
+                    href="/sumate"
+                    onClick={() => setIsOpen(false)}
+                    className="text-brand-orange"
+                  >
+                    Sumate
                   </Link>
                   {/* Add more mobile links here */}
                 </div>
