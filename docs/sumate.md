@@ -71,3 +71,43 @@ cambio de paso se ve demorado). La versión actual no tiene ese modo de falla.
 animación avanza: vas a ver elementos con la `opacity` inicial congelada — el
 navbar del sitio, por ejemplo, queda translúcido y el contenido se ve a través.
 No es un bug de la página.
+
+## Test E2E
+
+`scripts/e2e-sumate.mts` verifica el flujo contra entornos desplegados. No
+necesita dependencias: Node ≥ 23 ejecuta TypeScript directo.
+
+```bash
+npm run test:e2e                 # sólo lecturas, apunta a producción
+npm run test:e2e -- --full       # además crea una solicitud real y la borra
+```
+
+Otro entorno: `SITE_URL=... COACH_URL=... npm run test:e2e`.
+
+**Modo por defecto** — no escribe nada. Comprueba salud del panel (Postgres y
+Redis), que `/sumate` renderice, que el endpoint público rechace sin API key y
+con una incorrecta, que la API del panel exija sesión, que un formulario
+incompleto sea rechazado indicando qué falta, y que la clave compartida
+coincida en ambos lados. Esto último se verifica mandando un payload completo
+con un email inválido a propósito: si el rechazo viene del validador del coach
+(`Email inválido`), la clave viajó — y no se creó ninguna fila.
+
+**`--full`** — hace además el ciclo completo: crea una solicitud desde la web,
+la busca en el panel, comprueba que los datos de contacto y las respuestas
+llegaron enteras (incluido que los condicionales ocultos NO viajen), que el
+contador de solicitudes nuevas suba, y después la borra y verifica que no
+quedó rastro. Necesita `COACH_EMAIL` y `COACH_PASSWORD`.
+
+Detalles que importan:
+
+- **El payload se deriva de `lib/join-form.ts`.** Si agregás, sacás o hacés
+  condicional una pregunta, el test se adapta solo. No hay una copia del
+  cuestionario que se pueda quedar vieja.
+- **Nunca pisa datos reales.** Usa el DNI reservado `99000001` y, antes de
+  escribir, aborta si ese DNI ya tiene una solicitud.
+- **La limpieza corre en un `finally`**: aunque falle una aserción a mitad de
+  camino, la solicitud de prueba se borra igual.
+- **Códigos de salida** para CI: `0` si no hubo fallos, `1` si hubo alguno. Un
+  host caído se reporta como fallo normal, no revienta con un stack trace.
+- Si aparece un check **omitido** (amarillo), la corrida no falla pero esa
+  verificación quedó sin concluir: leelo antes de darla por buena.
