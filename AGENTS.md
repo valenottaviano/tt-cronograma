@@ -103,6 +103,13 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
     - Debugging in a background tab: no framer-motion animation advances, so
       elements sit at their `initial` opacity. That is the harness, not a bug.
 
+12c. PREGUNTAS FRECUENTES (`/faq`)
+    - Contenido en `content/faq/*.md` con frontmatter; no hay base de datos ni
+      panel. Agregar una pregunta es crear un archivo. Ver `docs/faq.md`.
+    - `audience` controla visibilidad y se aplica en el listado Y en la página
+      del artículo: nunca filtrar sólo en el índice.
+    - Frontmatter incompleto rompe el build a propósito.
+
 13. UI STYLE GUARDS
     - **Identity:** Bold typography, italic uppercase labels, neon accents.
     - **Responsiveness:** Mobile-first. Use `md:` and `lg:` overrides.
@@ -120,6 +127,11 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
     - `COACH_API_URL` + `COACH_PUBLIC_API_KEY` reach the coach backend. Both are
       server-only: never expose them with a `NEXT_PUBLIC_` prefix.
     - Document new required variables in the PR description.
+
+15b. LOCKFILES
+    - The repo keeps BOTH `pnpm-lock.yaml` and `package-lock.json`, and Vercel
+      builds with pnpm. Adding a dependency with npm alone breaks production.
+      Always run both: `npm install <pkg>` then `pnpm install --lockfile-only`.
 
 16. BUILD FEATURES
     - Service Worker (`sw.ts`) handles PWA capabilities.

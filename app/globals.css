@@ -144,3 +144,65 @@
 .glass-input {
   @apply bg-neutral-900 border-neutral-700 focus:bg-neutral-800 focus:border-neutral-600 transition-all;
 }
+
+/* Cuerpo de los artículos de preguntas frecuentes (Markdown renderizado).
+   Escrito a mano en vez de sumar @tailwindcss/typography: son pocos elementos
+   y así el resultado queda alineado con la identidad del sitio en vez de tener
+   que sobrescribir los defaults del plugin. */
+.prose-tt {
+  @apply text-white/70 leading-relaxed;
+}
+.prose-tt > * + * {
+  @apply mt-5;
+}
+.prose-tt h2 {
+  @apply text-2xl font-bold italic uppercase tracking-tight text-white mt-10 mb-4;
+}
+.prose-tt h3 {
+  @apply text-lg font-bold text-white mt-8 mb-3;
+}
+.prose-tt p {
+  @apply leading-relaxed;
+}
+.prose-tt a {
+  @apply text-brand-orange underline underline-offset-4 decoration-brand-orange/40 hover:decoration-brand-orange transition-colors;
+}
+.prose-tt strong {
+  @apply text-white font-semibold;
+}
+.prose-tt ul {
+  @apply list-disc pl-5 space-y-2 marker:text-brand-orange;
+}
+.prose-tt ol {
+  @apply list-decimal pl-5 space-y-2 marker:text-brand-orange;
+}
+.prose-tt li::marker {
+  @apply text-brand-orange;
+}
+.prose-tt blockquote {
+  @apply border-l-2 border-brand-orange/50 pl-4 italic text-white/60;
+}
+.prose-tt code {
+  @apply bg-white/10 rounded px-1.5 py-0.5 text-sm text-white/90;
+}
+.prose-tt pre {
+  @apply bg-neutral-900 border border-neutral-700 rounded-xl p-4 overflow-x-auto;
+}
+.prose-tt pre code {
+  @apply bg-transparent p-0;
+}
+.prose-tt hr {
+  @apply border-white/10 my-10;
+}
+.prose-tt img {
+  @apply rounded-xl max-w-full h-auto;
+}
+.prose-tt table {
+  @apply w-full text-sm border-collapse;
+}
+.prose-tt th {
+  @apply text-left text-white font-semibold border-b border-white/15 py-2 pr-4;
+}
+.prose-tt td {
+  @apply border-b border-white/5 py-2 pr-4 align-top;
+}

@@ -87,6 +87,12 @@ export function Navbar() {
                 Tienda
               </Link>
               <Link
+                href="/faq"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Preguntas
+              </Link>
+              <Link
                 href="/sumate"
                 className="transition-colors text-brand-orange hover:text-brand-orange/80"
               >
@@ -130,6 +136,9 @@ export function Navbar() {
                   </Link>
                   <Link href="/store" onClick={() => setIsOpen(false)}>
                     Tienda
+                  </Link>
+                  <Link href="/faq" onClick={() => setIsOpen(false)}>
+                    Preguntas
                   </Link>
                   <Link
                     href="/sumate"

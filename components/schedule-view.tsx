@@ -11,6 +11,7 @@ import {
   Download,
   ExternalLink,
   Flag,
+  HelpCircle,
   ImageDown,
   Loader2,
   LogOut,
@@ -193,6 +194,9 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }
           </Sheet>
           <Button variant="outline" onClick={() => router.push("/videos")} className="gap-2 min-h-[44px]">
             <Play className="w-4 h-4" /> Videos
+          </Button>
+          <Button variant="outline" onClick={() => router.push("/faq")} className="gap-2 min-h-[44px]">
+            <HelpCircle className="w-4 h-4" /> Preguntas
           </Button>
           <Button variant="outline" onClick={() => router.push(`/schedule/${dni}/profile`)} className="gap-2 min-h-[44px]">
             <User className="w-4 h-4" /> Mi Perfil
