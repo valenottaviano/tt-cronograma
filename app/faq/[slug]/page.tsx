@@ -10,6 +10,7 @@ import { getArticle } from "@/lib/faq";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
 }
 
 function formatDate(iso: string): string {
@@ -21,7 +22,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Omit<Props, "searchParams">): Promise<Metadata> {
   const { slug } = await params;
   const session = await getAthleteSession();
   const article = getArticle(slug, !!session.token);
@@ -34,10 +35,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function FaqArticlePage({ params }: Props) {
+export default async function FaqArticlePage({ params, searchParams }: Props) {
   const { slug } = await params;
   const session = await getAthleteSession();
   const isAthlete = !!session.token;
+
+  // Se arrastra el origen para que "Todas las preguntas" devuelva al listado
+  // conservando de dónde venía la persona.
+  const { from } = await searchParams;
+  const volverAlListado = from === "planilla" && isAthlete ? "/faq?from=planilla" : "/faq";
 
   // El filtrado también se aplica acá, no sólo en el listado: si no, bastaría
   // con adivinar la URL para leer un artículo interno.
@@ -51,7 +57,7 @@ export default async function FaqArticlePage({ params }: Props) {
       <div className="container mx-auto max-w-2xl px-4 relative z-10">
         <div className="mb-8">
           <Button asChild variant="ghost" className="text-white/60 hover:text-white hover:bg-white/5 group">
-            <Link href="/faq">
+            <Link href={volverAlListado}>
               <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Todas las preguntas
             </Link>
@@ -87,7 +93,7 @@ export default async function FaqArticlePage({ params }: Props) {
 
         <div className="mt-12 pt-8 border-t border-white/10">
           <Button asChild variant="ghost" className="text-white/60 hover:text-white hover:bg-white/5">
-            <Link href="/faq">
+            <Link href={volverAlListado}>
               <ArrowLeft className="mr-2 w-4 h-4" />
               Todas las preguntas
             </Link>
