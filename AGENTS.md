@@ -4,6 +4,10 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
 1. PURPOSE
    - This document teaches autonomous agents how to work inside this Next.js repo.
    - Prioritize developer velocity while keeping the existing design language intact.
+   - **This repo is one of two apps.** The other is `roberto-parodi` (the coach's
+     panel + API, on a VPS), whose API this app consumes. The full picture —data
+     ownership, auth between them, failure modes— is in
+     `roberto-parodi/docs/ECOSISTEMA.md`; see also `docs/ecosistema.md` here.
 
 2. HIGH-LEVEL STACK
    - Next.js 16 App Router with `use client` components where needed.
