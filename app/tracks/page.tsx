@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getFirebaseTracks } from '@/lib/firebase/tracks';
 import { TrackPreview } from '@/components/tracks/track-preview';
+import { TrackDownloadButton } from '@/components/tracks/track-download-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,14 +99,11 @@ export default async function TracksPage() {
                       >
                         Ver detalle
                       </Link>
-                      <a
-                        href={track.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex flex-1 min-w-[140px] items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-[10px] font-black uppercase tracking-[0.35em] text-white/80 hover:text-white"
-                      >
-                        Descargar GPX
-                      </a>
+                      <TrackDownloadButton
+                        fileUrl={track.fileUrl}
+                        title={track.title}
+                        className="inline-flex flex-1 min-w-[140px] items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-[10px] font-black uppercase tracking-[0.35em] text-white/80 hover:text-white disabled:opacity-60"
+                      />
                     </div>
                   </div>
                   <div className="md:w-[45%] px-5 pb-6 md:py-10 md:pr-10">
