@@ -1,14 +1,15 @@
-import { ProductList } from '@/components/admin/product-list';
+import { MovedToPanel } from '@/components/admin/moved-to-panel';
+
+export const metadata = { title: 'Productos | Admin TT' };
 
 export default function AdminProductsPage() {
   return (
-    <div className="space-y-10 pb-20">
-      <div>
-        <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter">Productos y Stock</h1>
-        <p className="text-white/40 font-medium tracking-widest uppercase text-xs mt-1">Administración del catálogo oficial y niveles de inventario</p>
-      </div>
-      
-      <ProductList />
-    </div>
+    <MovedToPanel
+      title="Productos"
+      panelPath="/web/products"
+      panelLabel="Contenido web → Productos"
+      why="Los productos pasaron a la base del panel junto con los pedidos, porque el stock por talle se descuenta cuando se verifica un pedido: las dos cosas tenían que vivir en el mismo lugar para que eso sea una transacción y no dos escrituras que pueden desincronizarse."
+      publicPath="/store"
+    />
   );
 }

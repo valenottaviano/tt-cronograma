@@ -1,9 +1,6 @@
-import { RaceForm } from '@/components/admin/race-form';
+import { redirect } from 'next/navigation';
 
+/** Fuera de servicio: las carreras se cargan en el panel del coach. */
 export default function NewRacePage() {
-  return (
-    <div className="space-y-10 pb-20">
-      <RaceForm />
-    </div>
-  );
+  redirect('/admin/races');
 }

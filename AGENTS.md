@@ -4,8 +4,9 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
 1. PURPOSE
    - This document teaches autonomous agents how to work inside this Next.js repo.
    - Prioritize developer velocity while keeping the existing design language intact.
-   - **This repo is one of two apps.** The other is `roberto-parodi` (the coach's
-     panel + API, on a VPS), whose API this app consumes. The full picture —data
+   - **This repo is one of three apps.** The others are `roberto-parodi` (the
+     coach's panel + API, on a VPS), whose API this app consumes, and
+     `tt-comercios` (the partner-merchant app, on Vercel). The full picture —data
      ownership, auth between them, failure modes— is in
      `roberto-parodi/docs/ECOSISTEMA.md`; see also `docs/ecosistema.md` here.
 
@@ -14,6 +15,24 @@ AGENTS GUIDE FOR TT-CRONOGRAMA
    - TypeScript everywhere; strict mode is enabled in `tsconfig.json`.
    - Tailwind v4 via `@tailwindcss/postcss`; class merging handled with `cn` helper.
    - Firebase (Firestore, Storage, Auth) for persistence plus Google Sheets ingestion utilities.
+   - **Tracks are NOT in Firestore any more either.** They moved to Postgres as
+     `PublicTrack`; `/tracks` reads `getPublicTracks()`. The .gpx FILES of the 13
+     migrated tracks still live in Firebase Storage — only the data moved. New
+     uploads go to MinIO's public `web` bucket.
+   - **Races are NOT in Firestore any more either.** The public calendar moved to
+     Postgres as `PublicRace`; `/races` reads `getPublicRaces()` from
+     `lib/coachApi.ts` and `/admin/races` points at the panel. Careful: there are
+     TWO `Race` types in `lib/coachApi.ts` — the local one is the athlete's
+     enrollable races, `PublicRaceDto` is the calendar.
+   - **Benefits are NOT in Firestore any more.** They moved to Postgres
+     (`roberto-parodi`) because the merchant that grants a benefit is the same
+     entity that records sales in `tt-comercios`. `/benefits` reads
+     `getBenefits()` from `lib/coachApi.ts`; the admin CRUD at `/admin/benefits`
+     is out of service and points at the coach panel. See
+     `roberto-parodi/docs/MERCHANTS.md`.
+   - **The credential QR points at `tt-comercios`**, not at this site:
+     `NEXT_PUBLIC_COMERCIOS_URL/v/<dni>`, falling back to `/card/<dni>` here if
+     the variable is unset. See `components/tt-credencial-dialog.tsx`.
    - Security: Storage CORS (`docs/storage-cors.md`), Firestore Rules (`docs/firestore-rules.md`).
 
 3. PACKAGE MANAGER & SCRIPTS

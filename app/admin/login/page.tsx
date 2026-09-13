@@ -1,9 +1,12 @@
-import { AdminLoginForm } from '@/components/auth/admin-login-form';
+import { redirect } from 'next/navigation';
 
+/**
+ * Ya no hay login acá.
+ *
+ * El /admin quedó sin nada que administrar —todo se migró al panel del coach— así
+ * que se retiró la autenticación con Firebase. Quien tenga esta URL guardada cae
+ * en el índice, que explica a dónde ir.
+ */
 export default function AdminLoginPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900">
-      <AdminLoginForm />
-    </div>
-  );
+  redirect('/admin');
 }

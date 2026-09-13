@@ -1,12 +1,10 @@
 'use client';
 
-import { useAuth } from '@/hooks/use-auth';
 import { Users, Calendar, Settings, Bell, Package, ShoppingCart, User } from "lucide-react";
 import { MapPin } from "lucide-react";
 import Link from 'next/link';
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
 
   return (
     <div className="space-y-12">
@@ -17,7 +15,7 @@ export default function AdminDashboard() {
         </div>
         <div className="relative z-10">
           <h2 className="text-2xl md:text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
-            Bienvenido, <span className="text-brand-orange">{user?.email?.split('@')[0]}</span>
+            Panel de contenido
           </h2>
           <p className="text-white/40 font-medium tracking-widest uppercase text-xs">
             Panel de control administrativo • TT Cronograma

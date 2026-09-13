@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Product, getProducts } from '@/lib/firebase/products';
+import { Product, fetchProducts } from '@/lib/store';
 import { ProductCard } from './product-card';
 import { Package, Search, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +13,7 @@ export function ProductCatalog() {
 
   useEffect(() => {
     async function loadProducts() {
-      const data = await getProducts();
+      const data = await fetchProducts();
       setProducts(data);
       setLoading(false);
     }

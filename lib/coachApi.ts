@@ -1,4 +1,9 @@
 import type { ApplicationPayload } from "./join-form";
+// `Race` de ./data es la carrera del CALENDARIO PÚBLICO. Ojo: en este mismo
+// archivo hay otra interfaz `Race` (línea ~236) que es la carrera del catálogo
+// del coach, a la que el atleta se inscribe. Son cosas distintas; el alias
+// evita que se confundan.
+import { benefitCategories, type BenefitCategory, type Race as PublicRaceDto, type Track } from "./data";
 
 const BASE = process.env.COACH_API_URL;
 
@@ -329,5 +334,195 @@ export async function submitApplication(
 
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
+  return json.data ?? json;
+}
+
+export interface CoachBenefit {
+  id: string;
+  title: string;
+  description: string;
+  company: string;
+  merchantSlug: string;
+  category: BenefitCategory;
+  logo: string;
+  linkCta: string;
+  instagramLink: string;
+  whatsappLink: string;
+}
+
+/**
+ * Beneficios del programa TT.
+ *
+ * Vivían en Firestore y ahora viven en Postgres, del lado de roberto-parodi,
+ * porque el comercio que los ofrece es la misma entidad que registra ventas en
+ * tt-comercios. El contrato de esta función es el mismo que tenía
+ * getFirebaseBenefits(), así que las pantallas no cambiaron.
+ *
+ * Devuelve [] si la API del coach no responde: la página de beneficios no debe
+ * tirar abajo el sitio público por una caída del VPS.
+ */
+export async function getBenefits(): Promise<CoachBenefit[]> {
+  const key = process.env.COACH_PUBLIC_API_KEY;
+  if (!BASE || !key) {
+    console.error("COACH_API_URL o COACH_PUBLIC_API_KEY sin configurar — beneficios vacíos");
+    return [];
+  }
+  try {
+    const res = await fetch(`${BASE}/api/v1/public/benefits`, {
+      headers: { "X-Api-Key": key },
+      // Los beneficios cambian poco: una cache corta evita golpear el VPS en
+      // cada visita sin que una edición tarde en verse.
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      console.error(`No se pudieron traer los beneficios: HTTP ${res.status}`);
+      return [];
+    }
+    const json = await res.json();
+    // La categoría en la base es texto libre (viene de datos cargados a mano en
+    // Firestore, donde 6 beneficios no tenían ninguna). La UI filtra por una
+    // lista cerrada, así que lo que no reconocemos cae en "Otros" en vez de
+    // crear una categoría fantasma que nadie puede filtrar.
+    return ((json.data ?? []) as (Omit<CoachBenefit, "category"> & { category: string })[]).map(
+      (b) => ({
+        ...b,
+        category: (benefitCategories as readonly string[]).includes(b.category)
+          ? (b.category as BenefitCategory)
+          : "Otros",
+      })
+    );
+  } catch (e) {
+    console.error("Error trayendo beneficios de la API del coach:", e);
+    return [];
+  }
+}
+
+/**
+ * Calendario público de carreras.
+ *
+ * Vivía en Firestore y ahora vive en Postgres (`PublicRace`), administrado desde
+ * el panel del coach en Contenido web → Carreras. El shape es el mismo que
+ * devolvía `getFirebaseRaces()`, así que `/races` y `/races/[id]` no cambiaron.
+ *
+ * Devuelve [] si la API no responde: una caída del VPS no debe tirar abajo la
+ * página, sólo dejarla vacía.
+ */
+export async function getPublicRaces(): Promise<PublicRaceDto[]> {
+  const key = process.env.COACH_PUBLIC_API_KEY;
+  if (!BASE || !key) {
+    console.error("COACH_API_URL o COACH_PUBLIC_API_KEY sin configurar — carreras vacías");
+    return [];
+  }
+  try {
+    const res = await fetch(`${BASE}/api/v1/public/races`, {
+      headers: { "X-Api-Key": key },
+      // El calendario cambia poco; 5 minutos evita golpear el VPS en cada visita.
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      console.error(`No se pudieron traer las carreras: HTTP ${res.status}`);
+      return [];
+    }
+    const json = await res.json();
+    return (json.data ?? []) as PublicRaceDto[];
+  } catch (e) {
+    console.error("Error trayendo carreras de la API del coach:", e);
+    return [];
+  }
+}
+
+export async function getPublicRace(id: string): Promise<PublicRaceDto | null> {
+  const races = await getPublicRaces();
+  return races.find((r) => r.id === id) ?? null;
+}
+
+/**
+ * Tracks GPX del sitio público.
+ *
+ * Vivían en Firestore y ahora viven en Postgres (`PublicTrack`). Los ARCHIVOS
+ * siguen en Firebase Storage para los 13 migrados; los nuevos que suba el panel
+ * van al storage propio. `fileUrl` es absoluta justamente por eso, y es la que
+ * `TrackPreview` descarga en el navegador.
+ */
+export async function getPublicTracks(): Promise<Track[]> {
+  const key = process.env.COACH_PUBLIC_API_KEY;
+  if (!BASE || !key) {
+    console.error("COACH_API_URL o COACH_PUBLIC_API_KEY sin configurar — tracks vacíos");
+    return [];
+  }
+  try {
+    const res = await fetch(`${BASE}/api/v1/public/tracks`, {
+      headers: { "X-Api-Key": key },
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) {
+      console.error(`No se pudieron traer los tracks: HTTP ${res.status}`);
+      return [];
+    }
+    const json = await res.json();
+    return (json.data ?? []) as Track[];
+  } catch (e) {
+    console.error("Error trayendo tracks de la API del coach:", e);
+    return [];
+  }
+}
+
+export async function getPublicTrack(id: string): Promise<Track | null> {
+  const tracks = await getPublicTracks();
+  return tracks.find((t) => t.id === id) ?? null;
+}
+
+// ─── Tienda ───────────────────────────────────────────────────────────────────
+
+export interface CoachProduct {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  sizes: Record<string, number>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Catálogo de la tienda. Vivía en Firestore; ahora en Postgres. */
+export async function getPublicProducts(): Promise<CoachProduct[]> {
+  const key = process.env.COACH_PUBLIC_API_KEY;
+  if (!BASE || !key) {
+    console.error("COACH_API_URL o COACH_PUBLIC_API_KEY sin configurar — productos vacíos");
+    return [];
+  }
+  try {
+    const res = await fetch(`${BASE}/api/v1/public/products`, {
+      headers: { "X-Api-Key": key },
+      // Más corta que el resto del contenido: el stock cambia cuando el coach
+      // verifica un pedido, y mostrar un talle agotado como disponible molesta.
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      console.error(`No se pudieron traer los productos: HTTP ${res.status}`);
+      return [];
+    }
+    const json = await res.json();
+    return (json.data ?? []) as CoachProduct[];
+  } catch (e) {
+    console.error("Error trayendo productos de la API del coach:", e);
+    return [];
+  }
+}
+
+/** Reenvía el pedido tal cual llegó, con el comprobante adjunto. */
+export async function createCoachOrder(form: FormData, clientIp: string): Promise<{ id: string }> {
+  const key = process.env.COACH_PUBLIC_API_KEY;
+  if (!BASE || !key) throw new ApiError("La tienda no está disponible", 503);
+
+  const res = await fetch(`${BASE}/api/v1/public/orders`, {
+    method: "POST",
+    headers: { "X-Api-Key": key, ...(clientIp ? { "X-Client-Ip": clientIp } : {}) },
+    body: form,
+    cache: "no-store",
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(json.error ?? "No se pudo procesar la compra", res.status);
   return json.data ?? json;
 }

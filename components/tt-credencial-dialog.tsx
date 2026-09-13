@@ -30,6 +30,20 @@ export function TTCCredencialDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState("");
 
+  /**
+   * A dónde lleva el QR de la credencial.
+   *
+   * Apunta a tt-comercios, donde el comercio valida la credencial y —si tiene
+   * sesión— registra la venta. Si la variable no está configurada, cae en la
+   * página de validación de este mismo sitio (/card/[dni]), que sigue existiendo
+   * y muestra el mismo estado: preferimos un QR que valide de menos antes que un
+   * QR roto.
+   */
+  const qrTarget = (dniValue: string) => {
+    const comercios = process.env.NEXT_PUBLIC_COMERCIOS_URL;
+    return comercios ? `${comercios.replace(/\/$/, "")}/v/${dniValue}` : `${baseUrl}/card/${dniValue}`;
+  };
+
   useEffect(() => {
     setBaseUrl(window.location.origin);
 
@@ -234,7 +248,7 @@ export function TTCCredencialDialog() {
                     >
                       <QRCode
                         size={Math.min(60, 80)} // Dynamic size fallback but keeping it readable
-                        value={`${baseUrl}/card/${person.dni}`}
+                        value={qrTarget(person.dni)}
                         viewBox={`0 0 256 256`}
                         style={{
                           height: "auto",
@@ -263,7 +277,7 @@ export function TTCCredencialDialog() {
                           >
                             <QRCode
                               size={280}
-                              value={`${baseUrl}/card/${person.dni}`}
+                              value={qrTarget(person.dni)}
                               viewBox={`0 0 256 256`}
                               style={{
                                 height: "auto",

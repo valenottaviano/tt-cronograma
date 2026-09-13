@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Product } from '@/lib/firebase/products';
-import { OrderInput, createOrder } from '@/lib/firebase/orders';
-import { uploadReceipt } from '@/lib/firebase/storage';
+import { Product } from '@/lib/store';
+import { createOrder } from '@/lib/store';
+
 import { formatPrice } from '@/components/navbar';
 import { X, Upload, CheckCircle2, Loader2, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,24 +54,22 @@ export function CheckoutModal({ product, selectedSize, onClose }: CheckoutModalP
 
     setIsSubmitting(true);
     try {
-      const receiptUrl = await uploadReceipt(receiptFile);
-      
-      const orderData: OrderInput = {
+      // El comprobante viaja junto con los datos del pedido, en un solo request.
+      // El nombre y el precio del producto los resuelve el servidor a partir del
+      // productId: antes los mandaba el navegador, o sea que se podía pedir un
+      // producto de $60.000 declarando que costaba $1.
+      await createOrder({
         productId: product.id,
-        productName: product.name,
         size: selectedSize,
-        totalPrice: product.price,
         customerFirstName: customerInfo.firstName,
         customerLastName: customerInfo.lastName,
         customerPhone: customerInfo.phone,
-        receiptUrl,
-      };
-
-      await createOrder(orderData);
+        receipt: receiptFile,
+      });
       setIsFinished(true);
     } catch (error) {
       console.error('Error processing order:', error);
-      toast.error('Hubo un error al procesar tu compra. Por favor intenta de nuevo.');
+      toast.error(error instanceof Error ? error.message : 'Hubo un error al procesar tu compra. Por favor intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
     }

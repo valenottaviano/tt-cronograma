@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import * as motion from "framer-motion/client";
 
-import { getFirebaseRaces, getFirebaseRace } from "@/lib/firebase/races";
+import { getPublicRaces, getPublicRace } from "@/lib/coachApi";
 import { Countdown } from "@/components/countdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import { DiscountCode } from "@/components/discount-code";
 export const revalidate = 0;
 
 export async function generateStaticParams() {
-  const races = await getFirebaseRaces();
+  const races = await getPublicRaces();
   return races.map((race) => ({
     id: race.id,
   }));
@@ -36,7 +36,7 @@ export default async function RacePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const race = await getFirebaseRace(id);
+  const race = await getPublicRace(id);
 
   if (!race) {
     notFound();

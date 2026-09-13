@@ -1,16 +1,18 @@
 # Ecosistema Grupo TT
 
-La vista completa del sistema —esta app, `roberto-parodi`, y cómo se hablan—
-vive en el otro repo, para no mantener dos copias que se desincronicen:
+La vista completa del sistema —esta app, `roberto-parodi`, `tt-comercios`, y cómo
+se hablan— vive en el repo del panel, para no mantener copias que se
+desincronicen:
 
 **`roberto-parodi/docs/ECOSISTEMA.md`**
 
 Cubre:
 
 - Quién es dueño de qué dato (esta app lee de cuatro fuentes distintas)
+- Comercios, beneficios y ventas: `roberto-parodi/docs/MERCHANTS.md`
 - El modelo de datos del panel del coach y el ciclo de vida de una planilla
 - Cómo funciona la sesión del atleta y por qué el JWT nunca llega al navegador
-- El mapa completo de endpoints entre ambas aplicaciones
+- El mapa completo de endpoints entre las tres aplicaciones
 - Qué se rompe si se cae cada pieza
 - Las trampas del sistema (los dos lockfiles, los proxies de archivos, qué
   quedó legacy)

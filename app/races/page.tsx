@@ -1,10 +1,10 @@
-import { getFirebaseRaces } from "@/lib/firebase/races";
+import { getPublicRaces } from "@/lib/coachApi";
 import { RaceList } from "@/components/race-list";
 
 export const revalidate = 0;
 
 export default async function RacesPage() {
-  const races = await getFirebaseRaces();
+  const races = await getPublicRaces();
 
   return (
     <div className="min-h-screen bg-background font-sans pt-24">

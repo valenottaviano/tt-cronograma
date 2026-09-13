@@ -7,7 +7,6 @@ import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PWAInstallToast } from "@/components/pwa-install-toast";
-import { AuthProvider } from "@/contexts/auth-context";
 import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
@@ -58,13 +57,11 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AuthProvider>
             {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Navbar />}
             {children}
             {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Footer />}
             <Toaster />
             {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <PWAInstallToast />}
-          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

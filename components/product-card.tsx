@@ -1,6 +1,6 @@
 'use client';
 
-import { Product } from '@/lib/firebase/products';
+import { Product } from '@/lib/store';
 import Image from 'next/image';
 import { Package } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';

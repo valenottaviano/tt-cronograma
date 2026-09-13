@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getFirebaseTrack } from '@/lib/firebase/tracks';
+import { getPublicTrack } from '@/lib/coachApi';
 import { TrackPreview } from '@/components/tracks/track-preview';
 import { TrackDownloadButton } from '@/components/tracks/track-download-button';
 
@@ -12,7 +12,7 @@ interface TrackDetailPageProps {
 
 export default async function TrackDetailPage({ params }: TrackDetailPageProps) {
   const { id } = await params;
-  const track = await getFirebaseTrack(id);
+  const track = await getPublicTrack(id);
 
   if (!track) {
     notFound();

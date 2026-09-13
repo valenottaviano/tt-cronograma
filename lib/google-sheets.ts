@@ -1,5 +1,5 @@
 import Papa from "papaparse";
-import { Race, RaceType, Benefit, News } from "./data";
+import { News } from "./data";
 
 async function fetchSheetData(url: string | undefined) {
   if (!url) {
@@ -28,47 +28,6 @@ async function fetchSheetData(url: string | undefined) {
   }
 }
 
-export async function getRaces(): Promise<Race[]> {
-  // Support both new specific var and old generic var
-  const url =
-    process.env.GOOGLE_SHEET_RACES_URL || process.env.GOOGLE_SHEET_CSV_URL;
-  const data = await fetchSheetData(url);
-
-  const races = (data as Record<string, string>[]).map((row) => ({
-    id: row.id || Math.random().toString(36).substr(2, 9),
-    name: row.name,
-    date: row.date,
-    location: row.location,
-    province: row.province,
-    distance: row.distance,
-    type: (row.type as RaceType) || "road",
-    url: row.url,
-    image: row.image,
-    description: row.description,
-    discountCode: row.discountCode,
-  })) as Race[];
-
-  return races.sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-}
-
-export async function getBenefits(): Promise<Benefit[]> {
-  const url = process.env.GOOGLE_SHEET_BENEFITS_URL;
-  const data = await fetchSheetData(url);
-
-  return (data as Record<string, string>[]).map((row) => ({
-    id: row.id || Math.random().toString(36).substr(2, 9),
-    title: row.titulo,
-    description: row.descripcion,
-    company: row.empresa,
-    logo: row.logo,
-    linkCta: row.link_cta,
-    instagramLink: row.instagram_link,
-    whatsappLink: row.whatsapp_link,
-  })) as Benefit[];
-}
-
 export async function getNews(): Promise<News[]> {
   const url = process.env.GOOGLE_SHEET_NEWS_URL;
   const data = await fetchSheetData(url);
@@ -84,7 +43,3 @@ export async function getNews(): Promise<News[]> {
   })) as News[];
 }
 
-export async function getRaceById(id: string): Promise<Race | undefined> {
-  const races = await getRaces();
-  return races.find((race) => race.id === id);
-}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getFirebaseTracks } from '@/lib/firebase/tracks';
+import { getPublicTracks } from '@/lib/coachApi';
 import { TrackPreview } from '@/components/tracks/track-preview';
 import { TrackDownloadButton } from '@/components/tracks/track-download-button';
 
@@ -24,7 +24,7 @@ const difficultyConfig = {
 } as const;
 
 export default async function TracksPage() {
-  const tracks = await getFirebaseTracks();
+  const tracks = await getPublicTracks();
 
   return (
     <main className="min-h-screen bg-black text-white">

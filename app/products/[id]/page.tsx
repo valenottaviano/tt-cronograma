@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useState, useEffect } from 'react';
-import { Product, getProduct } from '@/lib/firebase/products';
+import { Product, fetchProduct } from '@/lib/store';
 import Image from 'next/image';
 import { Package, ChevronLeft, ShoppingCart, Info, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     async function loadProduct() {
-      const data = await getProduct(id);
+      const data = await fetchProduct(id);
       setProduct(data);
       if (data) {
         // Auto-select first available size
