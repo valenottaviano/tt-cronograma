@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getAthleteSession } from "@/lib/session";
 import { getSchedules, getMe, getMonthStatus, Schedule, ApiError } from "@/lib/coachApi";
-import { ScheduleView } from "@/components/schedule-view";
+import { ScheduleViewClient } from "@/components/schedule-view-client";
 import { AutoRefresh } from "@/components/auto-refresh";
 
 interface Props {
@@ -55,7 +55,7 @@ export default async function SchedulePage({ params }: Props) {
   return (
     <>
       <AutoRefresh />
-      <ScheduleView
+      <ScheduleViewClient
         schedules={schedules}
         athleteName={session.name}
         dni={dni}
