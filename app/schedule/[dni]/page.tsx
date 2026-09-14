@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getAthleteSession } from "@/lib/session";
 import { getSchedules, getMe, getMonthStatus, Schedule, ApiError } from "@/lib/coachApi";
-import { ScheduleViewClient } from "@/components/schedule-view-client";
+import { ScheduleView } from "@/components/schedule-view";
 import { AutoRefresh } from "@/components/auto-refresh";
 
 interface Props {
@@ -39,7 +39,10 @@ export default async function SchedulePage({ params }: Props) {
     currentMonthPaid = monthStatus ? monthStatus.paid : null;
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {
-      await session.destroy();
+      // OJO: no llamar session.destroy() acá. Modificar cookies en el render de un
+      // Server Component lanza "Cookies can only be modified in a Server Action or
+      // Route Handler" y devuelve 500. La cookie se limpia en la route handler
+      // /api/client/auth/logout (GET), a la que redirigimos abajo.
       shouldLogout = true;
     }
     // Other errors (5xx, network): show empty state
@@ -47,7 +50,9 @@ export default async function SchedulePage({ params }: Props) {
 
   // redirect() must be called outside try/catch (Next.js throws NEXT_REDIRECT internally)
   if (shouldLogout) {
-    redirect("/");
+    // Redirige a la route handler que limpia la sesión (JWT vencido/rotado) y
+    // manda al home a re-loguearse. Limpiar la cookie sólo es válido ahí, no acá.
+    redirect("/api/client/auth/logout");
   }
 
   const monthLabel = format(now, "MMMM yyyy", { locale: es });
@@ -55,7 +60,7 @@ export default async function SchedulePage({ params }: Props) {
   return (
     <>
       <AutoRefresh />
-      <ScheduleViewClient
+      <ScheduleView
         schedules={schedules}
         athleteName={session.name}
         dni={dni}
