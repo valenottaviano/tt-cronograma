@@ -4,9 +4,23 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Race } from "@/lib/coachApi";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Loader2, MapPin, Search } from "lucide-react";
+import { CalendarDays, Loader2, MapPin, Pencil, Route, Search } from "lucide-react";
+
+/** Tope del campo en la API del panel. Acá sólo evita que se pase. */
+const DISTANCE_MAX = 60;
 
 export function RacesSection() {
   const router = useRouter();
@@ -15,6 +29,12 @@ export function RacesSection() {
   const [error, setError] = useState<string | null>(null);
   const [enrolling, setEnrolling] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
+  // Carrera cuyo diálogo de distancia está abierto. `mode` distingue anotarse
+  // (todavía no hay inscripción) de corregir una distancia ya guardada.
+  const [dialogRace, setDialogRace] = useState<Race | null>(null);
+  const [dialogMode, setDialogMode] = useState<"enroll" | "edit">("enroll");
+  const [distanceInput, setDistanceInput] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch("/api/client/races")
@@ -41,31 +61,71 @@ export function RacesSection() {
     );
   }, [races, query]);
 
-  async function toggleEnroll(race: Race) {
-    if (enrolling.has(race.id)) return;
+  function openDialog(race: Race, mode: "enroll" | "edit") {
+    setDialogRace(race);
+    setDialogMode(mode);
+    setDistanceInput(race.distance ?? "");
+  }
 
-    setEnrolling((prev) => new Set(prev).add(race.id));
-    const wasEnrolled = race.enrolled;
+  function closeDialog() {
+    setDialogRace(null);
+    setDistanceInput("");
+  }
 
-    setRaces((prev) =>
-      prev.map((r) => (r.id === race.id ? { ...r, enrolled: !wasEnrolled } : r))
-    );
+  function patchRace(raceId: string, changes: Partial<Race>) {
+    setRaces((prev) => prev.map((r) => (r.id === raceId ? { ...r, ...changes } : r)));
+  }
+
+  /** Inscribirse (con la distancia del diálogo) o corregir la distancia. */
+  async function submitDistance() {
+    if (!dialogRace || saving) return;
+    const race = dialogRace;
+    const distance = distanceInput.trim() || null;
+    setSaving(true);
 
     try {
       const res = await fetch(`/api/client/races/${race.id}/enroll`, {
-        method: wasEnrolled ? "DELETE" : "POST",
+        method: dialogMode === "enroll" ? "POST" : "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ distance }),
       });
       if (res.status === 401) {
         router.push("/");
         return;
       }
-      if (!res.ok && res.status !== 204) {
-        throw new Error("Error al actualizar inscripción");
-      }
-    } catch {
-      setRaces((prev) =>
-        prev.map((r) => (r.id === race.id ? { ...r, enrolled: wasEnrolled } : r))
+      if (!res.ok) throw new Error("Error al guardar");
+
+      patchRace(race.id, { enrolled: true, distance });
+      closeDialog();
+      toast.success(
+        dialogMode === "enroll"
+          ? `Te anotaste en ${race.name}`
+          : "Distancia actualizada"
       );
+    } catch {
+      toast.error("No pudimos guardar. Probá de nuevo.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  /** Bajarse de una carrera. Sigue siendo de un toque, sin diálogo. */
+  async function unenroll(race: Race) {
+    if (enrolling.has(race.id)) return;
+
+    setEnrolling((prev) => new Set(prev).add(race.id));
+    patchRace(race.id, { enrolled: false, distance: null });
+
+    try {
+      const res = await fetch(`/api/client/races/${race.id}/enroll`, { method: "DELETE" });
+      if (res.status === 401) {
+        router.push("/");
+        return;
+      }
+      if (!res.ok && res.status !== 204) throw new Error("Error al desinscribirse");
+    } catch {
+      patchRace(race.id, { enrolled: true, distance: race.distance });
+      toast.error("No pudimos darte de baja. Probá de nuevo.");
     } finally {
       setEnrolling((prev) => {
         const next = new Set(prev);
@@ -142,7 +202,7 @@ export function RacesSection() {
                       size="sm"
                       variant={race.enrolled ? "outline" : "default"}
                       disabled={busy}
-                      onClick={() => toggleEnroll(race)}
+                      onClick={() => (race.enrolled ? unenroll(race) : openDialog(race, "enroll"))}
                       className={`min-w-[110px] h-8 text-xs transition-colors ${
                         race.enrolled
                           ? "border-red-600/50 text-red-500 hover:bg-red-600/10 hover:text-red-400"
@@ -159,11 +219,81 @@ export function RacesSection() {
                     </Button>
                   </div>
                 </div>
+
+                {race.enrolled && (
+                  <button
+                    type="button"
+                    onClick={() => openDialog(race, "edit")}
+                    className="w-full flex items-center gap-2 border-t border-red-600/20 px-4 py-2.5 text-left transition-colors hover:bg-red-600/10"
+                  >
+                    <Route className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                    {race.distance ? (
+                      <span className="text-xs text-white truncate">
+                        Corrés <span className="font-semibold">{race.distance}</span>
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground truncate">
+                        Agregá qué distancia vas a correr
+                      </span>
+                    )}
+                    <Pencil className="w-3 h-3 ml-auto shrink-0 text-muted-foreground" />
+                  </button>
+                )}
               </div>
             );
           })}
         </div>
       )}
+
+      <Dialog open={!!dialogRace} onOpenChange={(open) => !open && !saving && closeDialog()}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogMode === "enroll" ? `Inscribirte a ${dialogRace?.name}` : dialogRace?.name}
+            </DialogTitle>
+            {dialogRace && (
+              <DialogDescription>
+                {format(parseISO(dialogRace.date), "d 'de' MMMM yyyy", { locale: es })}
+                {dialogRace.location && ` · ${dialogRace.location}`}
+              </DialogDescription>
+            )}
+          </DialogHeader>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              submitDistance();
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <Label htmlFor="race-distance">¿Qué distancia vas a correr?</Label>
+              <Input
+                id="race-distance"
+                value={distanceInput}
+                onChange={(e) => setDistanceInput(e.target.value)}
+                maxLength={DISTANCE_MAX}
+                placeholder="42k"
+                autoFocus
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Escribila como quieras. Podés dejarlo vacío y cargarla después.
+              </p>
+            </div>
+
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button type="button" variant="outline" onClick={closeDialog} disabled={saving}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving} className="bg-red-600 hover:bg-red-700 text-white border-0">
+                {saving && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
+                {dialogMode === "enroll" ? "Confirmar" : "Guardar"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

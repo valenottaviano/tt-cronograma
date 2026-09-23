@@ -39,6 +39,20 @@ export class ApiError extends Error {
   }
 }
 
+async function patch<T>(path: string, body: unknown, token: string): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(json.error ?? "Error inesperado", res.status);
+  return json.data ?? json;
+}
+
 async function get<T>(path: string, token: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -244,6 +258,12 @@ export interface Race {
   location: string | null;
   description: string | null;
   enrolled: boolean;
+  /**
+   * Distancia que el atleta dijo que va a correr, como la escribió ("42k",
+   * "la corta"). Texto libre: las carreras publican sus distancias como quieren.
+   * null si no está inscripto o si todavía no la cargó.
+   */
+  distance: string | null;
 }
 
 export function getRaces(token: string) {
@@ -298,8 +318,12 @@ export function reportPayment(input: ReportPaymentInput, token: string) {
   return post<Payment>("/api/v1/athlete/payments", input, token);
 }
 
-export function enrollRace(raceId: string, token: string) {
-  return post<unknown>(`/api/v1/athlete/races/${raceId}/enroll`, {}, token);
+export function enrollRace(raceId: string, token: string, distance?: string | null) {
+  return post<unknown>(`/api/v1/athlete/races/${raceId}/enroll`, { distance: distance ?? null }, token);
+}
+
+export function updateRaceDistance(raceId: string, distance: string | null, token: string) {
+  return patch<unknown>(`/api/v1/athlete/races/${raceId}/enroll`, { distance }, token);
 }
 
 export function unenrollRace(raceId: string, token: string) {
