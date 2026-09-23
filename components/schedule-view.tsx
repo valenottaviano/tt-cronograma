@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Schedule, Day } from "@/lib/coachApi";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
@@ -418,7 +419,17 @@ function gpxProxyUrl(url: string) {
 async function downloadGpxBlob(proxyUrl: string) {
   try {
     const res = await fetch(proxyUrl);
-    if (!res.ok) return;
+    // Una descarga que falla en silencio se vive como un botón roto: el atleta
+    // toca, no pasa nada, y no hay forma de saber que el servidor dijo que no.
+    if (!res.ok) {
+      toast.error(
+        res.status === 401
+          ? "Tu sesión venció. Volvé a entrar para descargar el recorrido."
+          : "No pudimos descargar el recorrido. Probá de nuevo en un rato."
+      );
+      console.error("GPX download failed", res.status, proxyUrl);
+      return;
+    }
     const cd = res.headers.get("content-disposition") ?? "";
     const match = cd.match(/filename[^;=\n]*=["']?([^"'\n;]+)["']?/);
     const filename = match ? match[1].trim() : "track.gpx";
@@ -432,6 +443,7 @@ async function downloadGpxBlob(proxyUrl: string) {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (err) {
+    toast.error("No pudimos descargar el recorrido. Revisá tu conexión.");
     console.error("GPX download failed", err);
   }
 }
