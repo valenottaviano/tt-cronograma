@@ -32,9 +32,9 @@ interface Plan {
 }
 
 const PLANS: Plan[] = [
-  { id: "trail", label: "Trail", amount: 44000 },
-  { id: "running", label: "Running", amount: 33000 },
-  { id: "distancia", label: "A distancia (otras provincias)", amount: 33000 },
+  { id: "trail", label: "Trail", amount: 49000 },
+  { id: "running", label: "Running", amount: 37000 },
+  { id: "distancia", label: "A distancia (otras provincias)", amount: 37000 },
 ];
 
 const fmt = (n: number) =>
