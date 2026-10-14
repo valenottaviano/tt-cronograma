@@ -330,6 +330,48 @@ export function unenrollRace(raceId: string, token: string) {
   return del(`/api/v1/athlete/races/${raceId}/enroll`, token);
 }
 
+// ─── Lesiones, vacaciones y viajes ───────────────────────────────────────────
+// El atleta avisa con opciones cerradas (tipo + duración de una lista) y el
+// coach lo ve en el inicio del panel. Ver roberto-parodi/src/lib/absences.ts.
+
+export type AbsenceType = "INJURY" | "VACATION" | "TRAVEL";
+
+/** Las mismas que acepta la API del panel. 30 es el tope: si sigue, se avisa de nuevo. */
+export const ABSENCE_DURATIONS = [7, 10, 15, 30] as const;
+
+export interface Absence {
+  id: string;
+  type: AbsenceType;
+  /** La nota del atleta, o el nombre del tipo si no escribió nada. */
+  description: string;
+  /** Medianoche UTC del primer día. */
+  startDate: string;
+  /** Medianoche UTC del día en que vuelve (el aviso cubre hasta el día anterior). */
+  endDate: string;
+  createdAt: string;
+}
+
+export interface CreateAbsenceInput {
+  type: AbsenceType;
+  /** YYYY-MM-DD */
+  startDate: string;
+  days: number;
+  note?: string | null;
+}
+
+export function getAbsences(token: string) {
+  return get<Absence[]>("/api/v1/athlete/absences", token);
+}
+
+export function createAbsence(input: CreateAbsenceInput, token: string) {
+  return post<Absence>("/api/v1/athlete/absences", input, token);
+}
+
+/** «Ya estoy bien» / «volví antes». Si todavía no empezó, el panel lo borra. */
+export function endAbsence(id: string, token: string) {
+  return del(`/api/v1/athlete/absences/${id}`, token);
+}
+
 // ─── Solicitudes de ingreso ──────────────────────────────────────────────────
 
 /**

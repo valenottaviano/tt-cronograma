@@ -32,6 +32,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { RacesSection } from "@/components/races-section";
+import { AbsencesSheetButton } from "@/components/absences-section";
 import { PaymentReminder } from "@/components/payment-reminder";
 import { format, addDays, parseISO, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
@@ -193,6 +194,7 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }
               <RacesSection />
             </SheetContent>
           </Sheet>
+          <AbsencesSheetButton className="min-h-[44px]" />
           <Button variant="outline" onClick={() => router.push("/videos")} className="gap-2 min-h-[44px]">
             <Play className="w-4 h-4" /> Videos
           </Button>
@@ -290,6 +292,7 @@ export function ScheduleView({ schedules, athleteName, dni, avatarKey, payment }
               <RacesSection />
             </SheetContent>
           </Sheet>
+          <AbsencesSheetButton className="w-full h-10 font-semibold" />
           <Button
             variant="outline"
             className="w-full h-10 font-semibold gap-2"
