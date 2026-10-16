@@ -16,7 +16,7 @@ import { MapPin, Calendar as CalendarIcon, ArrowRight } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { motion } from "framer-motion";
 
-import { Race } from "@/lib/data";
+import { Race, matchesProvinceFilter } from "@/lib/data";
 import { RaceFilters } from "@/components/race-filters";
 import { Countdown } from "@/components/countdown";
 import { Badge } from "@/components/ui/badge";
@@ -55,9 +55,7 @@ export function RaceList({ races }: RaceListProps) {
       return false;
     }
 
-    const matchesProvince = filters.province
-      ? race.province === filters.province
-      : true;
+    const matchesProvince = matchesProvinceFilter(race.province, filters.province);
     const matchesType = filters.type ? race.type === filters.type : true;
 
     let matchesDate = true;

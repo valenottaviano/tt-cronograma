@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { provinces, RaceType } from "@/lib/data";
+import { provinces, ABROAD, RaceType } from "@/lib/data";
 
 interface RaceFiltersProps {
   filters: {
@@ -78,6 +78,7 @@ export function RaceFilters({ filters, setFilters }: RaceFiltersProps) {
               {province}
             </SelectItem>
           ))}
+          <SelectItem value={ABROAD}>Exterior</SelectItem>
         </SelectContent>
       </Select>
 

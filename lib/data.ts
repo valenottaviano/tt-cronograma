@@ -87,6 +87,29 @@ export const provinces = [
   "Tucumán",
 ];
 
+/** Valor del filtro para las carreras fuera de Argentina ("EEUU", "Brasil"). */
+export const ABROAD = "__exterior";
+
+/** Sin tildes ni mayúsculas: el panel guardó "JuJuy" y "Tucuman" antes de tener lista cerrada. */
+export function normalizeProvince(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const normalizedProvinces = new Set(provinces.map(normalizeProvince));
+
+/** ¿La carrera entra en el filtro de provincia elegido? */
+export function matchesProvinceFilter(raceProvince: string, filter: string): boolean {
+  if (!filter) return true;
+  const n = normalizeProvince(raceProvince ?? "");
+  if (filter === ABROAD) return n !== "" && !normalizedProvinces.has(n);
+  return n === normalizeProvince(filter);
+}
+
 export const races: Race[] = [
   {
     id: "1",
