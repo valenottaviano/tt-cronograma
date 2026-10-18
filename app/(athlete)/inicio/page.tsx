@@ -8,7 +8,7 @@ import { MobileDayCard } from '@/components/schedule-view';
 import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, type AbsenceType } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
 import {
-  dayOn, formatKm, isoWeekOf, isTrainingDay, parseLocalDate, scheduleTotalDays, sessionTitle, summarize,
+  dayOn, isoWeekOf, isTrainingDay, parseLocalDate, scheduleTotalDays, sessionTitle, summarize,
   todayInArgentina,
 } from '@/lib/athlete-days';
 import { cn } from '@/lib/utils';
@@ -182,7 +182,7 @@ export default async function InicioPage() {
           </div>
           <div className="grid grid-cols-3 divide-x divide-border text-center">
             <Stat value={String(weekSummary.sessions)} label="sesiones" />
-            <Stat value={formatKm(weekSummary.km)} label="km" />
+            <Stat value={String(weekSummary.restDays)} label="descansos" />
             <Stat value={String(remaining.sessions)} label="te quedan" />
           </div>
         </div>
@@ -229,7 +229,7 @@ export default async function InicioPage() {
         <SectionTitle title={cap(format(today, 'MMMM', { locale: es }))} />
         <div className="grid grid-cols-2 gap-3">
           <StatCard value={String(monthSummary.sessions)} label="sesiones planificadas" />
-          <StatCard value={formatKm(monthSummary.km)} label="km planificados" />
+          <StatCard value={String(monthSummary.restDays)} label="días de descanso" />
         </div>
       </section>
     </main>

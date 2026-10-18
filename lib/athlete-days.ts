@@ -6,6 +6,8 @@ import type { Day, Schedule } from '@/lib/coachApi';
  * la de Entrenamiento: qué toca un día, y cuánto suma una semana o un mes.
  *
  * Por ahora es todo lo PLANIFICADO: la app no registra lo que el atleta hizo.
+ * Tampoco suma km: muchas variantes no los tienen cargados (y el gimnasio no
+ * tiene), así que un total semanal saldría incompleto sin que se note.
  */
 
 /** Cualquier `startDate` se toma como medianoche local, venga con la zona que venga. */
@@ -36,13 +38,6 @@ export function sessionTitle(day: Day | undefined): string {
   return names.length > 0 ? names.join(' + ') : '—';
 }
 
-/** Km de la sesión: el principal más los adicionales. Los opcionales no suman. */
-export function sessionKm(day: Day | undefined): number {
-  if (!day || day.isRest) return 0;
-  return [day.variant?.km, ...dayExtras(day).map((e) => e.variant?.km)]
-    .reduce<number>((sum, km) => sum + (km ?? 0), 0);
-}
-
 export function isTrainingDay(day: Day | undefined): day is Day {
   return !!day && !day.isRest && !!day.workout;
 }
@@ -66,29 +61,24 @@ export function dayOn(schedules: Schedule[], date: Date): Day | undefined {
 export interface PlannedSummary {
   /** Días con entrenamiento. */
   sessions: number;
-  km: number;
+  /** Días de descanso dentro de lo planificado. */
+  restDays: number;
   /** Días cubiertos por alguna planilla. */
   plannedDays: number;
 }
 
 export function summarize(schedules: Schedule[], from: Date, to: Date): PlannedSummary {
-  const summary: PlannedSummary = { sessions: 0, km: 0, plannedDays: 0 };
+  const summary: PlannedSummary = { sessions: 0, restDays: 0, plannedDays: 0 };
   for (let d = from; d <= to; d = addDays(d, 1)) {
     const day = dayOn(schedules, d);
     if (!day) continue;
     summary.plannedDays += 1;
-    if (isTrainingDay(day)) {
-      summary.sessions += 1;
-      summary.km += sessionKm(day);
-    }
+    if (day.isRest) summary.restDays += 1;
+    else if (isTrainingDay(day)) summary.sessions += 1;
   }
   return summary;
 }
 
 export function isoWeekOf(date: Date): { start: Date; end: Date } {
   return { start: startOfISOWeek(date), end: endOfISOWeek(date) };
-}
-
-export function formatKm(km: number): string {
-  return km % 1 === 0 ? String(km) : km.toFixed(1).replace('.', ',');
 }
