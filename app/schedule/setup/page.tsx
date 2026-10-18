@@ -119,7 +119,7 @@ function SetupContent() {
   }
 
   function handleFinish() {
-    router.push(`/schedule/${createdDni}`);
+    router.push("/inicio");
   }
 
   return (

@@ -264,14 +264,16 @@ export function AbsencesSection() {
 }
 
 /** El botón de la planilla que abre la sección. Mismo patrón que «Mis Carreras». */
-export function AbsencesSheetButton({ className }: { className?: string }) {
+export function AbsencesSheetButton({ className, trigger }: { className?: string; trigger?: React.ReactNode }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className={`gap-2 ${className ?? ""}`}>
-          <Bandage className="w-4 h-4" />
-          Lesión, vacaciones o viaje
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" className={`gap-2 ${className ?? ""}`}>
+            <Bandage className="w-4 h-4" />
+            Lesión, vacaciones o viaje
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
         <SheetHeader className="mb-4">

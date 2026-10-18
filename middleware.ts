@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { APP_ROUTES } from '@/lib/app-routes';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,9 +21,19 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // La app del atleta: sin cookie, ni siquiera se renderiza. El layout igual valida la sesión.
+  if (APP_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`))) {
+    if (!request.cookies.get('athlete_session')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/schedule/:path*'],
+  matcher: [
+    '/admin/:path*', '/schedule/:path*',
+    '/inicio', '/entrenamiento', '/mis-carreras', '/perfil', '/videos',
+  ],
 };

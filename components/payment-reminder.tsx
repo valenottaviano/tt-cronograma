@@ -49,11 +49,13 @@ interface Props {
   month: number;
   monthLabel: string;
   paid?: boolean;
+  /** Reemplaza el botón redondo del encabezado (ej. una fila del menú de Perfil). */
+  trigger?: React.ReactNode;
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export function PaymentReminder({ year, month, monthLabel, paid = false }: Props) {
+export function PaymentReminder({ year, month, monthLabel, paid = false, trigger }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [planId, setPlanId] = useState<string>("");
@@ -164,7 +166,7 @@ export function PaymentReminder({ year, month, monthLabel, paid = false }: Props
   return (
     <Dialog open={open} onOpenChange={(v) => !submitting && setOpen(v)}>
       <DialogTrigger asChild>
-        {paid ? (
+        {trigger ?? (paid ? (
           <button
             type="button"
             aria-label={`Cuota de ${monthLabel} al día — notificar otro mes`}
@@ -184,7 +186,7 @@ export function PaymentReminder({ year, month, monthLabel, paid = false }: Props
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
             </span>
           </button>
-        )}
+        ))}
       </DialogTrigger>
       <DialogContent className="border-red-600/30">
         <DialogHeader>

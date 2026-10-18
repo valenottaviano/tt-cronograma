@@ -43,7 +43,7 @@ export default async function FaqArticlePage({ params, searchParams }: Props) {
   // Se arrastra el origen para que "Todas las preguntas" devuelva al listado
   // conservando de dónde venía la persona.
   const { from } = await searchParams;
-  const volverAlListado = from === "planilla" && isAthlete ? "/faq?from=planilla" : "/faq";
+  const volverAlListado = (from === "app" || from === "planilla") && isAthlete ? "/faq?from=app" : "/faq";
 
   // El filtrado también se aplica acá, no sólo en el listado: si no, bastaría
   // con adivinar la URL para leer un artículo interno.

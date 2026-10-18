@@ -29,7 +29,7 @@ export default async function VideosPage() {
         {/* Header */}
         <div className="space-y-4">
           <Link
-            href={`/schedule/${session.dni}`}
+            href="/perfil"
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white/70 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />

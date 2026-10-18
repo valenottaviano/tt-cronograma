@@ -35,11 +35,12 @@ export default async function FaqPage({ searchParams }: Props) {
   // llegado desde la planilla: se puede estar navegando el sitio público con la
   // sesión abierta, y ahí "volver" tiene que devolver al inicio.
   const { from } = await searchParams;
-  const desdeLaPlanilla = from === "planilla" && isAthlete;
-  const volverA = desdeLaPlanilla ? `/schedule/${session.dni}` : "/";
-  const volverLabel = desdeLaPlanilla ? "Volver a mi planilla" : "Volver al inicio";
+  // "planilla" es el valor viejo: puede venir de un enlace guardado.
+  const desdeLaApp = (from === "app" || from === "planilla") && isAthlete;
+  const volverA = desdeLaApp ? "/perfil" : "/";
+  const volverLabel = desdeLaApp ? "Volver a la app" : "Volver al inicio";
   // El origen se propaga al artículo para que su "volver" también sea correcto.
-  const query = desdeLaPlanilla ? "?from=planilla" : "";
+  const query = desdeLaApp ? "?from=app" : "";
 
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 relative overflow-hidden">

@@ -1,76 +1,9 @@
 import { redirect } from "next/navigation";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { getAthleteSession } from "@/lib/session";
-import { getSchedules, getMe, getMonthStatus, Schedule, ApiError } from "@/lib/coachApi";
-import { ScheduleView } from "@/components/schedule-view";
-import { AutoRefresh } from "@/components/auto-refresh";
 
-interface Props {
-  params: Promise<{ dni: string }>;
-}
-
-export default async function SchedulePage({ params }: Props) {
-  const { dni } = await params;
-  const session = await getAthleteSession();
-
-  if (!session.token || session.dni !== dni) {
-    redirect("/");
-  }
-
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1; // 1–12
-
-  let schedules: Schedule[] = [];
-  let avatarKey: string | null = null;
-  // null = no pudimos determinar el estado (no mostramos nada de pagos)
-  let currentMonthPaid: boolean | null = null;
-  let shouldLogout = false;
-  try {
-    const [data, profile, monthStatus] = await Promise.all([
-      getSchedules(session.token),
-      getMe(session.token),
-      // If the payments API isn't reachable, don't block the schedule.
-      getMonthStatus(year, month, session.token).catch(() => null),
-    ]);
-    schedules = data.schedules;
-    avatarKey = profile.avatarKey;
-    currentMonthPaid = monthStatus ? monthStatus.paid : null;
-  } catch (err) {
-    if (err instanceof ApiError && err.status === 401) {
-      // OJO: no llamar session.destroy() acá. Modificar cookies en el render de un
-      // Server Component lanza "Cookies can only be modified in a Server Action or
-      // Route Handler" y devuelve 500. La cookie se limpia en la route handler
-      // /api/client/auth/logout (GET), a la que redirigimos abajo.
-      shouldLogout = true;
-    }
-    // Other errors (5xx, network): show empty state
-  }
-
-  // redirect() must be called outside try/catch (Next.js throws NEXT_REDIRECT internally)
-  if (shouldLogout) {
-    // Redirige a la route handler que limpia la sesión (JWT vencido/rotado) y
-    // manda al home a re-loguearse. Limpiar la cookie sólo es válido ahí, no acá.
-    redirect("/api/client/auth/logout");
-  }
-
-  const monthLabel = format(now, "MMMM yyyy", { locale: es });
-
-  return (
-    <>
-      <AutoRefresh />
-      <ScheduleView
-        schedules={schedules}
-        athleteName={session.name}
-        dni={dni}
-        avatarKey={avatarKey}
-        payment={
-          currentMonthPaid === null
-            ? null
-            : { year, month, monthLabel, paid: currentMonthPaid }
-        }
-      />
-    </>
-  );
+/**
+ * La planilla vieja. Ahora es la pestaña «Entrenamiento» de la app; esta ruta
+ * queda para no romper los accesos guardados y las PWA instaladas con esta URL.
+ */
+export default function SchedulePage() {
+  redirect("/entrenamiento");
 }

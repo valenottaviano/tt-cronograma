@@ -9,9 +9,15 @@ import { Calendar, Store, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { getNews } from "@/lib/google-sheets";
 import { NewsNotifier } from "@/components/news-notifier";
+import { redirect } from "next/navigation";
+import { getAthleteSession } from "@/lib/session";
 
 
 export default async function Home() {
+  // El atleta con sesión no ve la web pública: entra directo a la app.
+  const session = await getAthleteSession();
+  if (session.token) redirect("/inicio");
+
   // const news = await getNews();
 
   return (

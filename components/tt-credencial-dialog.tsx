@@ -22,8 +22,15 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCode from "react-qr-code";
 
-export function TTCCredencialDialog() {
-  const [dni, setDni] = useState("");
+interface TTCCredencialDialogProps {
+  /** Reemplaza el botón grande de la web pública. */
+  trigger?: React.ReactNode;
+  /** El DNI del atleta con sesión: no hace falta escribirlo. */
+  dni?: string;
+}
+
+export function TTCCredencialDialog({ trigger, dni: sessionDni }: TTCCredencialDialogProps = {}) {
+  const [dni, setDni] = useState(sessionDni ?? "");
   const [loading, setLoading] = useState(false);
   const [person, setPerson] = useState<{ name: string; isActive: boolean; dni: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,10 +56,10 @@ export function TTCCredencialDialog() {
 
     // Check for saved DNI on mount
     const savedDni = localStorage.getItem("tt_dni");
-    if (savedDni) {
+    if (savedDni && !sessionDni) {
       setDni(savedDni);
     }
-  }, []);
+  }, [sessionDni]);
 
   // Auto-validate when dialog opens if we have a DNI and no person yet
   useEffect(() => {
@@ -125,13 +132,15 @@ export function TTCCredencialDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-600 px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
-        >
-          <CreditCard className="mr-2 h-5 w-5" />
-          Credencial TT
-        </Button>
+        {trigger ?? (
+          <Button
+            variant="outline"
+            className="bg-neutral-800 hover:bg-neutral-700 text-white border-neutral-600 px-8 py-6 rounded-full text-lg font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg min-w-[200px]"
+          >
+            <CreditCard className="mr-2 h-5 w-5" />
+            Credencial TT
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-white overflow-hidden p-0 shadow-2xl rounded-3xl">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/50 to-black/50 pointer-events-none" />

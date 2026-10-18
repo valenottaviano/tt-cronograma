@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PWAInstallToast } from "@/components/pwa-install-toast";
 import { usePathname } from "next/navigation";
+import { isAppRoute } from "@/lib/app-routes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +28,8 @@ export default function RootLayout({
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith('/admin');
   const isScheduleRoute = pathname?.startsWith('/schedule');
-  const isVideosRoute = pathname?.startsWith('/videos');
+  // La app del atleta tiene su propia barra de pestañas: sin la navbar ni el footer de la web.
+  const isAthleteApp = isAppRoute(pathname);
 
   // Dynamic manifest and app name based on route
   const manifestUrl = isAdminRoute ? '/manifest-admin.json' : '/manifest.json';
@@ -57,11 +59,11 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Navbar />}
+            {!isAdminRoute && !isScheduleRoute && !isAthleteApp && <Navbar />}
             {children}
-            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <Footer />}
+            {!isAdminRoute && !isScheduleRoute && !isAthleteApp && <Footer />}
             <Toaster />
-            {!isAdminRoute && !isScheduleRoute && !isVideosRoute && <PWAInstallToast />}
+            {!isAdminRoute && !isScheduleRoute && !isAthleteApp && <PWAInstallToast />}
         </ThemeProvider>
       </body>
     </html>

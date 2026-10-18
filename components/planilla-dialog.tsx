@@ -39,7 +39,7 @@ export function PlanillaDialog() {
       const meRes = await fetch("/api/client/auth/me");
       if (meRes.ok) {
         const json = await meRes.json();
-        router.push(`/schedule/${json.data.dni}`);
+        router.push("/inicio");
         return;
       }
 
@@ -127,7 +127,7 @@ export function PlanillaDialog() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
       setOpen(false);
-      router.push(`/schedule/${json.data.dni}`);
+      router.push("/inicio");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
     } finally {

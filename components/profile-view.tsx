@@ -1,22 +1,23 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { AthleteProfile } from "@/lib/coachApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Camera, Check, Loader2, User } from "lucide-react";
+import { Camera, Check, Loader2, User } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { AppHeader } from "@/components/app/app-header";
 
 interface Props {
   initialProfile: AthleteProfile | null;
   dni: string;
+  /** El menú de la pestaña Perfil (credencial, pagos, avisos…), debajo de la foto. */
+  children?: React.ReactNode;
 }
 
-export function ProfileView({ initialProfile, dni }: Props) {
-  const router = useRouter();
+export function ProfileView({ initialProfile, dni, children }: Props) {
   const [profile, setProfile] = useState(initialProfile);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -120,18 +121,10 @@ export function ProfileView({ initialProfile, dni }: Props) {
   const avatarSrc = avatarPreview ?? (profile?.avatarKey ? "/api/client/auth/avatar" : null);
 
   return (
-    <div className="min-h-dvh bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-10">
-        <div className="px-4 h-14 flex items-center gap-3 max-w-lg mx-auto w-full">
-          <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => router.push(`/schedule/${dni}`)}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <h1 className="font-semibold text-sm">Mi perfil</h1>
-        </div>
-      </header>
+    <>
+      <AppHeader title="Perfil" />
 
-      <main className="px-4 py-6 max-w-lg mx-auto space-y-8 pb-16">
+      <main className="px-4 py-6 max-w-lg mx-auto space-y-8">
         {/* Avatar */}
         <div className="flex flex-col items-center gap-3">
           <button
@@ -157,6 +150,8 @@ export function ProfileView({ initialProfile, dni }: Props) {
             <p className="text-sm text-muted-foreground">DNI {profile?.dni ?? dni}</p>
           </div>
         </div>
+
+        {children}
 
         {/* Contact info */}
         <section className="space-y-4">
@@ -258,7 +253,7 @@ export function ProfileView({ initialProfile, dni }: Props) {
           </form>
         </section>
       </main>
-    </div>
+    </>
   );
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * Error boundary de la planilla, con auto-recuperación ante caché vieja.
+ * Error boundary de la app del atleta, con auto-recuperación ante caché vieja.
  *
  * El caso frecuente tras un deploy: el PWA (Serwist) o el navegador tienen
  * cacheado un bundle de una versión anterior, que referencia chunks JS con
@@ -77,7 +77,7 @@ export default function ScheduleError({
     return (
       <div className="min-h-dvh bg-background flex flex-col items-center justify-center gap-4 px-4">
         <img src="/logo-tt.png" alt="TT" className="h-12 w-auto" />
-        <p className="text-muted-foreground text-center text-sm">Cargando tu planilla…</p>
+        <p className="text-muted-foreground text-center text-sm">Cargando…</p>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function ScheduleError({
     <div className="min-h-dvh bg-background flex flex-col items-center justify-center gap-4 px-4">
       <img src="/logo-tt.png" alt="TT" className="h-12 w-auto" />
       <p className="text-muted-foreground text-center text-sm">
-        Ocurrió un error al cargar la planilla.
+        Ocurrió un error al cargar la app.
       </p>
       <div className="flex flex-col items-center gap-3">
         <button
