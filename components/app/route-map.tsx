@@ -12,7 +12,7 @@ import { parseGpxText, type TrackStats } from '@/lib/gpx';
 const SATELLITE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 const LABELS_URL =
   'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}';
-const ATTRIBUTION = 'Imágenes © Esri, Maxar, Earthstar Geographics';
+const ATTRIBUTION = '© Esri, Maxar';
 
 const ROUTE_COLOR = '#ED241F';
 
@@ -42,6 +42,8 @@ export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
           scrollWheelZoom: false,
           attributionControl: true,
         });
+        // Sin el «Leaflet» con la bandera: la atribución que piden las imágenes es la de Esri.
+        map.attributionControl.setPrefix(false);
         L.tileLayer(SATELLITE_URL, { maxZoom: 19, attribution: ATTRIBUTION }).addTo(map);
         L.tileLayer(LABELS_URL, { maxZoom: 19, opacity: 0.8 }).addTo(map);
 
