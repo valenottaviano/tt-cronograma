@@ -4,7 +4,7 @@ import { addDays, format, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ArrowLeft, ChevronLeft, ChevronRight, Moon, Plus } from 'lucide-react';
 import { AttachmentLinks, CoachNote } from '@/components/schedule-view';
-import { TrackPreview } from '@/components/tracks/track-preview';
+import { RouteMap } from '@/components/app/route-map';
 import { gpxProxyUrl } from '@/lib/gpx-proxy-url';
 import { getSchedules, type OptionalDay, type Variant, type Workout } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
@@ -165,7 +165,7 @@ function Exercise({
       )}
       {note && <CoachNote note={note} />}
       {variantFileUrl && (
-        <TrackPreview fileUrl={gpxProxyUrl(variantFileUrl)} variant="card" showMeta className="rounded-2xl" />
+        <RouteMap gpxUrl={gpxProxyUrl(variantFileUrl)} />
       )}
       <AttachmentLinks
         fileUrl={fileUrl}
