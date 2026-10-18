@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { PWAInstallToast } from "@/components/pwa-install-toast";
 import { usePathname } from "next/navigation";
 import { isAppRoute } from "@/lib/app-routes";
+import { BackToApp } from "@/components/back-to-app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,6 +64,7 @@ export default function RootLayout({
             {children}
             {!isAdminRoute && !isScheduleRoute && !isAthleteApp && <Footer />}
             <Toaster />
+            <BackToApp />
             {!isAdminRoute && !isScheduleRoute && !isAthleteApp && <PWAInstallToast />}
         </ThemeProvider>
       </body>

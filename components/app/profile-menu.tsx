@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { AbsencesSheetButton } from '@/components/absences-section';
+import { forgetAppPath } from '@/components/back-to-app';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { cn } from '@/lib/utils';
@@ -69,6 +70,7 @@ export function ProfileMenu({ dni, payment }: Props) {
 
   async function handleLogout() {
     await fetch('/api/client/auth/logout', { method: 'POST' });
+    forgetAppPath();
     router.push('/');
     router.refresh();
   }

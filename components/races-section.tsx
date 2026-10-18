@@ -20,6 +20,20 @@ import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarDays, Loader2, MapPin, Pencil, Route, Search } from "lucide-react";
 
+/** Hoy en Argentina como `YYYY-MM-DD`, para comparar con la fecha de la carrera. */
+function todayYmd(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(new Date());
+}
+
+/**
+ * La fecha de la carrera es un día, no un instante: se toma la parte `YYYY-MM-DD`.
+ * Con `parseISO` del valor entero, una medianoche UTC se mostraba como el día
+ * anterior en Argentina.
+ */
+function raceDate(iso: string): Date {
+  return parseISO(iso.slice(0, 10));
+}
+
 /** Tope del campo en la API del panel. Acá sólo evita que se pase. */
 const DISTANCE_MAX = 60;
 
@@ -52,15 +66,23 @@ export function RacesSection() {
       .finally(() => setLoading(false));
   }, [router]);
 
+  // Sólo las que no pasaron: inscribirse a una carrera de junio en octubre no tiene sentido,
+  // y con el catálogo entero las próximas quedaban al fondo de la lista.
   const filtered = useMemo(() => {
+    const today = todayYmd();
     const q = query.trim().toLowerCase();
-    if (!q) return races;
-    return races.filter(
-      (r) =>
-        r.name.toLowerCase().includes(q) ||
-        (r.location ?? "").toLowerCase().includes(q)
-    );
+    return races
+      .filter((r) => r.date.slice(0, 10) >= today)
+      .filter(
+        (r) =>
+          !q ||
+          r.name.toLowerCase().includes(q) ||
+          (r.location ?? "").toLowerCase().includes(q)
+      )
+      .sort((a, b) => a.date.localeCompare(b.date));
   }, [races, query]);
+  const enrolledUpcoming = filtered.filter((r) => r.enrolled);
+  const otherUpcoming = filtered.filter((r) => !r.enrolled);
 
   function openDialog(race: Race, mode: "enroll" | "edit") {
     setDialogRace(race);
@@ -136,8 +158,89 @@ export function RacesSection() {
     }
   }
 
+  function renderRace(race: Race) {
+    const busy = enrolling.has(race.id);
+    const date = raceDate(race.date);
+    return (
+      <div
+        key={race.id}
+        className={`rounded-xl border transition-colors ${
+          race.enrolled
+            ? "border-red-600/40 bg-red-600/5"
+            : "border-border bg-neutral-900"
+        }`}
+      >
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm leading-tight text-white">
+              {race.name}
+            </p>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                <CalendarDays className="w-3 h-3 shrink-0" />
+                {format(date, "d 'de' MMMM yyyy", { locale: es })}
+              </span>
+              {race.location && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="w-3 h-3 shrink-0" />
+                  {race.location}
+                </span>
+              )}
+            </div>
+            {race.description && (
+              <p className="text-xs text-muted-foreground/70 mt-1.5 leading-relaxed">
+                {race.description}
+              </p>
+            )}
+          </div>
+          <div className="shrink-0 px-1">
+            <Button
+              size="sm"
+              variant={race.enrolled ? "outline" : "default"}
+              disabled={busy}
+              onClick={() => (race.enrolled ? unenroll(race) : openDialog(race, "enroll"))}
+              className={`min-w-[110px] h-8 text-xs transition-colors ${
+                race.enrolled
+                  ? "border-red-600/50 text-red-500 hover:bg-red-600/10 hover:text-red-400"
+                  : "bg-red-600 text-white hover:bg-red-700 border-transparent"
+              }`}
+            >
+              {busy ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : race.enrolled ? (
+                "Desinscribirme"
+              ) : (
+                "Inscribirme"
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {race.enrolled && (
+          <button
+            type="button"
+            onClick={() => openDialog(race, "edit")}
+            className="w-full flex items-center gap-2 border-t border-red-600/20 px-4 py-2.5 text-left transition-colors hover:bg-red-600/10"
+          >
+            <Route className="w-3.5 h-3.5 text-red-500 shrink-0" />
+            {race.distance ? (
+              <span className="text-xs text-white truncate">
+                Corrés <span className="font-semibold">{race.distance}</span>
+              </span>
+            ) : (
+              <span className="text-xs text-muted-foreground truncate">
+                Agregá qué distancia vas a correr
+              </span>
+            )}
+            <Pencil className="w-3 h-3 ml-auto shrink-0 text-muted-foreground" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4 px-4 pb-6">
+    <div className="flex flex-col gap-4">
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -157,90 +260,22 @@ export function RacesSection() {
         <p className="text-sm text-destructive text-center py-8">{error}</p>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-8">
-          {query ? "Sin resultados." : "No hay carreras disponibles por ahora."}
+          {query ? "Sin resultados." : "No hay próximas carreras cargadas por ahora."}
         </p>
       ) : (
-        <div className="flex flex-col gap-3">
-          {filtered.map((race) => {
-            const busy = enrolling.has(race.id);
-            const date = parseISO(race.date);
-            return (
-              <div
-                key={race.id}
-                className={`rounded-xl border transition-colors ${
-                  race.enrolled
-                    ? "border-red-600/40 bg-red-600/5"
-                    : "border-border bg-neutral-900"
-                }`}
-              >
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm leading-tight text-white">
-                      {race.name}
-                    </p>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <CalendarDays className="w-3 h-3 shrink-0" />
-                        {format(date, "d 'de' MMMM yyyy", { locale: es })}
-                      </span>
-                      {race.location && (
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <MapPin className="w-3 h-3 shrink-0" />
-                          {race.location}
-                        </span>
-                      )}
-                    </div>
-                    {race.description && (
-                      <p className="text-xs text-muted-foreground/70 mt-1.5 leading-relaxed">
-                        {race.description}
-                      </p>
-                    )}
-                  </div>
-                  <div className="shrink-0 px-1">
-                    <Button
-                      size="sm"
-                      variant={race.enrolled ? "outline" : "default"}
-                      disabled={busy}
-                      onClick={() => (race.enrolled ? unenroll(race) : openDialog(race, "enroll"))}
-                      className={`min-w-[110px] h-8 text-xs transition-colors ${
-                        race.enrolled
-                          ? "border-red-600/50 text-red-500 hover:bg-red-600/10 hover:text-red-400"
-                          : "bg-red-600 text-white hover:bg-red-700 border-transparent"
-                      }`}
-                    >
-                      {busy ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : race.enrolled ? (
-                        "Desinscribirme"
-                      ) : (
-                        "Inscribirme"
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                {race.enrolled && (
-                  <button
-                    type="button"
-                    onClick={() => openDialog(race, "edit")}
-                    className="w-full flex items-center gap-2 border-t border-red-600/20 px-4 py-2.5 text-left transition-colors hover:bg-red-600/10"
-                  >
-                    <Route className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                    {race.distance ? (
-                      <span className="text-xs text-white truncate">
-                        Corrés <span className="font-semibold">{race.distance}</span>
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground truncate">
-                        Agregá qué distancia vas a correr
-                      </span>
-                    )}
-                    <Pencil className="w-3 h-3 ml-auto shrink-0 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
+        <div className="flex flex-col gap-6">
+          {enrolledUpcoming.length > 0 && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-sm font-black uppercase italic tracking-wider">Mis inscripciones</h2>
+              {enrolledUpcoming.map(renderRace)}
+            </section>
+          )}
+          {otherUpcoming.length > 0 && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-sm font-black uppercase italic tracking-wider">Próximas carreras</h2>
+              {otherUpcoming.map(renderRace)}
+            </section>
+          )}
         </div>
       )}
 
@@ -252,7 +287,7 @@ export function RacesSection() {
             </DialogTitle>
             {dialogRace && (
               <DialogDescription>
-                {format(parseISO(dialogRace.date), "d 'de' MMMM yyyy", { locale: es })}
+                {format(raceDate(dialogRace.date), "d 'de' MMMM yyyy", { locale: es })}
                 {dialogRace.location && ` · ${dialogRace.location}`}
               </DialogDescription>
             )}
