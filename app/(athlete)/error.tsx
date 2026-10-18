@@ -35,41 +35,38 @@ async function hardRecover() {
   window.location.reload();
 }
 
-export default function ScheduleError({
+function recentlyTriedToRecover(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return Date.now() - Number(sessionStorage.getItem(RECOVER_KEY) || 0) < RECOVER_WINDOW_MS;
+  } catch {
+    // sessionStorage puede fallar (modo privado, etc.); tratamos como sin intento.
+    return false;
+  }
+}
+
+export default function AthleteAppError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Arranca oculto: si vamos a auto-recuperar, no queremos que el atleta llegue
-  // a ver el cartel de error antes de que dispare la recarga.
-  const [showManual, setShowManual] = useState(false);
+  // Si ya intentamos recuperarnos hace poco y volvió a fallar, el error no es
+  // de caché: no recargamos de nuevo y mostramos la opción manual. Si no, arranca
+  // oculto, para que el atleta no vea el cartel antes de que dispare la recarga.
+  const [showManual] = useState(recentlyTriedToRecover);
 
   useEffect(() => {
     console.error(error);
-
-    let last = 0;
-    try {
-      last = Number(sessionStorage.getItem(RECOVER_KEY) || 0);
-    } catch {
-      // sessionStorage puede fallar (modo privado, etc.); tratamos como sin intento.
-    }
-
-    // Si ya intentamos recuperarnos hace poco y volvió a fallar, el error no es
-    // de caché: paramos de recargar y mostramos la opción manual.
-    if (Date.now() - last < RECOVER_WINDOW_MS) {
-      setShowManual(true);
-      return;
-    }
-
+    if (showManual) return;
     try {
       sessionStorage.setItem(RECOVER_KEY, String(Date.now()));
     } catch {
       // ignorar
     }
     void hardRecover();
-  }, [error]);
+  }, [error, showManual]);
 
   if (!showManual) {
     // Estado transitorio mientras se dispara la recarga: pantalla limpia, sin

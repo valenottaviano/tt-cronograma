@@ -9,6 +9,11 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  experimental: {
+    // Volver a una pestaña ya visitada es instantáneo durante 30 s, sin pedirle
+    // todo de nuevo al panel. AutoRefresh y router.refresh() siguen trayendo lo nuevo.
+    staleTimes: { dynamic: 30 },
+  },
   images: {
     remotePatterns: [
       {

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Schedule, Day } from "@/lib/coachApi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,8 @@ interface Props {
 export function ScheduleView({ schedules, athleteName }: Props) {
   const views = buildViews(schedules);
   const [viewIndex, setViewIndex] = useState(() => findCurrentViewIndex(views));
+  // Para qué lado entra la semana nueva: 1 = siguiente (desde la derecha), -1 = anterior.
+  const [direction, setDirection] = useState<1 | -1>(1);
   const exportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -124,6 +127,21 @@ export function ScheduleView({ schedules, athleteName }: Props) {
   }
 
   const safeViewIndex = Math.min(viewIndex, views.length - 1);
+
+  function goToWeek(delta: 1 | -1) {
+    const next = safeViewIndex + delta;
+    if (next < 0 || next > views.length - 1) return;
+    setDirection(delta);
+    setViewIndex(next);
+  }
+
+  /** Deslizar con el dedo cambia de semana, como pasar páginas. */
+  function handleSwipe(_: unknown, info: PanInfo) {
+    const SWIPE_DISTANCE = 70;
+    const SWIPE_VELOCITY = 400;
+    if (info.offset.x < -SWIPE_DISTANCE || info.velocity.x < -SWIPE_VELOCITY) goToWeek(1);
+    else if (info.offset.x > SWIPE_DISTANCE || info.velocity.x > SWIPE_VELOCITY) goToWeek(-1);
+  }
   const view = views[safeViewIndex];
   const { schedule, weekStart, weekEnd, scheduleStart, totalDays } = view;
 
@@ -178,7 +196,7 @@ export function ScheduleView({ schedules, athleteName }: Props) {
               variant="outline"
               size="icon"
               className="h-9 w-9 shrink-0"
-              onClick={() => setViewIndex((i) => i - 1)}
+              onClick={() => goToWeek(-1)}
               disabled={safeViewIndex === 0}
               aria-label="Semana anterior"
             >
@@ -193,7 +211,7 @@ export function ScheduleView({ schedules, athleteName }: Props) {
               variant="outline"
               size="icon"
               className="h-9 w-9 shrink-0"
-              onClick={() => setViewIndex((i) => i + 1)}
+              onClick={() => goToWeek(1)}
               disabled={safeViewIndex === views.length - 1}
               aria-label="Semana siguiente"
             >
@@ -204,28 +222,41 @@ export function ScheduleView({ schedules, athleteName }: Props) {
       </div>
 
       {/* ── Main content ── */}
-      <main className="px-4 py-4 max-w-3xl mx-auto w-full space-y-4">
-        {/* Coach note */}
-        {schedule.coachNoteExternal && (
-          <div className="rounded-xl bg-brand-orange/10 border border-brand-orange/30 px-4 py-3">
-            <p className="text-xs font-semibold text-brand-orange mb-1 uppercase tracking-wide">
-              Mensaje de Rober
-            </p>
-            <p className="text-sm leading-relaxed">{schedule.coachNoteExternal}</p>
-          </div>
-        )}
+      <main className="px-4 py-4 max-w-3xl mx-auto w-full overflow-x-hidden">
+        <motion.div
+          key={safeViewIndex}
+          className="space-y-4"
+          initial={{ opacity: 0, x: direction * 48 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          drag="x"
+          dragDirectionLock
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.18}
+          onDragEnd={handleSwipe}
+        >
+          {/* Coach note */}
+          {schedule.coachNoteExternal && (
+            <div className="rounded-xl bg-brand-orange/10 border border-brand-orange/30 px-4 py-3">
+              <p className="text-xs font-semibold text-brand-orange mb-1 uppercase tracking-wide">
+                Mensaje de Rober
+              </p>
+              <p className="text-sm leading-relaxed">{schedule.coachNoteExternal}</p>
+            </div>
+          )}
 
-        {/* Day cards — single column on all screen sizes */}
-        <div className="flex flex-col gap-2">
-          {Array.from({ length: 7 }, (_, i) => {
-            const date = addDays(weekStart, i);
-            const idx = differenceInCalendarDays(date, scheduleStart);
-            const inSchedule = idx >= 0 && idx < totalDays;
-            return (
-              <MobileDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
-            );
-          })}
-        </div>
+          {/* Day cards — single column on all screen sizes */}
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 7 }, (_, i) => {
+              const date = addDays(weekStart, i);
+              const idx = differenceInCalendarDays(date, scheduleStart);
+              const inSchedule = idx >= 0 && idx < totalDays;
+              return (
+                <MobileDayCard key={i} date={date} day={inSchedule ? dayMap[idx] : undefined} dimmed={!inSchedule} />
+              );
+            })}
+          </div>
+        </motion.div>
       </main>
 
       {/* Off-screen export surface — always mounted for html-to-image capture */}
@@ -673,73 +704,83 @@ export function MobileDayCard({
       </div>
 
       {/* Expandable details */}
-      {hasDetails && open && (
-        <div className="px-4 pb-4 space-y-2 border-t border-border/30">
-          <Link
-            href={`/entrenamiento/${format(date, "yyyy-MM-dd")}`}
-            className="flex items-center justify-end gap-1 pt-3 text-xs font-semibold text-brand-orange"
+      <AnimatePresence initial={false}>
+        {hasDetails && open && (
+          <motion.div
+            key="details"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
           >
-            Ver detalle completo <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-          {day?.workout?.description && (
-            <p className="text-sm text-neutral-200 leading-relaxed pt-3">
-              {day.workout.description}
-            </p>
-          )}
-          {day?.note && <CoachNote note={day.note} />}
-          <AttachmentLinks
-            fileUrl={day?.fileUrl}
-            variantFileUrl={day?.variantFileUrl}
-            workoutLink={day?.workout?.link}
-            variantLink={day?.variant?.link}
-          />
-          {extras.map((extra, i) => (
-            <div key={i} className="pt-3 border-t border-border/40">
-              <div className="flex items-center gap-1.5">
-                <Plus className="w-3.5 h-3.5 text-brand-orange shrink-0" />
-                <p className="text-sm text-white font-semibold">{extra.workout.name}</p>
-              </div>
-              {extra.variant?.notes && (
-                <p className="text-sm text-neutral-300 leading-snug mt-0.5">{extra.variant.notes}</p>
+            <div className="px-4 pb-4 space-y-2 border-t border-border/30">
+              <Link
+                href={`/entrenamiento/${format(date, "yyyy-MM-dd")}`}
+                className="flex items-center justify-end gap-1 pt-3 text-xs font-semibold text-brand-orange"
+              >
+                Ver detalle completo <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+              {day?.workout?.description && (
+                <p className="text-sm text-neutral-200 leading-relaxed pt-3">
+                  {day.workout.description}
+                </p>
               )}
-              {extra.workout.description && (
-                <p className="text-sm text-neutral-200 leading-relaxed mt-1">{extra.workout.description}</p>
-              )}
-              {extra.note && <CoachNote note={extra.note} />}
+              {day?.note && <CoachNote note={day.note} />}
               <AttachmentLinks
-                fileUrl={extra.fileUrl}
-                variantFileUrl={extra.variantFileUrl}
-                workoutLink={extra.workout.link}
-                variantLink={extra.variant?.link}
+                fileUrl={day?.fileUrl}
+                variantFileUrl={day?.variantFileUrl}
+                workoutLink={day?.workout?.link}
+                variantLink={day?.variant?.link}
               />
-            </div>
-          ))}
-          {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
-            <div className="pt-3 border-t border-border/40">
-              <p className="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">Opcionales</p>
-              {day.optionals.filter(o => o.workout).map((opt, i) => (
-                <div key={i} className="mb-3">
-                  <p className="text-sm text-white font-semibold">{opt.workout!.name}</p>
-                  {opt.variant?.notes && (
-                    <p className="text-sm text-neutral-300 leading-snug mt-0.5">{opt.variant.notes}</p>
+              {extras.map((extra, i) => (
+                <div key={i} className="pt-3 border-t border-border/40">
+                  <div className="flex items-center gap-1.5">
+                    <Plus className="w-3.5 h-3.5 text-brand-orange shrink-0" />
+                    <p className="text-sm text-white font-semibold">{extra.workout.name}</p>
+                  </div>
+                  {extra.variant?.notes && (
+                    <p className="text-sm text-neutral-300 leading-snug mt-0.5">{extra.variant.notes}</p>
                   )}
-                  {opt.workout.description && (
-                    <p className="text-sm text-neutral-200 leading-relaxed mt-1">{opt.workout.description}</p>
+                  {extra.workout.description && (
+                    <p className="text-sm text-neutral-200 leading-relaxed mt-1">{extra.workout.description}</p>
                   )}
-                  {opt.note && <CoachNote note={opt.note} />}
+                  {extra.note && <CoachNote note={extra.note} />}
                   <AttachmentLinks
-                    fileUrl={opt.fileUrl}
-                    variantFileUrl={opt.variantFileUrl}
-                    workoutLink={opt.workout.link}
-                    variantLink={opt.variant?.link}
+                    fileUrl={extra.fileUrl}
+                    variantFileUrl={extra.variantFileUrl}
+                    workoutLink={extra.workout.link}
+                    variantLink={extra.variant?.link}
                   />
                 </div>
               ))}
+              {day?.optionals && day.optionals.filter(o => o.workout).length > 0 && (
+                <div className="pt-3 border-t border-border/40">
+                  <p className="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">Opcionales</p>
+                  {day.optionals.filter(o => o.workout).map((opt, i) => (
+                    <div key={i} className="mb-3">
+                      <p className="text-sm text-white font-semibold">{opt.workout!.name}</p>
+                      {opt.variant?.notes && (
+                        <p className="text-sm text-neutral-300 leading-snug mt-0.5">{opt.variant.notes}</p>
+                      )}
+                      {opt.workout.description && (
+                        <p className="text-sm text-neutral-200 leading-relaxed mt-1">{opt.workout.description}</p>
+                      )}
+                      {opt.note && <CoachNote note={opt.note} />}
+                      <AttachmentLinks
+                        fileUrl={opt.fileUrl}
+                        variantFileUrl={opt.variantFileUrl}
+                        workoutLink={opt.workout.link}
+                        variantLink={opt.variant?.link}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-

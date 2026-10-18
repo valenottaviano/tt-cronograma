@@ -82,7 +82,8 @@ export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-neutral-900">
-      <div className="relative h-72 w-full">
+      {/* Arrastrar el mapa no tiene que cambiar de día (el detalle se desliza con el dedo). */}
+      <div className="relative h-72 w-full" onPointerDown={(e) => e.stopPropagation()}>
         {/* z-0: los paneles de Leaflet usan z-index altos y taparían el encabezado fijo. */}
         <div ref={containerRef} className="absolute inset-0 z-0" />
         {status === 'loading' && (

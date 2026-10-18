@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { RaceCardsSkeleton } from "@/components/app/skeletons";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarDays, Loader2, MapPin, Pencil, Route, Search } from "lucide-react";
@@ -151,9 +152,7 @@ export function RacesSection() {
 
       {/* List */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-        </div>
+        <RaceCardsSkeleton />
       ) : error ? (
         <p className="text-sm text-destructive text-center py-8">{error}</p>
       ) : filtered.length === 0 ? (
