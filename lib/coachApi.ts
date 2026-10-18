@@ -134,6 +134,15 @@ export async function loginAthlete(dni: string, password: string): Promise<Login
   return { token: data.token, name: data.athlete.name, dni: data.athlete.dni };
 }
 
+/**
+ * Cambia un token vigente por uno nuevo (dura 400 días). Lo usa
+ * /api/client/auth/refresh para que la sesión no venza mientras se use la app.
+ */
+export async function refreshAthleteToken(token: string): Promise<LoginResult> {
+  const data = await post<V1LoginResponse>("/api/v1/athlete/refresh", {}, token);
+  return { token: data.token, name: data.athlete.name, dni: data.athlete.dni };
+}
+
 export function getSchedules(token: string) {
   return get<{ schedules: Schedule[] }>("/api/v1/athlete/schedules", token);
 }

@@ -1,5 +1,6 @@
 import { AutoRefresh } from '@/components/auto-refresh';
 import { AppMotion } from '@/components/app/app-motion';
+import { SessionKeepAlive } from '@/components/app/session-keep-alive';
 import { TabBar } from '@/components/app/tab-bar';
 import { requireAthlete } from '@/lib/athlete-app';
 
@@ -14,6 +15,7 @@ export default async function AthleteLayout({ children }: { children: React.Reac
     <AppMotion>
       <div className="min-h-dvh bg-background pb-[calc(4rem+env(safe-area-inset-bottom))]">
         <AutoRefresh />
+        <SessionKeepAlive />
         {children}
         <TabBar />
       </div>
