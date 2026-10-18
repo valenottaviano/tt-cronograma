@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { Schedule, Day } from "@/lib/coachApi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import {
   Plus,
 } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
+import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
 import { dayExtras, parseLocalDate, scheduleTotalDays, sessionTitle } from "@/lib/athlete-days";
 import { format, addDays, differenceInCalendarDays, startOfISOWeek, endOfISOWeek, addWeeks } from "date-fns";
 import { es } from "date-fns/locale";
@@ -252,10 +254,6 @@ interface AttachmentProps {
   variantLink?: string | null;
 }
 
-function gpxProxyUrl(url: string) {
-  return `/api/client/gpx-download?url=${encodeURIComponent(url)}`;
-}
-
 // Safari iOS ignores Content-Disposition: attachment and navigates away when clicking
 // a plain anchor. Fetching as a blob and using createObjectURL keeps the user on the page.
 async function downloadGpxBlob(proxyUrl: string) {
@@ -292,7 +290,7 @@ async function downloadGpxBlob(proxyUrl: string) {
 
 // Full pill buttons — used in the mobile card
 /** Comentario que el coach dejó sobre un ejercicio puntual. */
-function CoachNote({ note }: { note: string }) {
+export function CoachNote({ note }: { note: string }) {
   return (
     <div className="flex items-start gap-2 rounded-lg border border-blue-500/30 bg-blue-500/10 px-3 py-2 mt-2">
       <MessageSquare className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
@@ -304,7 +302,7 @@ function CoachNote({ note }: { note: string }) {
   );
 }
 
-function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
+export function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
   const downloads = [
     fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
     variantFileUrl && { proxyUrl: gpxProxyUrl(variantFileUrl), icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
@@ -583,10 +581,23 @@ function WeekExportView({ exportRef, weekStart, weekEnd, scheduleStart, totalDay
 
 // ── Day card ──────────────────────────────────────────────────────────────────
 
-export function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | undefined; dimmed?: boolean }) {
+export function MobileDayCard({
+  date: dateProp, day, dimmed, defaultOpen,
+}: {
+  /**
+   * Desde un Server Component, pasar `YYYY-MM-DD`: un `Date` armado en el
+   * servidor (UTC en Vercel) llega al navegador de Argentina como el día anterior.
+   */
+  date: Date | string;
+  day: Day | undefined;
+  dimmed?: boolean;
+  /** Arranca desplegado aunque no sea hoy. */
+  defaultOpen?: boolean;
+}) {
+  const date = typeof dateProp === "string" ? parseLocalDate(dateProp) : dateProp;
   const isRest = !day || day.isRest;
   const isToday = format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-  const [open, setOpen] = useState(isToday);
+  const [open, setOpen] = useState(defaultOpen ?? isToday);
 
   const extras = dayExtras(day);
   const hasDetails = !isRest && (
@@ -664,6 +675,12 @@ export function MobileDayCard({ date, day, dimmed }: { date: Date; day: Day | un
       {/* Expandable details */}
       {hasDetails && open && (
         <div className="px-4 pb-4 space-y-2 border-t border-border/30">
+          <Link
+            href={`/entrenamiento/${format(date, "yyyy-MM-dd")}`}
+            className="flex items-center justify-end gap-1 pt-3 text-xs font-semibold text-brand-orange"
+          >
+            Ver detalle completo <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
           {day?.workout?.description && (
             <p className="text-sm text-neutral-200 leading-relaxed pt-3">
               {day.workout.description}

@@ -2,7 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bandage, ChevronRight, Flag, Moon, Plane, TreePalm, User } from 'lucide-react';
+import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, TreePalm, User } from 'lucide-react';
+import { InstallAppCard } from '@/components/app/install-app-card';
+import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { MobileDayCard } from '@/components/schedule-view';
 import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, type AbsenceType } from '@/lib/coachApi';
@@ -86,6 +88,19 @@ export default async function InicioPage() {
               paid={false}
             />
           )}
+          {/* La credencial es lo que se saca en el mostrador de un comercio: a un toque. */}
+          <TTCCredencialDialog
+            dni={session.dni}
+            trigger={
+              <button
+                type="button"
+                aria-label="Mi credencial TT"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-700 bg-neutral-800 text-foreground hover:border-brand-orange"
+              >
+                <QrCode className="h-4 w-4" />
+              </button>
+            }
+          />
           <Link
             href="/perfil"
             aria-label="Mi perfil"
@@ -119,7 +134,7 @@ export default async function InicioPage() {
       <section className="space-y-2">
         <SectionTitle title="Hoy" href="/entrenamiento" linkLabel="Ver semana" />
         {todayDay !== undefined ? (
-          <MobileDayCard date={today} day={todayDay} />
+          <MobileDayCard date={format(today, 'yyyy-MM-dd')} day={todayDay} defaultOpen />
         ) : (
           <div className="rounded-2xl border border-border bg-neutral-900 px-4 py-5 text-sm text-muted-foreground">
             Todavía no hay planilla para hoy. Cuando tu coach la publique, aparece acá.
@@ -223,6 +238,8 @@ export default async function InicioPage() {
           </Link>
         )}
       </section>
+
+      <InstallAppCard />
 
       {/* ── Mes ── */}
       <section className="space-y-2">

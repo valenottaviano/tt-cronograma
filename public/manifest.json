@@ -1,7 +1,7 @@
 {
-  "name": "TT Beneficios",
+  "name": "Grupo TT",
   "short_name": "TT",
-  "description": "Beneficios y credencial digital",
+  "description": "Tu entrenamiento, tus carreras y tu credencial TT",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
