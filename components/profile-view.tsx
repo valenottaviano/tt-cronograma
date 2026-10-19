@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { AthleteProfile } from "@/lib/coachApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function ProfileView({ initialProfile, dni, children }: Props) {
+  const router = useRouter();
   const [profile, setProfile] = useState(initialProfile);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -26,6 +28,9 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
   // Contact form
   const [email, setEmail] = useState(initialProfile?.email ?? "");
   const [phone, setPhone] = useState(stripPrefix(initialProfile?.phone));
+  const [birthDate, setBirthDate] = useState(initialProfile?.birthDate ?? "");
+  // Un panel viejo no manda el campo: no se muestra algo que no se puede guardar.
+  const supportsBirthDate = initialProfile?.birthDate !== undefined;
   const [savingContact, setSavingContact] = useState(false);
 
   // Password form
@@ -33,6 +38,16 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+
+  // El cartel de Inicio trae a /perfil#datos. Al llegar con navegación de cliente el
+  // navegador no baja solo (la pantalla entra animada), así que se baja a mano.
+  useEffect(() => {
+    if (window.location.hash !== "#datos") return;
+    const id = window.setTimeout(() => {
+      document.getElementById("datos")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, []);
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -57,6 +72,7 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
         throw new Error(pj.error);
       }
       setAvatarPreview(URL.createObjectURL(file));
+      router.refresh();
       toast.success("Foto actualizada");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al subir imagen");
@@ -75,11 +91,13 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
         body: JSON.stringify({
           email: email || undefined,
           phone: phone ? `+54 9 ${phone}` : null,
+          ...(supportsBirthDate ? { birthDate: birthDate || null } : {}),
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
       if (profile) setProfile({ ...profile, email: email || null, phone: phone ? `+54 9 ${phone}` : null });
+      router.refresh();
       toast.success("Datos actualizados");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error al guardar");
@@ -154,8 +172,8 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
         {children}
 
         {/* Contact info */}
-        <section className="space-y-4">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Datos de contacto</h2>
+        <section id="datos" className="scroll-mt-20 space-y-4">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Datos personales</h2>
           <form onSubmit={handleContactSave} className="space-y-4">
             <div>
               <Label htmlFor="p-email">Email</Label>
@@ -168,6 +186,20 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
                 className="mt-1"
               />
             </div>
+            {supportsBirthDate && (
+              <div>
+                <Label htmlFor="p-birth">Fecha de nacimiento</Label>
+                <Input
+                  id="p-birth"
+                  type="date"
+                  min="1920-01-01"
+                  max={new Date().toISOString().slice(0, 10)}
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="mt-1 [color-scheme:dark]"
+                />
+              </div>
+            )}
             <div>
               <Label htmlFor="p-phone">Teléfono</Label>
               <div className="flex items-center mt-1">

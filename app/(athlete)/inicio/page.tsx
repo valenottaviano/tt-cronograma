@@ -2,13 +2,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, TreePalm, User } from 'lucide-react';
+import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, TreePalm, User, UserRoundPen } from 'lucide-react';
 import { InstallAppCard } from '@/components/app/install-app-card';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { MobileDayCard } from '@/components/schedule-view';
 import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, type AbsenceType } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
+import { listInSpanish, missingProfileFields } from '@/lib/profile-completion';
 import {
   dayOn, isoWeekOf, isTrainingDay, parseLocalDate, scheduleTotalDays, sessionTitle, summarize,
   todayInArgentina,
@@ -66,6 +67,8 @@ export default async function InicioPage() {
     return start <= today && differenceInCalendarDays(today, start) < scheduleTotalDays(s);
   })?.coachNoteExternal;
 
+  const missingProfile = profile ? missingProfileFields(profile) : [];
+
   const firstName = cap((session.name ?? '').split(' ')[0]?.toLowerCase() ?? '');
 
   return (
@@ -113,6 +116,20 @@ export default async function InicioPage() {
           </Link>
         </div>
       </header>
+
+      {missingProfile.length > 0 && (
+        <Link
+          href="/perfil#datos"
+          className="flex items-center gap-3 rounded-2xl border border-red-600/50 bg-red-600/15 px-4 py-3 transition-colors hover:bg-red-600/20"
+        >
+          <UserRoundPen className="h-5 w-5 shrink-0 text-red-500" />
+          <p className="flex-1 text-sm">
+            <span className="font-semibold text-red-400">Completá tu perfil.</span>{' '}
+            Te falta {listInSpanish(missingProfile)}.
+          </p>
+          <ChevronRight className="h-4 w-4 shrink-0 text-red-400" />
+        </Link>
+      )}
 
       {currentAbsence && (() => {
         const copy = ABSENCE_COPY[currentAbsence.type];

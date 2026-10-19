@@ -97,6 +97,8 @@ export interface AthleteProfile {
   avatarUrl: string | null;
   /** Bici para entrenamientos cruzados. `null` = no contestó; ausente = panel viejo. */
   hasBike?: boolean | null;
+  /** `YYYY-MM-DD`; `null` = no la cargó; ausente = panel viejo. */
+  birthDate?: string | null;
 }
 
 export interface ClientInfo {
