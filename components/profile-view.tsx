@@ -196,7 +196,9 @@ export function ProfileView({ initialProfile, dni, children }: Props) {
                   max={new Date().toISOString().slice(0, 10)}
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="mt-1 [color-scheme:dark]"
+                  // Safari de iOS le da al date un ancho y alto propios y se pasa del
+                  // contenedor: sin la apariencia nativa respeta el w-full y el h-10.
+                  className="mt-1 block h-10 appearance-none text-left [color-scheme:dark] [&::-webkit-date-and-time-value]:text-left"
                 />
               </div>
             )}
