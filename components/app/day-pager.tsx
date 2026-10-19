@@ -8,7 +8,7 @@ import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
 import { ArrowLeft, ChevronLeft, ChevronRight, Moon, Plus } from 'lucide-react';
 import { RouteMap } from '@/components/app/route-map';
 import { AttachmentLinks, CoachNote } from '@/components/schedule-view';
-import { gpxProxyUrl } from '@/lib/gpx-proxy-url';
+import { gpxProxyUrl, isGpxUrl } from '@/lib/gpx-proxy-url';
 import type { OptionalDay, Schedule, Variant, Workout } from '@/lib/coachApi';
 import { dayExtras, dayOn, isTrainingDay, parseLocalDate, sessionTitle, todayInArgentina } from '@/lib/athlete-days';
 
@@ -184,6 +184,9 @@ function Exercise({
   variantFileUrl: string | null;
   showTitle?: boolean;
 }) {
+  // Roberto a veces sube el GPX como archivo del ejercicio y no de la variante:
+  // también se dibuja, pero si están los dos manda el recorrido de la variante.
+  const mapUrl = variantFileUrl ?? (fileUrl && isGpxUrl(fileUrl) ? fileUrl : null);
   return (
     <div className="space-y-3">
       {showTitle && <h2 className="text-xl font-bold leading-snug">{workout.name}</h2>}
@@ -206,9 +209,7 @@ function Exercise({
         <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-300">{workout.description}</p>
       )}
       {note && <CoachNote note={note} />}
-      {variantFileUrl && (
-        <RouteMap gpxUrl={gpxProxyUrl(variantFileUrl)} />
-      )}
+      {mapUrl && <RouteMap gpxUrl={gpxProxyUrl(mapUrl)} />}
       <AttachmentLinks
         fileUrl={fileUrl}
         variantFileUrl={variantFileUrl}
