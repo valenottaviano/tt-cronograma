@@ -4,7 +4,7 @@ import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Bandage, ChevronRight, CreditCard, DollarSign, Gift, HelpCircle, LogOut, Play, ShoppingBag,
+  Bandage, ChevronRight, CreditCard, DollarSign, HelpCircle, LogOut, Play, ShoppingBag,
   type LucideIcon,
 } from 'lucide-react';
 import { AbsencesSheetButton } from '@/components/absences-section';
@@ -103,7 +103,6 @@ export function ProfileMenu({ dni, payment }: Props) {
       <Group>
         <LinkRow href="/videos" icon={Play} label="Videos" />
         <LinkRow href="/faq?from=app" icon={HelpCircle} label="Preguntas frecuentes" />
-        <LinkRow href="/benefits" icon={Gift} label="Beneficios" />
         <LinkRow href="/store" icon={ShoppingBag} label="Tienda" />
       </Group>
 

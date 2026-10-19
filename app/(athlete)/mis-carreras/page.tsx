@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CalendarSearch } from 'lucide-react';
+import { Ticket } from 'lucide-react';
 import { AppHeader } from '@/components/app/app-header';
 import { RacesSection } from '@/components/races-section';
 
@@ -11,10 +11,10 @@ export default function MisCarrerasPage() {
         action={
           <Link
             href="/races"
-            className="flex items-center gap-1.5 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            className="flex items-center gap-1.5 rounded-full bg-yellow-400 px-3 py-1.5 text-xs font-black uppercase italic text-black shadow-[0_0_18px_rgba(250,204,21,0.35)] transition-transform hover:bg-yellow-300 active:scale-95"
           >
-            <CalendarSearch className="h-3.5 w-3.5" />
-            Calendario
+            <Ticket className="h-3.5 w-3.5" />
+            Descuentos
           </Link>
         }
       />

@@ -3,13 +3,15 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { CalendarDays, Flag, Home, User } from 'lucide-react';
+import { CalendarDays, Flag, Gift, Home, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TABS = [
   { href: '/inicio', label: 'Inicio', icon: Home },
-  { href: '/entrenamiento', label: 'Entrenamiento', icon: CalendarDays },
+  // «Entreno» y no «Entrenamiento»: con cinco pestañas no entra en un celular de 360 px.
+  { href: '/entrenamiento', label: 'Entreno', icon: CalendarDays },
   { href: '/mis-carreras', label: 'Carreras', icon: Flag },
+  { href: '/beneficios', label: 'Beneficios', icon: Gift },
   { href: '/perfil', label: 'Perfil', icon: User },
 ] as const;
 
@@ -25,7 +27,7 @@ export function TabBar() {
       aria-label="Secciones"
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
     >
-      <ul className="mx-auto grid h-16 max-w-3xl grid-cols-4 px-2">
+      <ul className="mx-auto grid h-16 max-w-3xl grid-cols-5 px-1">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = href === activeHref;
           return (
@@ -34,7 +36,7 @@ export function TabBar() {
                 href={href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'relative flex flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold',
+                  'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold',
                   'transition-[color,transform] duration-150 active:scale-90',
                   active ? 'text-brand-orange' : 'text-muted-foreground hover:text-foreground',
                 )}
@@ -43,7 +45,7 @@ export function TabBar() {
                   // La pastilla viaja de una pestaña a otra en vez de aparecer de golpe.
                   <motion.span
                     layoutId="tab-pill"
-                    className="absolute inset-x-2 inset-y-1.5 -z-10 rounded-2xl bg-brand-orange/10"
+                    className="absolute inset-x-1 inset-y-1.5 -z-10 rounded-2xl bg-brand-orange/10"
                     transition={{ type: 'spring', stiffness: 500, damping: 38 }}
                   />
                 )}

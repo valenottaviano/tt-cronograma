@@ -195,3 +195,20 @@ export function VideosSkeleton() {
     </main>
   );
 }
+
+export function BenefitsSkeleton() {
+  return (
+    <>
+      <HeaderBar title="Beneficios" />
+      <main className="mx-auto w-full max-w-3xl space-y-5 px-4 py-4">
+        <Bone className="h-4 w-4/5" />
+        <Bone className="h-10 w-full rounded-lg" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {Array.from({ length: 4 }, (_, i) => (
+            <Bone key={i} className="h-56 w-full rounded-2xl" />
+          ))}
+        </div>
+      </main>
+    </>
+  );
+}
