@@ -50,7 +50,6 @@ export default async function InicioPage() {
   const week = isoWeekOf(today);
   const weekSummary = summarize(schedules, week.start, week.end);
   const remaining = summarize(schedules, today, week.end);
-  const monthSummary = summarize(schedules, new Date(year, month - 1, 1), new Date(year, month, 0));
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(week.start, i));
 
   const nextRace = races
@@ -240,15 +239,6 @@ export default async function InicioPage() {
       </section>
 
       <InstallAppCard />
-
-      {/* ── Mes ── */}
-      <section className="space-y-2">
-        <SectionTitle title={cap(format(today, 'MMMM', { locale: es }))} />
-        <div className="grid grid-cols-2 gap-3">
-          <StatCard value={String(monthSummary.sessions)} label="sesiones planificadas" />
-          <StatCard value={String(monthSummary.restDays)} label="días de descanso" />
-        </div>
-      </section>
     </main>
   );
 }
@@ -271,15 +261,6 @@ function Stat({ value, label }: { value: string; label: string }) {
     <div>
       <p className="text-2xl font-black italic leading-tight">{value}</p>
       <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function StatCard({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-neutral-900 p-4">
-      <p className="text-3xl font-black italic leading-tight">{value}</p>
-      <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );
 }
