@@ -67,9 +67,9 @@ export function BikeQuestion() {
           <div className="mb-1 flex h-14 w-14 items-center justify-center rounded-full bg-red-600/15">
             <Bike className="h-7 w-7 text-red-500" />
           </div>
-          <DialogTitle className="text-xl font-black italic uppercase">¿Tenés bicicleta?</DialogTitle>
+          <DialogTitle className="text-xl font-black italic uppercase">¿Tenés bicicleta muscular?</DialogTitle>
           <DialogDescription>
-            Rober la usa para planificar entrenamientos cruzados. Puede ser fija, de ruta o MTB.
+            Rober la usa para planificar entrenamientos cruzados.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-3">
