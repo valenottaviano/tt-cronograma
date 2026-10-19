@@ -95,6 +95,8 @@ export interface AthleteProfile {
   phone: string | null;
   avatarKey: string | null;
   avatarUrl: string | null;
+  /** Bici para entrenamientos cruzados. `null` = no contestó; ausente = panel viejo. */
+  hasBike?: boolean | null;
 }
 
 export interface ClientInfo {
