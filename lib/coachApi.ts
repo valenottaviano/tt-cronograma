@@ -95,6 +95,8 @@ export interface AthleteProfile {
   phone: string | null;
   avatarKey: string | null;
   avatarUrl: string | null;
+  /** Si va al gimnasio: cambia las planillas que se generen. Ausente = panel viejo. */
+  hasGym?: boolean;
   /** Bici para entrenamientos cruzados. `null` = no contestó; ausente = panel viejo. */
   hasBike?: boolean | null;
   /** `YYYY-MM-DD`; `null` = no la cargó; ausente = panel viejo. */

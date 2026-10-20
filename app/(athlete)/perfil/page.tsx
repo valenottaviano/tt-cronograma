@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ProfileMenu } from '@/components/app/profile-menu';
 import { ProfileView } from '@/components/profile-view';
+import { TrainingPrefs } from '@/components/app/training-prefs';
 import { getMe, getMonthStatus } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
 
@@ -30,6 +31,7 @@ export default async function PerfilPage() {
             : null
         }
       />
+      {profile && <TrainingPrefs hasGym={profile.hasGym} hasBike={profile.hasBike} />}
     </ProfileView>
   );
 }
