@@ -19,6 +19,7 @@ import {
   MessageSquare,
   Moon,
   Plus,
+  Route,
 } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
@@ -175,16 +176,28 @@ export function ScheduleView({ schedules, athleteName }: Props) {
       <AppHeader
         title="Entrenamiento"
         action={
-          <button
-            onClick={handleDownloadImage}
-            disabled={isExporting}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 py-1"
-          >
-            {isExporting
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              : <ImageDown className="w-3.5 h-3.5" />}
-            Descargar semana
-          </button>
+          // Con el título y el botón de Tracks no entra "Descargar semana" en 360px:
+          // la descarga queda como ícono.
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              onClick={handleDownloadImage}
+              disabled={isExporting}
+              aria-label="Descargar semana"
+              title="Descargar semana"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            >
+              {isExporting
+                ? <Loader2 className="w-4 h-4 animate-spin" />
+                : <ImageDown className="w-4 h-4" />}
+            </button>
+            <Link
+              href="/tracks"
+              className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1.5 text-xs font-black uppercase italic text-black shadow-[0_0_18px_rgba(16,185,129,0.35)] transition-transform hover:bg-emerald-400 active:scale-95"
+            >
+              <Route className="h-3.5 w-3.5" />
+              Tracks
+            </Link>
+          </div>
         }
       />
 
