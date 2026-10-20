@@ -134,6 +134,20 @@ export function setupProfile(body: {
   return post<{ dni: string }>("/api/client/auth/setup", body);
 }
 
+export type ForgotPasswordResult =
+  | { status: "sent"; email: string }
+  | { status: "no-email" | "no-account" | "not-found" };
+
+/** Manda el mail de "olvidé mi contraseña" si el atleta tiene mail cargado. */
+export function forgotPassword(dni: string) {
+  return post<ForgotPasswordResult>("/api/client/auth/forgot", { dni });
+}
+
+/** Sin `password` sólo valida el link del mail; con ella, la cambia. */
+export function resetPassword(token: string, password?: string) {
+  return post<{ name: string; dni?: string }>("/api/client/auth/reset", { token, password });
+}
+
 export async function loginAthlete(dni: string, password: string): Promise<LoginResult> {
   // Use the JWT endpoint so we get a token we can store server-side
   const data = await post<V1LoginResponse>("/api/v1/athlete/login", { dni, password });

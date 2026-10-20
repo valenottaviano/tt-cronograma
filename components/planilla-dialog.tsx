@@ -12,9 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ClipboardList, Loader2 } from "lucide-react";
+import { ClipboardList, Loader2, Mail, UserRound } from "lucide-react";
 
-type Step = "dni" | "password";
+type Step = "dni" | "password" | "forgot";
+
+/** Resultado de "olvidé mi contraseña": a qué mail se mandó el link, o que no tiene mail. */
+type Forgot = { status: "sent"; email: string } | { status: "no-email" };
 
 export function PlanillaDialog() {
   const router = useRouter();
@@ -25,6 +28,8 @@ export function PlanillaDialog() {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
+  const [forgot, setForgot] = useState<Forgot | null>(null);
+  const [sendingReset, setSendingReset] = useState(false);
 
   // Pre-fill cached DNI (shared with Credencial TT dialog)
   useEffect(() => {
@@ -80,6 +85,34 @@ export function PlanillaDialog() {
     setPassword("");
     setError("");
     setLoading(false);
+    setForgot(null);
+  }
+
+  async function handleForgot() {
+    setError("");
+    setSendingReset(true);
+    try {
+      const res = await fetch("/api/client/auth/forgot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dni: dni.trim() }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? "No pudimos mandar el mail. Probá de nuevo en un rato.");
+      const data = json.data as { status: string; email?: string };
+      if (data.status === "no-account") {
+        setOpen(false);
+        router.push(`/schedule/setup?dni=${encodeURIComponent(dni.trim())}`);
+        return;
+      }
+      if (data.status === "not-found") throw new Error("DNI no encontrado. Verificá que estés registrado en el equipo.");
+      setForgot(data.status === "sent" ? { status: "sent", email: data.email ?? "tu mail" } : { status: "no-email" });
+      setStep("forgot");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error inesperado");
+    } finally {
+      setSendingReset(false);
+    }
   }
 
   async function handleDniSubmit(e: React.FormEvent) {
@@ -151,7 +184,7 @@ export function PlanillaDialog() {
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>
-            {step === "dni" ? "Ingresá tu DNI" : "Ingresá tu contraseña"}
+            {step === "dni" ? "Ingresá tu DNI" : step === "password" ? "Ingresá tu contraseña" : "Recuperá tu contraseña"}
           </DialogTitle>
         </DialogHeader>
 
@@ -181,6 +214,40 @@ export function PlanillaDialog() {
               Continuar
             </Button>
           </form>
+        ) : step === "forgot" && forgot ? (
+          <div className="space-y-4">
+            <div className="flex gap-3 rounded-xl border border-border bg-neutral-900 p-4">
+              {forgot.status === "sent" ? (
+                <>
+                  <Mail className="mt-0.5 h-5 w-5 shrink-0 text-brand-orange" />
+                  <div className="space-y-1 text-sm">
+                    <p className="font-medium">Te mandamos un mail a {forgot.email}</p>
+                    <p className="text-muted-foreground">
+                      Tocá el link del mail para elegir una contraseña nueva. Vence en 1 hora. Si no lo ves, revisá en spam.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <UserRound className="mt-0.5 h-5 w-5 shrink-0 text-brand-orange" />
+                  <div className="space-y-1 text-sm">
+                    <p className="font-medium">Tu cuenta no tiene un mail cargado</p>
+                    <p className="text-muted-foreground">
+                      Contactate con Carolina Lobo para restaurar tu contraseña.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => { setStep("password"); setForgot(null); setError(""); }}
+              className="w-full"
+            >
+              Volver
+            </Button>
+          </div>
         ) : (
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <p className="text-sm text-muted-foreground">DNI: {dni}</p>
@@ -195,6 +262,15 @@ export function PlanillaDialog() {
                 autoFocus
                 className="mt-1"
               />
+              <button
+                type="button"
+                onClick={handleForgot}
+                disabled={sendingReset}
+                className="mt-2 inline-flex items-center text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground disabled:opacity-60"
+              >
+                {sendingReset && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <div className="flex gap-2">
