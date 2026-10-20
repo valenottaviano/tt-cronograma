@@ -173,7 +173,7 @@ function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: 
   );
 }
 
-/** Un ejercicio con todo lo que tiene: variante, km, consignas, nota del coach, recorrido y adjuntos. */
+/** Un ejercicio con todo lo que tiene: km, consignas, nota del coach, recorrido y adjuntos. */
 function Exercise({
   workout, variant, note, fileUrl, variantFileUrl, showTitle,
 }: {
@@ -190,16 +190,12 @@ function Exercise({
   return (
     <div className="space-y-3">
       {showTitle && <h2 className="text-xl font-bold leading-snug">{workout.name}</h2>}
-      {(variant?.label || (variant?.km ?? 0) > 0) && (
+      {/* El nombre de la variante ("Nivel 4") es de uso interno de Roberto: no se muestra. */}
+      {(variant?.km ?? 0) > 0 && (
         <div className="flex flex-wrap gap-2">
-          {variant?.label && (
-            <span className="rounded-full bg-neutral-800 px-3 py-1 text-xs font-semibold">{variant.label}</span>
-          )}
-          {(variant?.km ?? 0) > 0 && (
-            <span className="rounded-full bg-brand-orange/15 px-3 py-1 text-xs font-semibold text-brand-orange">
-              {variant!.km} km
-            </span>
-          )}
+          <span className="rounded-full bg-brand-orange/15 px-3 py-1 text-xs font-semibold text-brand-orange">
+            {variant!.km} km
+          </span>
         </div>
       )}
       {variant?.notes && (
