@@ -12,7 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ClipboardList, Loader2, Mail, UserRound } from "lucide-react";
+import { ClipboardList, Loader2, Mail, MessageCircle, UserRound } from "lucide-react";
+
+/** Quien restablece la contraseña a mano a los atletas sin mail. */
+const CAROLINA_WHATSAPP = "https://wa.me/5493815816540";
 
 type Step = "dni" | "password" | "forgot";
 
@@ -239,6 +242,14 @@ export function PlanillaDialog() {
                 </>
               )}
             </div>
+            {forgot.status === "no-email" && (
+              <Button asChild className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-black font-semibold">
+                <a href={CAROLINA_WHATSAPP} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Escribirle a Carolina por WhatsApp
+                </a>
+              </Button>
+            )}
             <Button
               type="button"
               variant="outline"
