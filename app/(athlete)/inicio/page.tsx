@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, TreePalm, User, UserRoundPen } from 'lucide-react';
+import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, Receipt, TreePalm, User, UserRoundPen } from 'lucide-react';
 import { InstallAppCard } from '@/components/app/install-app-card';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
@@ -129,6 +129,28 @@ export default async function InicioPage() {
           </p>
           <ChevronRight className="h-4 w-4 shrink-0 text-red-400" />
         </Link>
+      )}
+
+      {/* Recordatorio, no reclamo: se va solo cuando el atleta notifica el pago del mes. */}
+      {monthStatus && !monthStatus.paid && (
+        <PaymentReminder
+          year={year}
+          month={month}
+          monthLabel={format(today, 'MMMM yyyy', { locale: es })}
+          trigger={
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left transition-colors hover:bg-amber-500/15"
+            >
+              <Receipt className="h-5 w-5 shrink-0 text-amber-400" />
+              <p className="flex-1 text-sm">
+                <span className="font-semibold text-amber-300">Recordatorio de cuota.</span>{' '}
+                Cuando pagues {format(today, 'MMMM', { locale: es })}, subí el comprobante desde acá. ¡Gracias!
+              </p>
+              <ChevronRight className="h-4 w-4 shrink-0 text-amber-400" />
+            </button>
+          }
+        />
       )}
 
       {currentAbsence && (() => {
