@@ -53,18 +53,26 @@ export function StravaSection({ state, today }: { state: StravaState | null; tod
 }
 
 /**
- * Los números de Strava (la semana, las 12 semanas y el año). Van separados de
- * "Tu actividad" porque en Inicio se muestran después de "Tu semana": primero
- * lo que planificó Rober, después lo que corrió.
+ * Los números de Strava. Van separados de "Tu actividad" porque en Inicio se
+ * muestran después de "Tu semana": primero lo que planificó Rober, después lo
+ * que corrió. `part` permite repartirlos en las dos columnas de la compu:
+ * la semana, las últimas 12 semanas o el año.
  */
-export function StravaStatsCards({ state, today }: { state: StravaState | null; today: Date }) {
+export function StravaStatsCards({
+  state, today, part, className,
+}: {
+  state: StravaState | null;
+  today: Date;
+  part: 'week' | 'weeks' | 'year';
+  className?: string;
+}) {
   if (!state?.enabled || !state.connected || !state.stats.latest) return null;
 
   return (
-    <section className="space-y-3">
-      <WeekCard stats={state.stats} today={today} />
-      <WeeksCard stats={state.stats} />
-      <YearCard stats={state.stats} />
+    <section className={cn('space-y-3', className)}>
+      {part === 'week' && <WeekCard stats={state.stats} today={today} />}
+      {part === 'weeks' && <WeeksCard stats={state.stats} />}
+      {part === 'year' && <YearCard stats={state.stats} />}
     </section>
   );
 }

@@ -83,7 +83,7 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-neutral-900">
       {activity.polyline ? (
-        <div className="relative h-48 bg-neutral-800">
+        <div className="relative h-48 bg-neutral-800 lg:h-64">
           <ActivityMap polyline={activity.polyline} />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-neutral-900 to-transparent" />
           <span className="absolute left-3 top-3 z-[1] rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
@@ -94,7 +94,7 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
       ) : (
         // Sin recorrido (gimnasio, cinta): la misma altura que un mapa, para que
         // al deslizar las tarjetas no salten.
-        <div className="relative flex h-48 items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-900">
+        <div className="relative flex h-48 items-center lg:h-64 justify-center overflow-hidden bg-gradient-to-br from-neutral-800 to-neutral-900">
           <div aria-hidden className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-brand-orange/15 blur-3xl" />
           <SportIcon sport={activity.sportType} />
           <span className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
