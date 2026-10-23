@@ -1,13 +1,10 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Activity, Flame, Heart, Loader2, Mountain, TrendingDown, TrendingUp } from 'lucide-react';
-import type { StravaLatest, StravaState, StravaStats } from '@/lib/coachApi';
-import {
-  STRAVA_ORANGE, formatClock, formatDuration, formatInt, formatKm, formatSpeed, formatWhen, sportLabel,
-  stravaActivityUrl,
-} from '@/lib/strava-format';
+import { Flame, Loader2, Mountain, TrendingDown, TrendingUp } from 'lucide-react';
+import type { StravaState, StravaStats } from '@/lib/coachApi';
+import { STRAVA_ORANGE, formatDuration, formatInt, formatKm } from '@/lib/strava-format';
 import { cn } from '@/lib/utils';
-import { ActivityMap } from './activity-map';
+import { RecentActivities } from './recent-activities';
 import { StravaLogo } from './strava-logo';
 import { StravaSyncWatcher } from './strava-sync-watcher';
 
@@ -48,7 +45,7 @@ export function StravaSection({ state, today }: { state: StravaState | null; tod
               <StravaSyncWatcher />
             </p>
           )}
-          <LatestActivityCard activity={state.stats.latest} today={today} />
+          <RecentActivities activities={state.stats.recent ?? [state.stats.latest]} todayIso={format(today, 'yyyy-MM-dd')} />
           <WeekCard stats={state.stats} today={today} />
           <WeeksCard stats={state.stats} />
           <YearCard stats={state.stats} />
@@ -102,92 +99,6 @@ function EmptyCard() {
     <div className="rounded-2xl border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
       Tu Strava está vinculado, pero no tiene actividades del último año. Cuando subas una, aparece acá.
     </div>
-  );
-}
-
-// --- Última actividad -----------------------------------------------------------
-
-function LatestActivityCard({ activity, today }: { activity: StravaLatest; today: Date }) {
-  const speed = formatSpeed(activity.sportType, activity.averageSpeed);
-  const metrics = [
-    activity.distance > 0 && { value: formatKm(activity.distance / 1000, 2), unit: 'km', label: 'Distancia' },
-    { value: formatClock(activity.movingTime), unit: '', label: 'Tiempo' },
-    speed && { value: speed.value, unit: speed.unit, label: speed.unit === '/km' ? 'Ritmo' : 'Velocidad' },
-    activity.elevationGain >= 1 && { value: `+${formatInt(activity.elevationGain)}`, unit: 'm', label: 'Desnivel' },
-  ].filter(Boolean) as { value: string; unit: string; label: string }[];
-
-  return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-neutral-900">
-      {activity.polyline ? (
-        <div className="relative h-48 bg-neutral-800">
-          <ActivityMap polyline={activity.polyline} />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20 bg-gradient-to-t from-neutral-900 to-transparent" />
-          <span className="absolute left-3 top-3 z-[1] rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
-            {sportLabel(activity.sportType)}
-          </span>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 px-4 pt-4">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-800">
-            <Activity className="h-4 w-4 text-brand-orange" />
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            {sportLabel(activity.sportType)}
-          </span>
-        </div>
-      )}
-
-      <div className={cn('px-4 pb-4', activity.polyline ? '-mt-6 relative z-[2]' : 'pt-3')}>
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Última actividad · {formatWhen(activity.startDateLocal, today)}
-        </p>
-        <h3 className="mt-0.5 truncate text-lg font-bold">{activity.name}</h3>
-
-        {/* En el celular, cuatro números no entran en una fila: van de a dos. */}
-        <div
-          className={cn(
-            'mt-3 grid gap-x-3 gap-y-3',
-            metrics.length >= 4 ? 'grid-cols-2 sm:grid-cols-4' : metrics.length === 3 ? 'grid-cols-3' : 'grid-cols-2',
-          )}
-        >
-          {metrics.map((m) => (
-            <div key={m.label} className="min-w-0">
-              <p className="truncate text-2xl font-black italic leading-tight tabular-nums">
-                {m.value}
-                {m.unit && <span className="ml-0.5 text-xs font-semibold not-italic text-muted-foreground">{m.unit}</span>}
-              </p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm">
-          {activity.averageHeartrate ? (
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <Heart className="h-4 w-4 text-rose-500" />
-              <span className="font-semibold tabular-nums text-foreground">{Math.round(activity.averageHeartrate)}</span> ppm prom.
-            </span>
-          ) : (
-            <span />
-          )}
-          <StravaLink id={activity.id} />
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function StravaLink({ id }: { id: string }) {
-  return (
-    <a
-      href={stravaActivityUrl(id)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-sm font-bold underline-offset-4 hover:underline"
-      style={{ color: STRAVA_ORANGE }}
-    >
-      Ver en Strava
-    </a>
   );
 }
 

@@ -640,6 +640,8 @@ export interface StravaLatest {
 
 export interface StravaStats {
   latest: StravaLatest | null;
+  /** Las últimas (hasta 5), la más nueva primero. Un panel viejo no la manda. */
+  recent?: StravaLatest[];
   week: {
     km: number;
     /** La semana pasada hasta el mismo día, para comparar parejo. */

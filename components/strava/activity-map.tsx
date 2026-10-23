@@ -9,8 +9,27 @@ import { createRouteMap } from '@/lib/satellite-map';
 export function ActivityMap({ polyline }: { polyline: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  // En el carrusel, el mapa de cada actividad se arma recién cuando se desliza hasta ella.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!visible) return;
     let cancelled = false;
     let map: import('leaflet').Map | null = null;
     (async () => {
@@ -24,7 +43,7 @@ export function ActivityMap({ polyline }: { polyline: string }) {
       cancelled = true;
       map?.remove();
     };
-  }, [polyline]);
+  }, [visible, polyline]);
 
   return (
     // El fundido va en un envoltorio: si React tocara las clases del contenedor
