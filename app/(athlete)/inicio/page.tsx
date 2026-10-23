@@ -7,7 +7,9 @@ import { InstallAppCard } from '@/components/app/install-app-card';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { MobileDayCard } from '@/components/schedule-view';
-import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, type AbsenceType } from '@/lib/coachApi';
+import { StravaFlash } from '@/components/strava/strava-flash';
+import { StravaSection } from '@/components/strava/strava-section';
+import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, getStrava, type AbsenceType } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
 import { listInSpanish, missingProfileFields } from '@/lib/profile-completion';
 import {
@@ -24,7 +26,8 @@ const ABSENCE_COPY: Record<AbsenceType, { label: string; icon: typeof Bandage; c
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export default async function InicioPage() {
+export default async function InicioPage({ searchParams }: { searchParams: Promise<{ strava?: string }> }) {
+  const { strava: stravaResult } = await searchParams;
   const session = await requireAthlete();
   const now = new Date();
   const today = todayInArgentina(now);
@@ -39,9 +42,10 @@ export default async function InicioPage() {
       getMonthStatus(year, month, session.token).catch(() => null),
       getRaces(session.token).catch(() => []),
       getAbsences(session.token).catch(() => []),
+      getStrava(session.token).catch(() => null),
     ]),
   );
-  const [scheduleData, profile, monthStatus, races, absences] = data ?? [null, null, null, [], []];
+  const [scheduleData, profile, monthStatus, races, absences, strava] = data ?? [null, null, null, [], [], null];
   const schedules = scheduleData?.schedules ?? [];
 
   const todayDay = dayOn(schedules, today);
@@ -198,6 +202,10 @@ export default async function InicioPage() {
           <p className="text-sm leading-relaxed">{coachNote}</p>
         </div>
       )}
+
+      {/* ── Lo que hizo, según su Strava ── */}
+      <StravaSection state={strava} today={today} />
+      <StravaFlash result={stravaResult} />
 
       {/* ── Semana ── */}
       <section className="space-y-2">

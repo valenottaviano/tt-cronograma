@@ -621,3 +621,68 @@ export async function createCoachOrder(form: FormData, clientIp: string): Promis
   if (!res.ok) throw new ApiError(json.error ?? "No se pudo procesar la compra", res.status);
   return json.data ?? json;
 }
+
+// --- Strava -------------------------------------------------------------------
+
+export interface StravaLatest {
+  id: string;
+  name: string;
+  sportType: string;
+  /** Hora de reloj donde se hizo, "YYYY-MM-DDTHH:mm". */
+  startDateLocal: string;
+  distance: number;
+  movingTime: number;
+  elevationGain: number;
+  averageSpeed: number;
+  averageHeartrate: number | null;
+  polyline: string | null;
+}
+
+export interface StravaStats {
+  latest: StravaLatest | null;
+  week: {
+    km: number;
+    /** La semana pasada hasta el mismo día, para comparar parejo. */
+    prevKm: number;
+    days: { date: string; km: number; active: boolean }[];
+    activities: number;
+    movingTime: number;
+    elevation: number;
+  };
+  weeks: { start: string; km: number }[];
+  avgKm: number;
+  streakWeeks: number;
+  year: {
+    year: number;
+    km: number;
+    movingTime: number;
+    elevation: number;
+    everests: number;
+    activities: number;
+    split: { key: 'run' | 'trail' | 'bike' | 'gym' | 'other'; label: string; pct: number }[];
+  };
+  bests: { key: string; label: string; time: number | null; date: string | null; activityId: string | null }[];
+  bestsPending: boolean;
+}
+
+/** `enabled: false` mientras Strava esté habilitado sólo para algunos atletas. */
+export type StravaState =
+  | { enabled: false }
+  | { enabled: true; connected: false }
+  | { enabled: true; connected: true; syncStatus: 'SYNCING' | 'READY'; stats: StravaStats };
+
+export function getStrava(token: string) {
+  return get<StravaState>('/api/v1/athlete/strava', token);
+}
+
+export function getStravaAuthorizeUrl(token: string) {
+  return post<{ url: string }>('/api/v1/athlete/strava/authorize', {}, token);
+}
+
+export function connectStrava(input: { code: string; state: string; scope: string }, token: string) {
+  return post<null>('/api/v1/athlete/strava/connect', input, token);
+}
+
+export function disconnectStrava(token: string) {
+  return del('/api/v1/athlete/strava', token);
+}

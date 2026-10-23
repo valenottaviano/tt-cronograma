@@ -3,7 +3,8 @@ import { es } from 'date-fns/locale';
 import { ProfileMenu } from '@/components/app/profile-menu';
 import { ProfileView } from '@/components/profile-view';
 import { TrainingPrefs } from '@/components/app/training-prefs';
-import { getMe, getMonthStatus } from '@/lib/coachApi';
+import { StravaProfileRow } from '@/components/strava/strava-profile-row';
+import { getMe, getMonthStatus, getStrava } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
 
 export default async function PerfilPage() {
@@ -17,9 +18,10 @@ export default async function PerfilPage() {
       getMe(session.token),
       // Si la API de pagos no responde, el perfil igual se muestra (sin la fila de la cuota).
       getMonthStatus(year, month, session.token).catch(() => null),
+      getStrava(session.token).catch(() => null),
     ]),
   );
-  const [profile, monthStatus] = data ?? [null, null];
+  const [profile, monthStatus, strava] = data ?? [null, null, null];
 
   return (
     <ProfileView initialProfile={profile} dni={session.dni}>
@@ -32,6 +34,7 @@ export default async function PerfilPage() {
         }
       />
       {profile && <TrainingPrefs hasGym={profile.hasGym} hasBike={profile.hasBike} />}
+      {strava?.enabled && <StravaProfileRow connected={strava.connected} />}
     </ProfileView>
   );
 }
