@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { RaceCardsSkeleton } from "@/components/app/skeletons";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Loader2, MapPin, Pencil, Route, Search } from "lucide-react";
+import { CalendarDays, ChevronDown, Loader2, MapPin, Pencil, Route, Search } from "lucide-react";
 
 /** Hoy en Argentina como `YYYY-MM-DD`, para comparar con la fecha de la carrera. */
 function todayYmd(): string {
@@ -170,36 +170,34 @@ export function RacesSection() {
             : "border-border bg-neutral-900"
         }`}
       >
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm leading-tight text-white">
-              {race.name}
-            </p>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <CalendarDays className="w-3 h-3 shrink-0" />
-                {format(date, "d 'de' MMMM yyyy", { locale: es })}
-              </span>
-              {race.location && (
-                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3 shrink-0" />
-                  {race.location}
-                </span>
-              )}
-            </div>
-            {race.description && (
-              <p className="text-xs text-muted-foreground/70 mt-1.5 leading-relaxed">
-                {race.description}
+        <div className="px-4 py-3">
+          {/* Nombre y datos a la izquierda, el botón arriba a la derecha. La
+              descripción va debajo, a todo el ancho: al lado del botón quedaba
+              como una columna angosta y larguísima. */}
+          <div className="flex items-start gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm leading-tight text-white">
+                {race.name}
               </p>
-            )}
-          </div>
-          <div className="shrink-0 px-1">
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <CalendarDays className="w-3 h-3 shrink-0" />
+                  {format(date, "d 'de' MMMM yyyy", { locale: es })}
+                </span>
+                {race.location && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <MapPin className="w-3 h-3 shrink-0" />
+                    {race.location}
+                  </span>
+                )}
+              </div>
+            </div>
             <Button
               size="sm"
               variant={race.enrolled ? "outline" : "default"}
               disabled={busy}
               onClick={() => (race.enrolled ? unenroll(race) : openDialog(race, "enroll"))}
-              className={`min-w-[110px] h-8 text-xs transition-colors ${
+              className={`shrink-0 min-w-[110px] h-8 text-xs transition-colors ${
                 race.enrolled
                   ? "border-red-600/50 text-red-500 hover:bg-red-600/10 hover:text-red-400"
                   : "bg-red-600 text-white hover:bg-red-700 border-transparent"
@@ -214,6 +212,7 @@ export function RacesSection() {
               )}
             </Button>
           </div>
+          {race.description && <RaceDescription text={race.description} />}
         </div>
 
         {race.enrolled && (
@@ -328,6 +327,41 @@ export function RacesSection() {
           </form>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/** Más de esto se corta en dos líneas con "Ver más". */
+const DESCRIPTION_PREVIEW_CHARS = 120;
+
+/**
+ * La descripción de la carrera. Algunas son de varios párrafos (todas las
+ * distancias de un ultra): se muestran dos líneas y el resto a pedido.
+ */
+function RaceDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const long = text.length > DESCRIPTION_PREVIEW_CHARS || text.includes("\n");
+
+  return (
+    <div className="mt-2">
+      <p
+        className={`whitespace-pre-line text-xs leading-relaxed text-muted-foreground/80 ${
+          long && !expanded ? "line-clamp-2" : ""
+        }`}
+      >
+        {text}
+      </p>
+      {long && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          className="mt-1 flex items-center gap-0.5 text-xs font-semibold text-white/80 transition-colors hover:text-white"
+        >
+          {expanded ? "Ver menos" : "Ver más"}
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </button>
+      )}
     </div>
   );
 }
