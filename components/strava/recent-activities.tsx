@@ -1,13 +1,14 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Activity, Bike, Dumbbell, Heart, type LucideIcon } from 'lucide-react';
+import { Activity, Bike, Dumbbell, Heart, Share2, type LucideIcon } from 'lucide-react';
 import type { StravaLatest } from '@/lib/coachApi';
 import {
   STRAVA_ORANGE, formatClock, formatInt, formatKm, formatSpeed, formatWhen, sportLabel, stravaActivityUrl,
 } from '@/lib/strava-format';
 import { cn } from '@/lib/utils';
 import { ActivityMap } from './activity-map';
+import { ShareActivitySheet } from './share-activity-sheet';
 
 /**
  * Las últimas actividades (hasta 5), de a una, deslizando con el dedo. Es un
@@ -69,6 +70,7 @@ export function RecentActivities({ activities, todayIso }: { activities: StravaL
 }
 
 function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; today: Date; isLatest: boolean }) {
+  const [sharing, setSharing] = useState(false);
   const speed = formatSpeed(activity.sportType, activity.averageSpeed);
   const metrics = [
     activity.distance > 0 && { value: formatKm(activity.distance / 1000, 2), unit: 'km', label: 'Distancia' },
@@ -133,8 +135,19 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
           ) : (
             <span />
           )}
-          <StravaLink id={activity.id} />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSharing(true)}
+              className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold transition-colors hover:bg-white/15"
+            >
+              <Share2 className="h-3.5 w-3.5" /> Compartir
+            </button>
+            <StravaLink id={activity.id} />
+          </div>
         </div>
+        {/* Se monta recién al abrir: arma canvas y carga el logo. */}
+        {sharing && <ShareActivitySheet activity={activity} open={sharing} onOpenChange={setSharing} />}
       </div>
     </article>
   );
