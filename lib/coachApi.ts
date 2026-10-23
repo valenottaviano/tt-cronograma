@@ -661,8 +661,6 @@ export interface StravaStats {
     activities: number;
     split: { key: 'run' | 'trail' | 'bike' | 'gym' | 'other'; label: string; pct: number }[];
   };
-  bests: { key: string; label: string; time: number | null; date: string | null; activityId: string | null }[];
-  bestsPending: boolean;
 }
 
 /** `enabled: false` mientras Strava esté habilitado sólo para algunos atletas. */

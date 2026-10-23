@@ -52,7 +52,6 @@ export function StravaSection({ state, today }: { state: StravaState | null; tod
           <WeekCard stats={state.stats} today={today} />
           <WeeksCard stats={state.stats} />
           <YearCard stats={state.stats} />
-          <BestsCard stats={state.stats} />
         </>
       )}
     </section>
@@ -71,7 +70,7 @@ function ConnectCard() {
       />
       <p className="text-lg font-black italic leading-tight">Tus kilómetros, acá mismo</p>
       <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-        Vinculá tu Strava y mirá tu última salida, tu semana, tu año y tus mejores marcas. Sólo vos ves estos datos.
+        Vinculá tu Strava y mirá tu última salida, tu semana y tu año. Sólo vos ves estos datos.
       </p>
       {/* Navegación completa: la ruta redirige a Strava. */}
       <a
@@ -396,51 +395,6 @@ function YearTile({ value, unit, label }: { value: string; unit: string; label: 
         {unit && <span className="ml-1 text-sm font-bold not-italic text-muted-foreground">{unit}</span>}
       </p>
       <div className="text-[11px] text-muted-foreground">{label}</div>
-    </div>
-  );
-}
-
-// --- Mejores marcas -------------------------------------------------------------
-
-function BestsCard({ stats }: { stats: StravaStats }) {
-  if (!stats.bests.some((b) => b.time) && !stats.bestsPending) return null;
-
-  return (
-    <div className="rounded-2xl border border-border bg-neutral-900 p-4">
-      <CardLabel>Mejores marcas · último año</CardLabel>
-      <div className="mt-3 grid grid-cols-4 gap-2">
-        {stats.bests.map((b) => {
-          const body = (
-            <>
-              <p className="text-[11px] font-black uppercase italic tracking-wider text-brand-orange">{b.label}</p>
-              <p className="mt-1 truncate text-base font-black tabular-nums sm:text-lg">{b.time ? formatClock(b.time) : '—'}</p>
-              <p className="truncate text-[10px] text-muted-foreground">
-                {b.date ? format(new Date(`${b.date}T12:00:00`), 'MMM yyyy', { locale: es }) : ' '}
-              </p>
-            </>
-          );
-          return b.activityId ? (
-            <a
-              key={b.key}
-              href={stravaActivityUrl(b.activityId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-neutral-800/60 px-2 py-3 text-center transition-colors hover:bg-neutral-800"
-            >
-              {body}
-            </a>
-          ) : (
-            <div key={b.key} className="rounded-xl bg-neutral-800/30 px-2 py-3 text-center opacity-70">
-              {body}
-            </div>
-          );
-        })}
-      </div>
-      {stats.bestsPending && (
-        <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <Loader2 className="h-3 w-3 animate-spin" /> Calculando tus marcas con cada carrera…
-        </p>
-      )}
     </div>
   );
 }
