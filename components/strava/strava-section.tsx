@@ -46,11 +46,25 @@ export function StravaSection({ state, today }: { state: StravaState | null; tod
             </p>
           )}
           <RecentActivities activities={state.stats.recent ?? [state.stats.latest]} todayIso={format(today, 'yyyy-MM-dd')} />
-          <WeekCard stats={state.stats} today={today} />
-          <WeeksCard stats={state.stats} />
-          <YearCard stats={state.stats} />
         </>
       )}
+    </section>
+  );
+}
+
+/**
+ * Los números de Strava (la semana, las 12 semanas y el año). Van separados de
+ * "Tu actividad" porque en Inicio se muestran después de "Tu semana": primero
+ * lo que planificó Rober, después lo que corrió.
+ */
+export function StravaStatsCards({ state, today }: { state: StravaState | null; today: Date }) {
+  if (!state?.enabled || !state.connected || !state.stats.latest) return null;
+
+  return (
+    <section className="space-y-3">
+      <WeekCard stats={state.stats} today={today} />
+      <WeeksCard stats={state.stats} />
+      <YearCard stats={state.stats} />
     </section>
   );
 }

@@ -8,7 +8,7 @@ import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { MobileDayCard } from '@/components/schedule-view';
 import { StravaFlash } from '@/components/strava/strava-flash';
-import { StravaSection } from '@/components/strava/strava-section';
+import { StravaSection, StravaStatsCards } from '@/components/strava/strava-section';
 import { getAbsences, getMe, getMonthStatus, getRaces, getSchedules, getStrava, type AbsenceType } from '@/lib/coachApi';
 import { loadForAthlete, requireAthlete } from '@/lib/athlete-app';
 import { listInSpanish, missingProfileFields } from '@/lib/profile-completion';
@@ -248,6 +248,9 @@ export default async function InicioPage({ searchParams }: { searchParams: Promi
           </div>
         </div>
       </section>
+
+      {/* Lo que corrió esta semana, debajo de lo que tenía planificado. */}
+      <StravaStatsCards state={strava} today={today} />
 
       {/* ── Próxima carrera ── */}
       <section className="space-y-2">
