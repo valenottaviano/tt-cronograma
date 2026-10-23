@@ -11,18 +11,8 @@ import {
 } from '@/lib/activity-sticker';
 import { cn } from '@/lib/utils';
 
-type PreviewBg = 'photo' | 'light' | 'checker';
-
-const PREVIEW_BGS: { id: PreviewBg; label: string; className: string }[] = [
-  // Simula una foto de historia: así se ve el blanco, que es lo más usado.
-  { id: 'photo', label: 'Foto', className: 'bg-[linear-gradient(160deg,#3a4a3f_0%,#1f2a24_45%,#5b4a3a_100%)]' },
-  { id: 'light', label: 'Claro', className: 'bg-[linear-gradient(160deg,#f5f1ea_0%,#d9d2c5_100%)]' },
-  {
-    id: 'checker',
-    label: 'Transparente',
-    className: 'bg-[conic-gradient(#3f3f46_25%,#27272a_0_50%,#3f3f46_0_75%,#27272a_0)] bg-[length:20px_20px]',
-  },
-];
+/** Cuadriculado de transparencia: el sticker no tiene fondo y así se nota. */
+const CHECKER = 'bg-[conic-gradient(#52525b_25%,#3f3f46_0_50%,#52525b_0_75%,#3f3f46_0)] bg-[length:20px_20px]';
 
 /** Carga el logo y la fuente de la app una vez: el canvas no los toma solo. */
 function useStickerAssets(): StickerAssets | null {
@@ -66,17 +56,15 @@ export function ShareActivitySheet({
   const [design, setDesign] = useState<StickerDesign>(designs[0]?.id ?? 'numbers');
   const [color, setColor] = useState<StickerColor>('white');
   const [fields, setFields] = useState<StickerField[]>(() => stats.slice(0, 4).map((s) => s.key));
-  const [logo, setLogo] = useState(true);
-  const [bg, setBg] = useState<PreviewBg>('photo');
   const [copied, setCopied] = useState(false);
 
-  const options: StickerOptions = { design, color, fields, logo };
+  const options: StickerOptions = { design, color, fields };
   const previewRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     if (!open || !assets || !previewRef.current) return;
-    drawSticker(previewRef.current, activity, { design, color, fields, logo }, assets, 0.5);
-  }, [open, assets, activity, design, color, fields, logo]);
+    drawSticker(previewRef.current, activity, { design, color, fields }, assets, 0.5);
+  }, [open, assets, activity, design, color, fields]);
 
   function toggleField(key: StickerField) {
     setFields((f) => (f.includes(key) ? f.filter((k) => k !== key) : stats.map((s) => s.key).filter((k) => k === key || f.includes(k))));
@@ -142,27 +130,12 @@ export function ShareActivitySheet({
         <div className="shrink-0">
           {/* Vista previa */}
           <div className="px-4">
-            <div className={cn('flex h-72 items-center justify-center rounded-2xl p-6', PREVIEW_BGS.find((b) => b.id === bg)?.className)}>
+            <div className={cn('flex h-72 items-center justify-center rounded-2xl p-6', CHECKER)}>
               {assets ? (
                 <canvas ref={previewRef} className="max-h-full max-w-full object-contain" />
               ) : (
                 <span className="text-sm text-white/60">Preparando…</span>
               )}
-            </div>
-            <div className="mt-2 flex justify-center gap-1.5">
-              {PREVIEW_BGS.map((b) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => setBg(b.id)}
-                  className={cn(
-                    'rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors',
-                    bg === b.id ? 'bg-neutral-700 text-white' : 'text-muted-foreground hover:text-foreground',
-                  )}
-                >
-                  {b.label}
-                </button>
-              ))}
             </div>
           </div>
 
@@ -179,7 +152,7 @@ export function ShareActivitySheet({
                   design === d.id ? 'border-brand-orange bg-brand-orange/10' : 'border-border bg-neutral-900',
                 )}
               >
-                <span className="flex h-20 w-full items-center justify-center rounded-lg bg-[linear-gradient(160deg,#3a4a3f,#1f2a24)] p-1.5">
+                <span className={cn('flex h-20 w-full items-center justify-center rounded-lg p-1.5', CHECKER)}>
                   {assets && <DesignThumb activity={activity} options={{ ...options, design: d.id }} assets={assets} />}
                 </span>
                 <span className={cn('text-[11px] font-bold', design === d.id ? 'text-foreground' : 'text-muted-foreground')}>
@@ -229,18 +202,6 @@ export function ShareActivitySheet({
                 </button>
               );
             })}
-            <button
-              type="button"
-              onClick={() => setLogo((v) => !v)}
-              aria-pressed={logo}
-              className={cn(
-                'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors',
-                logo ? 'border-brand-orange bg-brand-orange/10 text-foreground' : 'border-border bg-neutral-900 text-muted-foreground',
-              )}
-            >
-              {logo && <Check className="h-3.5 w-3.5" />}
-              Logo Grupo TT
-            </button>
           </div>
 
           {/* Acciones */}
@@ -284,11 +245,11 @@ function OptionTitle({ children }: { children: React.ReactNode }) {
 
 function DesignThumb({ activity, options, assets }: { activity: StravaLatest; options: StickerOptions; assets: StickerAssets }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const { design, color, logo } = options;
+  const { design, color } = options;
   const fieldsKey = options.fields.join(',');
   useEffect(() => {
     if (!ref.current) return;
-    drawSticker(ref.current, activity, { design, color, logo, fields: fieldsKey ? (fieldsKey.split(',') as StickerField[]) : [] }, assets, 0.12);
-  }, [activity, design, color, logo, fieldsKey, assets]);
+    drawSticker(ref.current, activity, { design, color, fields: fieldsKey ? (fieldsKey.split(',') as StickerField[]) : [] }, assets, 0.12);
+  }, [activity, design, color, fieldsKey, assets]);
   return <canvas ref={ref} className="max-h-full max-w-full object-contain" />;
 }

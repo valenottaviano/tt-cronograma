@@ -10,7 +10,7 @@ import {
  * fondo transparente, para pegarlos sobre una foto. Se dibujan en un canvas en
  * el celular, así que no cuestan ninguna llamada a la API.
  *
- * Llevan la marca de Grupo TT y no la de Strava (pedido de Valentin).
+ * Llevan siempre el logo de Grupo TT y nunca la marca de Strava (pedido de Valentin).
  */
 
 export type StickerDesign =
@@ -24,7 +24,6 @@ export interface StickerOptions {
   design: StickerDesign;
   color: StickerColor;
   fields: StickerField[];
-  logo: boolean;
 }
 
 /** El logo listo para dibujar: la imagen original o un canvas con el logo teñido. */
@@ -115,7 +114,8 @@ export function drawSticker(
   const all = availableStats(activity);
   const stats = all.filter((s) => options.fields.includes(s.key));
   const route = activity.polyline ? decodePolyline(activity.polyline) : [];
-  const logo = options.logo ? tintedLogo(assets.logo, options.color) : null;
+  // El logo de Grupo TT va siempre (pedido de Valentin): no es una opción.
+  const logo = tintedLogo(assets.logo, options.color);
 
   const layout = LAYOUTS[options.design];
   const { width, height } = layout.size(stats, logo !== null);

@@ -4,10 +4,11 @@ import { useRef, useState } from 'react';
 import { Activity, Bike, Dumbbell, Heart, Share2, type LucideIcon } from 'lucide-react';
 import type { StravaLatest } from '@/lib/coachApi';
 import {
-  STRAVA_ORANGE, formatClock, formatInt, formatKm, formatSpeed, formatWhen, sportLabel, stravaActivityUrl,
+  formatClock, formatInt, formatKm, formatSpeed, formatWhen, sportLabel, stravaActivityUrl,
 } from '@/lib/strava-format';
 import { cn } from '@/lib/utils';
 import { ActivityMap } from './activity-map';
+import { StravaLogo } from './strava-logo';
 import { ShareActivitySheet } from './share-activity-sheet';
 
 /**
@@ -88,6 +89,7 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
           <span className="absolute left-3 top-3 z-[1] rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
             {sportLabel(activity.sportType)}
           </span>
+          <StravaLink id={activity.id} />
         </div>
       ) : (
         // Sin recorrido (gimnasio, cinta): la misma altura que un mapa, para que
@@ -98,6 +100,7 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
           <span className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
             {sportLabel(activity.sportType)}
           </span>
+          <StravaLink id={activity.id} />
         </div>
       )}
 
@@ -143,7 +146,6 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
             >
               <Share2 className="h-3.5 w-3.5" /> Compartir
             </button>
-            <StravaLink id={activity.id} />
           </div>
         </div>
         {/* Se monta recién al abrir: arma canvas y carga el logo. */}
@@ -153,16 +155,18 @@ function ActivityCard({ activity, today, isLatest }: { activity: StravaLatest; t
   );
 }
 
+/** Abrir la actividad en Strava: un botón chico con su logo, arriba a la derecha. */
 function StravaLink({ id }: { id: string }) {
   return (
     <a
       href={stravaActivityUrl(id)}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-sm font-bold underline-offset-4 hover:underline"
-      style={{ color: STRAVA_ORANGE }}
+      aria-label="Ver en Strava"
+      title="Ver en Strava"
+      className="absolute right-3 top-3 z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white/85 backdrop-blur transition-colors hover:bg-black/70 hover:text-white"
     >
-      Ver en Strava
+      <StravaLogo className="h-4 w-4" />
     </a>
   );
 }
