@@ -20,6 +20,7 @@ import {
   Moon,
   Plus,
   Route,
+  Watch,
 } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
@@ -294,6 +295,7 @@ export function ScheduleView({ schedules, athleteName }: Props) {
 interface AttachmentProps {
   fileUrl?: string | null;
   variantFileUrl?: string | null;
+  variantFitUrl?: string | null;
   workoutLink?: string | null;
   variantLink?: string | null;
 }
@@ -308,8 +310,8 @@ async function downloadGpxBlob(proxyUrl: string) {
     if (!res.ok) {
       toast.error(
         res.status === 401
-          ? "Tu sesión venció. Volvé a entrar para descargar el recorrido."
-          : "No pudimos descargar el recorrido. Probá de nuevo en un rato."
+          ? "Tu sesión venció. Volvé a entrar para descargar el archivo."
+          : "No pudimos descargar el archivo. Probá de nuevo en un rato."
       );
       console.error("GPX download failed", res.status, proxyUrl);
       return;
@@ -327,7 +329,7 @@ async function downloadGpxBlob(proxyUrl: string) {
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
   } catch (err) {
-    toast.error("No pudimos descargar el recorrido. Revisá tu conexión.");
+    toast.error("No pudimos descargar el archivo. Revisá tu conexión.");
     console.error("GPX download failed", err);
   }
 }
@@ -346,10 +348,11 @@ export function CoachNote({ note }: { note: string }) {
   );
 }
 
-export function AttachmentLinks({ fileUrl, variantFileUrl, workoutLink, variantLink }: AttachmentProps) {
+export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workoutLink, variantLink }: AttachmentProps) {
   const downloads = [
     fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
     variantFileUrl && { proxyUrl: gpxProxyUrl(variantFileUrl), icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
+    variantFitUrl  && { proxyUrl: gpxProxyUrl(variantFitUrl),  icon: <Watch className="w-3.5 h-3.5" />,    label: "Archivo .fit", cls: "bg-violet-500/10 text-violet-300 border-violet-500/30 hover:bg-violet-500/20" },
   ].filter(Boolean) as { proxyUrl: string; icon: React.ReactNode; label: string; cls: string }[];
 
   const links = [

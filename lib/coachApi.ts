@@ -237,6 +237,8 @@ export interface Day {
   variant: Variant | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+  /** El .fit de la variante (para el reloj). Opcional: las respuestas viejas no lo traen. */
+  variantFitUrl?: string | null;
   /** Comentario del coach sobre este ejercicio puntual. */
   note?: string | null;
   /**
@@ -264,6 +266,7 @@ export interface Variant {
   link: string | null;
   km: number | null;
   gpxKey: string | null;
+  fitKey?: string | null;
 }
 
 /** Slot de ejercicio: se usa tanto para `optionals` como para `extras`. */
@@ -274,6 +277,8 @@ export interface OptionalDay {
   variant: Variant | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+  /** El .fit de la variante (para el reloj). Opcional: las respuestas viejas no lo traen. */
+  variantFitUrl?: string | null;
   /** Comentario del coach sobre este ejercicio puntual. */
   note?: string | null;
 }

@@ -3,16 +3,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { Loader2, Mountain, Route } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
-import { parseGpxText, type TrackStats } from '@/lib/gpx';
+import { parseGpxText } from '@/lib/gpx';
 import { createRouteMap } from '@/lib/satellite-map';
 
 type Status = 'loading' | 'ready' | 'error';
 
-/** El recorrido de un GPX sobre el mapa satelital, con distancia y desnivel. */
-export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
+/** Lo que hace falta para dibujar un recorrido, venga de un GPX o de un .fit. */
+export interface RouteTrack {
+  points: { lat: number; lon: number; ele?: number }[];
+  distanceKm: number;
+  elevationGain: number;
+}
+
+/**
+ * El recorrido sobre el mapa satelital, con distancia y desnivel. Recibe la URL
+ * de un GPX, o el recorrido ya leído (el de un .fit, que se lee en otro lado).
+ */
+export function RouteMap({ gpxUrl, track }: { gpxUrl: string; track?: never } | { gpxUrl?: never; track: RouteTrack }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>('loading');
-  const [stats, setStats] = useState<TrackStats | null>(null);
+  const [stats, setStats] = useState<RouteTrack | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,9 +30,7 @@ export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
 
     (async () => {
       try {
-        const [L, res] = await Promise.all([import('leaflet'), fetch(gpxUrl, { cache: 'force-cache' })]);
-        if (!res.ok) throw new Error(`GPX ${res.status}`);
-        const parsed = parseGpxText(await res.text());
+        const [L, parsed] = await Promise.all([import('leaflet'), track ?? loadGpx(gpxUrl!)]);
         if (cancelled) return;
         if (parsed.points.length < 2 || !containerRef.current) throw new Error('GPX sin puntos');
 
@@ -39,7 +47,7 @@ export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
       cancelled = true;
       map?.remove();
     };
-  }, [gpxUrl]);
+  }, [gpxUrl, track]);
 
   if (status === 'error') {
     return (
@@ -76,4 +84,10 @@ export function RouteMap({ gpxUrl }: { gpxUrl: string }) {
       )}
     </div>
   );
+}
+
+async function loadGpx(url: string): Promise<RouteTrack> {
+  const res = await fetch(url, { cache: 'force-cache' });
+  if (!res.ok) throw new Error(`GPX ${res.status}`);
+  return parseGpxText(await res.text());
 }

@@ -6,6 +6,7 @@ import { addDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
 import { ArrowLeft, ChevronLeft, ChevronRight, Moon, Plus } from 'lucide-react';
+import { FitPreview } from '@/components/app/fit-preview';
 import { RouteMap } from '@/components/app/route-map';
 import { AttachmentLinks, CoachNote } from '@/components/schedule-view';
 import { gpxProxyUrl, isGpxUrl } from '@/lib/gpx-proxy-url';
@@ -114,6 +115,7 @@ export function DayPager({ schedules, initialFecha }: { schedules: Schedule[]; i
                     note={day.note}
                     fileUrl={day.fileUrl}
                     variantFileUrl={day.variantFileUrl}
+                    variantFitUrl={day.variantFitUrl}
                   />
 
                   {dayExtras(day).map((extra, i) => (
@@ -168,6 +170,7 @@ function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: 
       note={slot.note}
       fileUrl={slot.fileUrl}
       variantFileUrl={slot.variantFileUrl}
+      variantFitUrl={slot.variantFitUrl}
       showTitle={showTitle}
     />
   );
@@ -175,13 +178,14 @@ function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: 
 
 /** Un ejercicio con todo lo que tiene: km, consignas, nota del coach, recorrido y adjuntos. */
 function Exercise({
-  workout, variant, note, fileUrl, variantFileUrl, showTitle,
+  workout, variant, note, fileUrl, variantFileUrl, variantFitUrl, showTitle,
 }: {
   workout: Workout;
   variant: Variant | null;
   note?: string | null;
   fileUrl: string | null;
   variantFileUrl: string | null;
+  variantFitUrl?: string | null;
   showTitle?: boolean;
 }) {
   // Roberto a veces sube el GPX como archivo del ejercicio y no de la variante:
@@ -206,9 +210,11 @@ function Exercise({
       )}
       {note && <CoachNote note={note} />}
       {mapUrl && <RouteMap gpxUrl={gpxProxyUrl(mapUrl)} />}
+      {variantFitUrl && <FitPreview url={gpxProxyUrl(variantFitUrl)} showRoute={!mapUrl} />}
       <AttachmentLinks
         fileUrl={fileUrl}
         variantFileUrl={variantFileUrl}
+        variantFitUrl={variantFitUrl}
         workoutLink={workout.link}
         variantLink={variant?.link}
       />

@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
 
   return new NextResponse(buffer, {
     headers: {
-      "Content-Type": "application/gpx+xml",
+      // Pasa GPX y también .fit (binario): se respeta lo que dice el panel.
+      "Content-Type": res.headers.get("content-type") ?? "application/octet-stream",
       "Content-Disposition": contentDisposition,
     },
   });
