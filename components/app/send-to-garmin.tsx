@@ -40,16 +40,16 @@ export function SendToGarminButton({ fitUrl, className }: { fitUrl: string; clas
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={cn(className, 'border-[#007CC3]/50 bg-[#007CC3]/15 text-white hover:bg-[#007CC3]/25')}
+        className={cn(className, 'gap-2 border-transparent bg-[#007CC3] font-semibold text-white hover:bg-[#0069a8]')}
       >
-        Enviar a <GarminLogo className="h-5 w-auto" />
+        Enviar a <GarminLogo className="ml-0.5 h-[9px] w-auto" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="rounded-t-3xl border-border bg-neutral-950 px-0 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
           <SheetHeader className="px-5 pb-0">
             <SheetTitle className="flex items-center gap-2 text-left">
-              Enviar a tu <GarminLogo className="h-7 w-auto text-white" />
+              Enviar a tu <GarminLogo className="ml-0.5 h-[13px] w-auto text-white" />
             </SheetTitle>
             <SheetDescription className="text-left">Funciona solo con relojes Garmin.</SheetDescription>
           </SheetHeader>
