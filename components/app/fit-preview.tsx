@@ -39,6 +39,14 @@ export function FitPreview({ url, showRoute }: { url: string; showRoute: boolean
   }
   if (!preview) return null;
   if (preview.kind === 'route') return showRoute ? <RouteMap track={preview} /> : null;
+  if (preview.kind === 'invalid') {
+    return (
+      <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed text-amber-100">
+        No pudimos leer los pasos de {preview.name ? <strong>{preview.name}</strong> : 'este entrenamiento'}. Puede que el
+        archivo esté mal armado y que tu reloj tampoco lo acepte: avisale a tu coach.
+      </p>
+    );
+  }
   if (preview.kind !== 'workout') return null;
 
   const totals = [
@@ -67,7 +75,10 @@ export function FitPreview({ url, showRoute }: { url: string; showRoute: boolean
         ))}
       </ol>
       <p className="border-t border-border px-4 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
-        Descargá el archivo .fit y cargalo en la app de tu reloj (Garmin Connect, Coros, Suunto…) para que te guíe paso a paso.
+        {/* Las apps del celular (Garmin Connect, COROS) no importan entrenamientos desde un archivo: no prometerlo. */}
+        Con un Garmin: conectalo a la compu y copiá el .fit a la carpeta <span className="font-mono">GARMIN/NewFiles</span>.
+        Aparece en Entrenamientos.
+
       </p>
     </section>
   );

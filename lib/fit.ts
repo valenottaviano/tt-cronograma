@@ -30,6 +30,8 @@ export type FitPreview =
       totalMeters: number;
     }
   | { kind: 'route'; name: string | null; points: FitPoint[]; distanceKm: number; elevationGain: number }
+  /** Tiene pasos, pero no se entienden: el programa que lo armó lo hizo mal, y el reloj tampoco lo va a leer. */
+  | { kind: 'invalid'; name: string | null }
   | { kind: 'other' };
 
 // El SDK no trae tipos útiles para los mensajes: se leen como registros sueltos.
@@ -39,7 +41,7 @@ const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFi
 const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v.trim() : null);
 
 export async function parseFit(bytes: ArrayBuffer): Promise<FitPreview> {
-  const { Decoder, Stream } = await import('@garmin/fitsdk');
+  const { Decoder, Profile, Stream } = await import('@garmin/fitsdk');
   const decoder = new Decoder(Stream.fromArrayBuffer(bytes));
   if (!decoder.isFIT()) throw new Error('No es un archivo FIT');
   const { messages } = decoder.read() as unknown as { messages: Record<string, Mesg[] | undefined> };
@@ -47,6 +49,10 @@ export async function parseFit(bytes: ArrayBuffer): Promise<FitPreview> {
   const steps = messages.workoutStepMesgs ?? [];
   if (steps.length) {
     const workout = messages.workoutMesgs?.[0] ?? {};
+    // Pasó con un .fit armado a mano: los campos corridos de lugar, y el nombre
+    // del paso leído como si fuera su duración. Mejor avisar que mostrar pasos vacíos.
+    const durations = new Set<unknown>(Object.values(Profile.types.wktStepDuration));
+    if (!steps.every((s) => durations.has(s.durationType))) return { kind: 'invalid', name: str(workout.wktName) };
     return { kind: 'workout', name: str(workout.wktName), sport: str(workout.sport), ...buildSteps(steps, str(workout.sport)) };
   }
 
