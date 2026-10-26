@@ -66,6 +66,11 @@ export function Footer() {
             derechos reservados.
           </p>
           <p className="text-xs">
+            <Link href="/privacidad" className="hover:text-white transition-colors underline underline-offset-4">
+              Política de privacidad
+            </Link>
+          </p>
+          <p className="text-xs">
             Programado con ❤️ por{" "}
             <a
               href="https://wa.me/5493816003467"
