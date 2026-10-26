@@ -74,12 +74,6 @@ export function FitPreview({ url, showRoute }: { url: string; showRoute: boolean
           <StepRow key={i} step={step} />
         ))}
       </ol>
-      <p className="border-t border-border px-4 py-2.5 text-[11px] leading-relaxed text-muted-foreground">
-        {/* Las apps del celular (Garmin Connect, COROS) no importan entrenamientos desde un archivo: no prometerlo. */}
-        Con un Garmin: conectalo a la compu y copiá el .fit a la carpeta <span className="font-mono">GARMIN/NewFiles</span>.
-        Aparece en Entrenamientos.
-
-      </p>
     </section>
   );
 }

@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Schedule, Day } from "@/lib/coachApi";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   CalendarX,
@@ -20,8 +19,9 @@ import {
   Moon,
   Plus,
   Route,
-  Watch,
 } from "lucide-react";
+import { SendToGarminButton } from "@/components/app/send-to-garmin";
+import { downloadFile } from "@/lib/download-file";
 import { AppHeader } from "@/components/app/app-header";
 import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
 import { dayExtras, parseLocalDate, scheduleTotalDays, sessionTitle } from "@/lib/athlete-days";
@@ -300,40 +300,6 @@ interface AttachmentProps {
   variantLink?: string | null;
 }
 
-// Safari iOS ignores Content-Disposition: attachment and navigates away when clicking
-// a plain anchor. Fetching as a blob and using createObjectURL keeps the user on the page.
-async function downloadGpxBlob(proxyUrl: string) {
-  try {
-    const res = await fetch(proxyUrl);
-    // Una descarga que falla en silencio se vive como un botón roto: el atleta
-    // toca, no pasa nada, y no hay forma de saber que el servidor dijo que no.
-    if (!res.ok) {
-      toast.error(
-        res.status === 401
-          ? "Tu sesión venció. Volvé a entrar para descargar el archivo."
-          : "No pudimos descargar el archivo. Probá de nuevo en un rato."
-      );
-      console.error("GPX download failed", res.status, proxyUrl);
-      return;
-    }
-    const cd = res.headers.get("content-disposition") ?? "";
-    const match = cd.match(/filename[^;=\n]*=["']?([^"'\n;]+)["']?/);
-    const filename = match ? match[1].trim() : "track.gpx";
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-  } catch (err) {
-    toast.error("No pudimos descargar el archivo. Revisá tu conexión.");
-    console.error("GPX download failed", err);
-  }
-}
-
 // Full pill buttons — used in the mobile card
 /** Comentario que el coach dejó sobre un ejercicio puntual. */
 export function CoachNote({ note }: { note: string }) {
@@ -352,7 +318,6 @@ export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workou
   const downloads = [
     fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
     variantFileUrl && { proxyUrl: gpxProxyUrl(variantFileUrl), icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
-    variantFitUrl  && { proxyUrl: gpxProxyUrl(variantFitUrl),  icon: <Watch className="w-3.5 h-3.5" />,    label: "Archivo .fit", cls: "bg-violet-500/10 text-violet-300 border-violet-500/30 hover:bg-violet-500/20" },
   ].filter(Boolean) as { proxyUrl: string; icon: React.ReactNode; label: string; cls: string }[];
 
   const links = [
@@ -360,17 +325,18 @@ export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workou
     variantLink && { href: variantLink, icon: <ExternalLink className="w-3.5 h-3.5" />, label: "Más info", cls: "bg-blue-500/10 text-blue-400 border-blue-500/30 hover:bg-blue-500/20" },
   ].filter(Boolean) as { href: string; icon: React.ReactNode; label: string; cls: string }[];
 
-  if (downloads.length === 0 && links.length === 0) return null;
+  if (downloads.length === 0 && links.length === 0 && !variantFitUrl) return null;
 
   const pillCls = "inline-flex items-center gap-1.5 px-3 h-[36px] rounded-full border text-xs font-medium transition-colors";
 
   return (
     <div className="flex flex-wrap gap-2 pt-2">
+      {variantFitUrl && <SendToGarminButton fitUrl={gpxProxyUrl(variantFitUrl)} className={pillCls} />}
       {downloads.map((item) => (
         <button
           key={item.proxyUrl}
           type="button"
-          onClick={() => downloadGpxBlob(item.proxyUrl)}
+          onClick={() => downloadFile(item.proxyUrl)}
           className={`${pillCls} ${item.cls}`}
         >
           {item.icon}
@@ -746,6 +712,7 @@ export function MobileDayCard({
               <AttachmentLinks
                 fileUrl={day?.fileUrl}
                 variantFileUrl={day?.variantFileUrl}
+                variantFitUrl={day?.variantFitUrl}
                 workoutLink={day?.workout?.link}
                 variantLink={day?.variant?.link}
               />
@@ -765,6 +732,7 @@ export function MobileDayCard({
                   <AttachmentLinks
                     fileUrl={extra.fileUrl}
                     variantFileUrl={extra.variantFileUrl}
+                    variantFitUrl={extra.variantFitUrl}
                     workoutLink={extra.workout.link}
                     variantLink={extra.variant?.link}
                   />
@@ -786,6 +754,7 @@ export function MobileDayCard({
                       <AttachmentLinks
                         fileUrl={opt.fileUrl}
                         variantFileUrl={opt.variantFileUrl}
+                        variantFitUrl={opt.variantFitUrl}
                         workoutLink={opt.workout.link}
                         variantLink={opt.variant?.link}
                       />
