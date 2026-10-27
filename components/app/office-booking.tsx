@@ -7,6 +7,7 @@ import { CalendarCheck, CalendarX, Loader2, MessageCircle, X } from 'lucide-reac
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
 import type { Appointment, AppointmentSlot, AppointmentsData } from '@/lib/coachApi';
+import { useKeyboardInset } from '@/hooks/use-keyboard-inset';
 import { helpWhatsappUrl } from '@/lib/help-contact';
 import { cn } from '@/lib/utils';
 
@@ -74,6 +75,7 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
     days.find(([k, daySlots]) => k === selectedDay && daySlots.length > 0) ?? days.find(([, daySlots]) => daySlots.length > 0);
 
   const [picked, setPicked] = useState<AppointmentSlot | null>(null);
+  const keyboardInset = useKeyboardInset(picked !== null);
   const [reason, setReason] = useState('');
   const [booking, setBooking] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -238,7 +240,12 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
       </div>
 
       <Sheet open={picked !== null} onOpenChange={(open) => !open && setPicked(null)}>
-        <SheetContent side="bottom" className="rounded-t-3xl border-border bg-neutral-950 px-0 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+        <SheetContent
+          side="bottom"
+          className="max-h-[85dvh] overflow-y-auto rounded-t-3xl border-border bg-neutral-950 px-0 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+          // Con el teclado abierto, la hoja se apoya arriba del teclado en vez de quedar detrás.
+          style={keyboardInset ? { bottom: keyboardInset, maxHeight: `calc(100dvh - ${keyboardInset}px - 1rem)`, paddingBottom: '1rem' } : undefined}
+        >
           {picked && (
             <>
               <SheetHeader className="px-5">
