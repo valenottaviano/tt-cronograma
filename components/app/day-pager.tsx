@@ -116,6 +116,7 @@ export function DayPager({ schedules, initialFecha }: { schedules: Schedule[]; i
                     fileUrl={day.fileUrl}
                     variantFileUrl={day.variantFileUrl}
                     variantFitUrl={day.variantFitUrl}
+                    date={fecha}
                   />
 
                   {dayExtras(day).map((extra, i) => (
@@ -123,7 +124,7 @@ export function DayPager({ schedules, initialFecha }: { schedules: Schedule[]; i
                       <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-brand-orange">
                         <Plus className="h-3.5 w-3.5" /> En la misma sesión
                       </p>
-                      <ExerciseFromSlot slot={extra} showTitle />
+                      <ExerciseFromSlot slot={extra} date={fecha} showTitle />
                     </section>
                   ))}
 
@@ -131,7 +132,7 @@ export function DayPager({ schedules, initialFecha }: { schedules: Schedule[]; i
                     <section className="space-y-5 border-t border-border pt-5">
                       <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Opcionales</p>
                       {optionals.map((opt, i) => (
-                        <ExerciseFromSlot key={i} slot={opt} showTitle />
+                        <ExerciseFromSlot key={i} slot={opt} date={fecha} showTitle />
                       ))}
                     </section>
                   )}
@@ -162,7 +163,7 @@ function Empty({ text }: { text: string }) {
   return <p className="py-16 text-center text-sm text-muted-foreground">{text}</p>;
 }
 
-function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: boolean }) {
+function ExerciseFromSlot({ slot, date, showTitle }: { slot: OptionalDay; date: string; showTitle?: boolean }) {
   return (
     <Exercise
       workout={slot.workout}
@@ -171,6 +172,7 @@ function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: 
       fileUrl={slot.fileUrl}
       variantFileUrl={slot.variantFileUrl}
       variantFitUrl={slot.variantFitUrl}
+      date={date}
       showTitle={showTitle}
     />
   );
@@ -178,7 +180,7 @@ function ExerciseFromSlot({ slot, showTitle }: { slot: OptionalDay; showTitle?: 
 
 /** Un ejercicio con todo lo que tiene: km, consignas, nota del coach, recorrido y adjuntos. */
 function Exercise({
-  workout, variant, note, fileUrl, variantFileUrl, variantFitUrl, showTitle,
+  workout, variant, note, fileUrl, variantFileUrl, variantFitUrl, date, showTitle,
 }: {
   workout: Workout;
   variant: Variant | null;
@@ -186,6 +188,8 @@ function Exercise({
   fileUrl: string | null;
   variantFileUrl: string | null;
   variantFitUrl?: string | null;
+  /** El día que se ve, YYYY-MM-DD: es el que se agenda en Garmin Connect. */
+  date: string;
   showTitle?: boolean;
 }) {
   // Roberto a veces sube el GPX como archivo del ejercicio y no de la variante:
@@ -217,6 +221,8 @@ function Exercise({
         variantFitUrl={variantFitUrl}
         workoutLink={workout.link}
         variantLink={variant?.link}
+        variant={variant}
+        date={date}
       />
     </div>
   );

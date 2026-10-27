@@ -267,6 +267,8 @@ export interface Variant {
   km: number | null;
   gpxKey: string | null;
   fitKey?: string | null;
+  /** El entrenamiento armado en el panel. Sólo si existe se puede mandar a Garmin Connect. */
+  fitWorkout?: unknown;
 }
 
 /** Slot de ejercicio: se usa tanto para `optionals` como para `extras`. */
@@ -690,4 +692,31 @@ export function connectStrava(input: { code: string; state: string; scope: strin
 
 export function disconnectStrava(token: string) {
   return del('/api/v1/athlete/strava', token);
+}
+
+// --- Garmin -------------------------------------------------------------------
+
+/** `enabled: false` mientras Garmin esté habilitado sólo para algunos atletas. */
+export type GarminState =
+  | { enabled: false }
+  | { enabled: true; connected: boolean; canSend: boolean };
+
+export function getGarmin(token: string) {
+  return get<GarminState>('/api/v1/athlete/garmin', token);
+}
+
+export function getGarminAuthorizeUrl(token: string) {
+  return post<{ url: string }>('/api/v1/athlete/garmin/authorize', {}, token);
+}
+
+export function connectGarmin(input: { code: string; state: string }, token: string) {
+  return post<null>('/api/v1/athlete/garmin/connect', input, token);
+}
+
+export function disconnectGarmin(token: string) {
+  return del('/api/v1/athlete/garmin', token);
+}
+
+export function sendToGarmin(input: { variantId: string; date: string }, token: string) {
+  return post<{ alreadySent: boolean }>('/api/v1/athlete/garmin/send', input, token);
 }

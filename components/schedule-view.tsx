@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { Schedule, Day } from "@/lib/coachApi";
+import { Schedule, Day, Variant } from "@/lib/coachApi";
 import { Button } from "@/components/ui/button";
 import {
   CalendarX,
@@ -20,7 +20,7 @@ import {
   Plus,
   Route,
 } from "lucide-react";
-import { SendToGarminButton } from "@/components/app/send-to-garmin";
+import { SendToGarminButton } from "@/components/garmin/send-to-garmin";
 import { downloadFile } from "@/lib/download-file";
 import { AppHeader } from "@/components/app/app-header";
 import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
@@ -298,6 +298,9 @@ interface AttachmentProps {
   variantFitUrl?: string | null;
   workoutLink?: string | null;
   variantLink?: string | null;
+  /** Para "Enviar a Garmin Connect": la variante y el día (YYYY-MM-DD) que se agendan. */
+  variant?: Variant | null;
+  date?: string;
 }
 
 // Full pill buttons — used in the mobile card
@@ -314,7 +317,7 @@ export function CoachNote({ note }: { note: string }) {
   );
 }
 
-export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workoutLink, variantLink }: AttachmentProps) {
+export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workoutLink, variantLink, variant, date }: AttachmentProps) {
   const downloads = [
     fileUrl        && { proxyUrl: gpxProxyUrl(fileUrl),        icon: <Download className="w-3.5 h-3.5" />, label: "Descargar", cls: "bg-brand-orange/10 text-brand-orange border-brand-orange/30 hover:bg-brand-orange/20" },
     variantFileUrl && { proxyUrl: gpxProxyUrl(variantFileUrl), icon: <Map className="w-3.5 h-3.5" />,      label: "Recorrido", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20" },
@@ -331,7 +334,15 @@ export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workou
 
   return (
     <div className="flex flex-wrap gap-2 pt-2">
-      {variantFitUrl && <SendToGarminButton fitUrl={gpxProxyUrl(variantFitUrl)} className={pillCls} />}
+      {variantFitUrl && (
+        <SendToGarminButton
+          fitUrl={gpxProxyUrl(variantFitUrl)}
+          variantId={variant?.id}
+          date={date}
+          sendable={variant?.fitWorkout != null}
+          className={pillCls}
+        />
+      )}
       {downloads.map((item) => (
         <button
           key={item.proxyUrl}
@@ -715,6 +726,8 @@ export function MobileDayCard({
                 variantFitUrl={day?.variantFitUrl}
                 workoutLink={day?.workout?.link}
                 variantLink={day?.variant?.link}
+                variant={day?.variant}
+                date={format(date, "yyyy-MM-dd")}
               />
               {extras.map((extra, i) => (
                 <div key={i} className="pt-3 border-t border-border/40">
@@ -735,6 +748,8 @@ export function MobileDayCard({
                     variantFitUrl={extra.variantFitUrl}
                     workoutLink={extra.workout.link}
                     variantLink={extra.variant?.link}
+                    variant={extra.variant}
+                    date={format(date, "yyyy-MM-dd")}
                   />
                 </div>
               ))}
@@ -757,6 +772,8 @@ export function MobileDayCard({
                         variantFitUrl={opt.variantFitUrl}
                         workoutLink={opt.workout.link}
                         variantLink={opt.variant?.link}
+                        variant={opt.variant}
+                        date={format(date, "yyyy-MM-dd")}
                       />
                     </div>
                   ))}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
  * dato o un servicio nuevo que procese datos de los atletas, actualizarla
  * (y la fecha de abajo).
  */
-const UPDATED = "26 de octubre de 2026";
+const UPDATED = "27 de octubre de 2026";
 const RESPONSIBLE = "Roberto Parodi";
 const EMAIL = "rparodi26@gmail.com";
 
@@ -149,7 +149,7 @@ export default function PrivacyPage() {
           <section>
             <h2>Tus derechos</h2>
             <p>
-              Podés pedir ver, corregir o borrar tus datos escribiendo a{" "}
+              Podés pedir ver, corregir, exportar o borrar tus datos, o retirar tu consentimiento, escribiendo a{" "}
               <a href={`mailto:${EMAIL}`} className="text-brand-orange underline underline-offset-4">{EMAIL}</a>, y te
               respondemos dentro de los plazos de la Ley 25.326 de Protección de Datos Personales. La Agencia de
               Acceso a la Información Pública, como órgano de control de esa ley, atiende las denuncias y reclamos
@@ -171,8 +171,8 @@ export default function PrivacyPage() {
               shown only to the athlete they belong to, and Garmin is used only to send the coach&apos;s workouts to the
               athlete&apos;s Garmin Connect calendar (we do not read activity or health data). Tokens are stored
               encrypted, and disconnecting deletes the related data immediately. Data is stored on our own server;
-              the website is hosted on Vercel and account emails are sent through Resend. To access, correct or
-              delete your data, email {EMAIL}.
+              the website is hosted on Vercel and account emails are sent through Resend. To access, correct, export or
+              delete your data, or withdraw consent, email {EMAIL}.
             </p>
           </section>
         </article>
