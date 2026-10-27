@@ -4,6 +4,7 @@ import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, Receipt, TreePalm, User, UserRoundPen } from 'lucide-react';
 import { InstallAppCard } from '@/components/app/install-app-card';
+import { RefreshOnReturn } from '@/components/app/refresh-on-return';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { MobileDayCard } from '@/components/schedule-view';
@@ -211,6 +212,8 @@ export default async function InicioPage({ searchParams }: { searchParams: Promi
           {/* ── Lo que hizo, según su Strava ── */}
           <StravaSection state={strava} today={today} />
           <StravaFlash result={stravaResult} />
+          {/* Puede vincular Strava en el navegador (app instalada) y volver. */}
+          {strava?.enabled && !strava.connected && <RefreshOnReturn />}
           {/* En la compu, las 12 semanas van acá para emparejar las columnas. */}
           <StravaStatsCards state={strava} today={today} part="weeks" className="hidden lg:block" />
         </div>

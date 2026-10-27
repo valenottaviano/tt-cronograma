@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ProfileMenu } from '@/components/app/profile-menu';
+import { RefreshOnReturn } from '@/components/app/refresh-on-return';
 import { ProfileView } from '@/components/profile-view';
 import { TrainingPrefs } from '@/components/app/training-prefs';
 import { GarminFlash } from '@/components/garmin/garmin-flash';
@@ -47,6 +48,7 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
         </section>
       )}
       <GarminFlash result={garminResult} />
+      {linkedApps && <RefreshOnReturn />}
     </ProfileView>
   );
 }

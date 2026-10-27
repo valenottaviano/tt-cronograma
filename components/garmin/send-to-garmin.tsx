@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -19,7 +19,11 @@ const CABLE_STEPS = [
   <>Desconectalo: el entrenamiento aparece en <span className="font-semibold text-foreground">Entrenamientos</span>, listo para empezar.</>,
 ];
 
-/** El estado de Garmin del atleta: se pregunta una vez por carga de página, lo comparten todos los botones. */
+/**
+ * El estado de Garmin del atleta: lo comparten todos los botones y se vuelve a
+ * preguntar cuando el atleta regresa a la app (puede haber vinculado la cuenta
+ * en el navegador mientras tanto).
+ */
 let garminState: Promise<GarminState> | null = null;
 function loadGarminState(): Promise<GarminState> {
   garminState ??= fetch('/api/client/garmin')
@@ -54,6 +58,14 @@ export function SendToGarminButton({
 }) {
   const [sheet, setSheet] = useState<'connect' | 'cable' | null>(null);
   const [sending, setSending] = useState<Sending>('idle');
+
+  useEffect(() => {
+    function onChange() {
+      if (document.visibilityState === 'visible') garminState = null;
+    }
+    document.addEventListener('visibilitychange', onChange);
+    return () => document.removeEventListener('visibilitychange', onChange);
+  }, []);
 
   async function onClick() {
     const state = await loadGarminState();

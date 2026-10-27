@@ -2,14 +2,9 @@
 
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { LINK_RESULT_MESSAGES } from '@/lib/linked-app-messages';
 
-const MESSAGES: Record<string, { kind: 'success' | 'error' | 'message'; text: string }> = {
-  connected: { kind: 'success', text: '¡Listo! Vinculaste tu Strava. Estamos trayendo tus actividades.' },
-  cancelled: { kind: 'message', text: 'No se vinculó Strava. Podés hacerlo cuando quieras.' },
-  taken: { kind: 'error', text: 'Esa cuenta de Strava ya está vinculada a otro atleta.' },
-  scope: { kind: 'error', text: 'Para ver tus estadísticas, dejá marcado el permiso de ver tus actividades.' },
-  error: { kind: 'error', text: 'No pudimos vincular Strava. Probá de nuevo en un momento.' },
-};
+const MESSAGES = LINK_RESULT_MESSAGES.strava;
 
 /** El resultado de volver de Strava (`?strava=`): se avisa una vez y se limpia la URL. */
 export function StravaFlash({ result }: { result?: string }) {

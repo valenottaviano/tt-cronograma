@@ -686,8 +686,9 @@ export function getStravaAuthorizeUrl(token: string) {
   return post<{ url: string }>('/api/v1/athlete/strava/authorize', {}, token);
 }
 
-export function connectStrava(input: { code: string; state: string; scope: string }, token: string) {
-  return post<null>('/api/v1/athlete/strava/connect', input, token);
+/** Sin token: el panel identifica al atleta por el `state` (la vuelta cae en el navegador, sin sesión). */
+export function connectStrava(input: { code: string; state: string; scope: string }, token?: string) {
+  return post<{ athleteName: string }>('/api/v1/athlete/strava/connect', input, token);
 }
 
 export function disconnectStrava(token: string) {
@@ -709,8 +710,9 @@ export function getGarminAuthorizeUrl(token: string) {
   return post<{ url: string }>('/api/v1/athlete/garmin/authorize', {}, token);
 }
 
-export function connectGarmin(input: { code: string; state: string }, token: string) {
-  return post<null>('/api/v1/athlete/garmin/connect', input, token);
+/** Sin token: el panel identifica al atleta por el `state` (la vuelta cae en el navegador, sin sesión). */
+export function connectGarmin(input: { code: string; state: string }, token?: string) {
+  return post<{ athleteName: string }>('/api/v1/athlete/garmin/connect', input, token);
 }
 
 export function disconnectGarmin(token: string) {

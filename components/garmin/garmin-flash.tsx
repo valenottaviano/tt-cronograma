@@ -2,17 +2,9 @@
 
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { LINK_RESULT_MESSAGES } from '@/lib/linked-app-messages';
 
-const MESSAGES: Record<string, { kind: 'success' | 'error' | 'message'; text: string }> = {
-  connected: { kind: 'success', text: '¡Listo! Vinculaste Garmin Connect. Ya podés mandar tus entrenamientos al reloj.' },
-  cancelled: { kind: 'message', text: 'No se vinculó Garmin Connect. Podés hacerlo cuando quieras.' },
-  taken: { kind: 'error', text: 'Esa cuenta de Garmin ya está vinculada a otro atleta.' },
-  permission: {
-    kind: 'error',
-    text: 'Quedó vinculado, pero sin el permiso de importar entrenamientos. Activalo para Grupo TT en Garmin Connect.',
-  },
-  error: { kind: 'error', text: 'No pudimos vincular Garmin Connect. Probá de nuevo en un momento.' },
-};
+const MESSAGES = LINK_RESULT_MESSAGES.garmin;
 
 /** El resultado de volver de Garmin (`?garmin=`): se avisa una vez y se limpia la URL. */
 export function GarminFlash({ result }: { result?: string }) {
