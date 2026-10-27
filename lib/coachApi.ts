@@ -430,6 +430,8 @@ export interface AppointmentsData {
   mine: Appointment[];
   /** Hasta cuántos minutos antes puede cancelar desde la app. */
   cancelNoticeMinutes: number;
+  /** Cuántos días, contando hoy, se ofrecen turnos. */
+  daysAhead?: number;
 }
 
 export function getAppointments(token: string) {

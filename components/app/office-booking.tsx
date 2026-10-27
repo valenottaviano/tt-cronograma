@@ -22,6 +22,15 @@ const dayNumFmt = new Intl.DateTimeFormat('es-AR', { timeZone: TZ, day: 'numeric
 const longDayFmt = new Intl.DateTimeFormat('es-AR', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' });
 
 const time = (iso: string) => timeFmt.format(new Date(iso));
+
+/** Los días que se ofrecen, desde hoy en Argentina: «2026-10-27», «2026-10-28»… */
+function dayKeys(count: number): string[] {
+  const [y, m, d] = dayKeyFmt.format(new Date()).split('-').map(Number);
+  return Array.from({ length: count }, (_, i) => new Date(Date.UTC(y, m - 1, d + i)).toISOString().slice(0, 10));
+}
+
+/** Mediodía en Argentina de ese día, para mostrarlo con los formatos de arriba. */
+const noonOf = (key: string) => new Date(`${key}T15:00:00Z`);
 /** «Martes, 27 de octubre»: sólo la primera en mayúscula (con `capitalize` quedaría «De Octubre»). */
 const longDay = (iso: string) => {
   const s = longDayFmt.format(new Date(iso));
@@ -48,17 +57,21 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
   const [mine, setMine] = useState<Appointment[]>(initial?.mine ?? []);
   const cancelNotice = initial?.cancelNoticeMinutes ?? 120;
 
+  const daysAhead = initial?.daysAhead ?? 21;
+  // Todos los días, también los que no tienen turnos (van grisados): así se
+  // entiende qué días atiende la oficina.
   const days = useMemo(() => {
-    const groups = new Map<string, AppointmentSlot[]>();
+    const groups = new Map<string, AppointmentSlot[]>(dayKeys(daysAhead).map((k) => [k, []]));
     for (const s of slots) {
       const k = dayKeyFmt.format(new Date(s.startsAt));
-      groups.set(k, [...(groups.get(k) ?? []), s]);
+      groups.get(k)?.push(s);
     }
     return [...groups.entries()];
-  }, [slots]);
+  }, [slots, daysAhead]);
 
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const activeDay = days.find(([k]) => k === selectedDay) ?? days[0];
+  const activeDay =
+    days.find(([k, daySlots]) => k === selectedDay && daySlots.length > 0) ?? days.find(([, daySlots]) => daySlots.length > 0);
 
   const [picked, setPicked] = useState<AppointmentSlot | null>(null);
   const [reason, setReason] = useState('');
@@ -185,15 +198,20 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
         {days.map(([k, daySlots]) => {
           const active = k === activeDay[0];
-          const d = new Date(daySlots[0].startsAt);
+          const empty = daySlots.length === 0;
+          const d = noonOf(k);
           return (
             <button
               key={k}
               type="button"
+              disabled={empty}
+              aria-label={empty ? `${longDay(d.toISOString())}: sin turnos` : undefined}
               onClick={() => setSelectedDay(k)}
               className={cn(
                 'flex w-14 shrink-0 flex-col items-center rounded-2xl border py-2 transition-colors',
-                active ? 'border-brand-orange bg-brand-orange/10 text-foreground' : 'border-border bg-neutral-900 text-muted-foreground',
+                active && 'border-brand-orange bg-brand-orange/10 text-foreground',
+                !active && !empty && 'border-border bg-neutral-900 text-foreground',
+                empty && 'border-transparent bg-neutral-900/40 text-muted-foreground/40',
               )}
             >
               <span className="text-[11px] font-bold uppercase">{weekdayFmt.format(d).replace('.', '')}</span>
