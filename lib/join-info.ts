@@ -64,7 +64,7 @@ export const JOIN_SECTIONS: InfoSection[] = [
     icon: "💪",
     title: "Fortalecimiento",
     body: [
-      "Tenés 2 clases semanales de fortalecimiento en el Predio Las Cañas, porque sabemos que correr mejor también implica desarrollar fuerza.",
+      "Tenés beneficios y descuentos en gimnasios locales para hacer tu trabajo de fuerza, porque sabemos que correr mejor también implica desarrollar fuerza.",
     ],
   },
   {
