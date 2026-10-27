@@ -408,6 +408,44 @@ export function endAbsence(id: string, token: string) {
   return del(`/api/v1/athlete/absences/${id}`, token);
 }
 
+// ─── Turnos en la oficina ────────────────────────────────────────────────────
+// El coach carga los horarios en el panel (Turnos) y el atleta saca uno desde
+// el botón de ayuda. Ver roberto-parodi/src/lib/officeAppointments.ts.
+
+export type AppointmentReason = "OFFICE_VISIT" | "TECHNICAL" | "OTHER";
+
+export interface AppointmentSlot {
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface Appointment extends AppointmentSlot {
+  id: string;
+  reason: AppointmentReason;
+  note: string | null;
+}
+
+export interface AppointmentsData {
+  /** Los turnos libres de las próximas semanas, en orden. */
+  slots: AppointmentSlot[];
+  /** Los turnos que ya sacó el atleta y todavía no pasaron. */
+  mine: Appointment[];
+  /** Hasta cuántos minutos antes puede cancelar desde la app. */
+  cancelNoticeMinutes: number;
+}
+
+export function getAppointments(token: string) {
+  return get<AppointmentsData>("/api/v1/athlete/appointments", token);
+}
+
+export function bookAppointment(input: { startsAt: string; reason: AppointmentReason; note?: string | null }, token: string) {
+  return post<Appointment>("/api/v1/athlete/appointments", input, token);
+}
+
+export function cancelAppointment(id: string, token: string) {
+  return del(`/api/v1/athlete/appointments/${id}`, token);
+}
+
 // ─── Solicitudes de ingreso ──────────────────────────────────────────────────
 
 /**

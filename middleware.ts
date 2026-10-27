@@ -34,6 +34,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*', '/schedule/:path*',
-    '/inicio', '/entrenamiento', '/mis-carreras', '/perfil', '/videos', '/beneficios',
+    '/inicio', '/entrenamiento', '/mis-carreras', '/perfil', '/videos', '/beneficios', '/turnos',
   ],
 };
