@@ -6,21 +6,14 @@ import { toast } from 'sonner';
 import { CalendarCheck, CalendarX, Loader2, MessageCircle, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
-import type { Appointment, AppointmentReason, AppointmentSlot, AppointmentsData } from '@/lib/coachApi';
+import type { Appointment, AppointmentSlot, AppointmentsData } from '@/lib/coachApi';
 import { helpWhatsappUrl } from '@/lib/help-contact';
 import { cn } from '@/lib/utils';
 
 /** Las horas se muestran siempre en hora de Argentina, aunque el celular esté en otra zona. */
 const TZ = 'America/Argentina/Buenos_Aires';
-/** Tope de la nota en la API del panel. */
-const NOTE_MAX = 280;
-
-const REASONS: { value: AppointmentReason; label: string; hint: string }[] = [
-  { value: 'OFFICE_VISIT', label: 'Visita a la oficina', hint: 'Charlar sobre tu entrenamiento, objetivos o carreras' },
-  { value: 'TECHNICAL', label: 'Consultoría técnica', hint: 'Técnica de carrera, fuerza, calzado, reloj' },
-  { value: 'OTHER', label: 'Otro', hint: 'Contanos en la nota' },
-];
-const REASON_LABEL = Object.fromEntries(REASONS.map((r) => [r.value, r.label])) as Record<AppointmentReason, string>;
+/** Tope del motivo en la API del panel. */
+const REASON_MAX = 280;
 
 const dayKeyFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ });
 const timeFmt = new Intl.DateTimeFormat('es-AR', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: false });
@@ -68,8 +61,7 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
   const activeDay = days.find(([k]) => k === selectedDay) ?? days[0];
 
   const [picked, setPicked] = useState<AppointmentSlot | null>(null);
-  const [reason, setReason] = useState<AppointmentReason>('OFFICE_VISIT');
-  const [note, setNote] = useState('');
+  const [reason, setReason] = useState('');
   const [booking, setBooking] = useState(false);
   const [cancelling, setCancelling] = useState(false);
 
@@ -84,13 +76,13 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
   }
 
   async function book() {
-    if (!picked || booking) return;
+    if (!picked || booking || !reason.trim()) return;
     setBooking(true);
     try {
       const res = await fetch('/api/client/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startsAt: picked.startsAt, reason, note: note.trim() || null }),
+        body: JSON.stringify({ startsAt: picked.startsAt, reason: reason.trim() }),
       });
       if (res.status === 401) return router.push('/');
       const json = await res.json().catch(() => ({}));
@@ -104,7 +96,7 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
       setMine([json.data]);
       setSlots((prev) => prev.filter((s) => s.startsAt !== picked.startsAt));
       setPicked(null);
-      setNote('');
+      setReason('');
       toast.success('¡Listo! Te esperamos.');
     } catch {
       toast.error('No se pudo sacar el turno. Revisá tu conexión.');
@@ -155,8 +147,7 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
           <p className="text-lg font-semibold tabular-nums">
             {time(current.startsAt)} a {time(current.endsAt)} h
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">{REASON_LABEL[current.reason]}</p>
-          {current.note && <p className="mt-1 text-sm text-muted-foreground">«{current.note}»</p>}
+          <p className="mt-2 text-sm text-muted-foreground">«{current.reason}»</p>
         </div>
         {canCancel ? (
           <button
@@ -240,33 +231,22 @@ export function OfficeBooking({ initial }: { initial: AppointmentsData | null })
               </SheetHeader>
               <div className="space-y-4 px-5">
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Motivo</p>
-                  {REASONS.map((r) => (
-                    <button
-                      key={r.value}
-                      type="button"
-                      onClick={() => setReason(r.value)}
-                      className={cn(
-                        'w-full rounded-2xl border px-4 py-3 text-left transition-colors',
-                        reason === r.value ? 'border-brand-orange bg-brand-orange/10' : 'border-border bg-neutral-900',
-                      )}
-                    >
-                      <span className="block text-sm font-semibold">{r.label}</span>
-                      <span className="block text-xs text-muted-foreground">{r.hint}</span>
-                    </button>
-                  ))}
+                  <label htmlFor="appointment-reason" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    Motivo
+                  </label>
+                  <Textarea
+                    id="appointment-reason"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value.slice(0, REASON_MAX))}
+                    placeholder="¿Sobre qué querés hablar? Ej: revisar mi técnica de carrera, armar el plan para una carrera…"
+                    rows={4}
+                    className="bg-neutral-900"
+                  />
                 </div>
-                <Textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value.slice(0, NOTE_MAX))}
-                  placeholder={reason === 'OTHER' ? '¿Sobre qué querés hablar?' : 'Algo que quieras contarnos antes (opcional)'}
-                  rows={3}
-                  className="bg-neutral-900"
-                />
                 <button
                   type="button"
                   onClick={book}
-                  disabled={booking}
+                  disabled={booking || !reason.trim()}
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-orange py-3.5 text-sm font-bold text-white disabled:opacity-60"
                 >
                   {booking && <Loader2 className="h-4 w-4 animate-spin" />} Confirmar turno

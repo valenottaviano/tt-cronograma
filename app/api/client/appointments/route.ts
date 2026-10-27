@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const created = await bookAppointment(
-      { startsAt: body.startsAt, reason: body.reason, note: body.note ?? null },
+      { startsAt: body.startsAt, reason: body.reason },
       session.token
     );
     return NextResponse.json({ data: created }, { status: 201 });

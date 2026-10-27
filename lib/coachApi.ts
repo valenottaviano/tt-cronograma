@@ -412,8 +412,6 @@ export function endAbsence(id: string, token: string) {
 // El coach carga los horarios en el panel (Turnos) y el atleta saca uno desde
 // el botón de ayuda. Ver roberto-parodi/src/lib/officeAppointments.ts.
 
-export type AppointmentReason = "OFFICE_VISIT" | "TECHNICAL" | "OTHER";
-
 export interface AppointmentSlot {
   startsAt: string;
   endsAt: string;
@@ -421,8 +419,8 @@ export interface AppointmentSlot {
 
 export interface Appointment extends AppointmentSlot {
   id: string;
-  reason: AppointmentReason;
-  note: string | null;
+  /** Para qué viene, escrito por el atleta. */
+  reason: string;
 }
 
 export interface AppointmentsData {
@@ -438,7 +436,7 @@ export function getAppointments(token: string) {
   return get<AppointmentsData>("/api/v1/athlete/appointments", token);
 }
 
-export function bookAppointment(input: { startsAt: string; reason: AppointmentReason; note?: string | null }, token: string) {
+export function bookAppointment(input: { startsAt: string; reason: string }, token: string) {
   return post<Appointment>("/api/v1/athlete/appointments", input, token);
 }
 
