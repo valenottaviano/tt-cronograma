@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { SendToGarminButton } from "@/components/garmin/send-to-garmin";
 import { downloadFile } from "@/lib/download-file";
+import { shareOrDownloadImage } from "@/lib/share-image";
+import { toast } from "sonner";
 import { AppHeader } from "@/components/app/app-header";
 import { gpxProxyUrl } from "@/lib/gpx-proxy-url";
 import { dayExtras, parseLocalDate, scheduleTotalDays, sessionTitle } from "@/lib/athlete-days";
@@ -154,18 +156,17 @@ export function ScheduleView({ schedules, athleteName }: Props) {
     if (isExporting || !exportRef.current) return;
     setIsExporting(true);
     try {
-      const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(exportRef.current, {
+      const { toBlob } = await import("html-to-image");
+      const blob = await toBlob(exportRef.current, {
         cacheBust: true,
         pixelRatio: 2,
         backgroundColor: EX.bg,
         width: 640,
       });
-      const link = document.createElement("a");
-      link.download = `semana-${format(weekStart, "yyyy-MM-dd")}.png`;
-      link.href = dataUrl;
-      link.click();
+      if (!blob) throw new Error("toBlob devolvió null");
+      await shareOrDownloadImage(blob, `semana-${format(weekStart, "yyyy-MM-dd")}.png`);
     } catch (err) {
+      toast.error("No pudimos armar la imagen de la semana. Probá de nuevo.");
       console.error("Export failed", err);
     } finally {
       setIsExporting(false);
