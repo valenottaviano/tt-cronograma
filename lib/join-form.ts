@@ -90,7 +90,6 @@ export const FORM_STEPS: FormStep[] = [
     title: "Logística",
     description: "Dónde y con qué entrenás",
     fields: [
-      { id: "canAttendVenue", label: "¿Podés ir al predio?", type: "select", required: true, options: ["Sí", "No", "A veces"] },
       { id: "hasBike", label: "¿Tenés bicicleta?", type: "select", required: true, options: YES_NO },
       {
         id: "availability",
