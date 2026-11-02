@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Watch } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CorosIcon } from './coros-icon';
 
 /**
  * COROS en Perfil: vincular o desvincular. Desvincular no borra nada en COROS
@@ -31,9 +32,7 @@ export function CorosProfileRow({ connected }: { connected: boolean }) {
   return (
     <div className="space-y-2 rounded-2xl border border-border bg-neutral-900 px-4 py-3">
       <div className="flex items-center gap-3">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white text-black">
-          <Watch className="h-4 w-4" />
-        </span>
+        <CorosIcon className="h-6 w-6" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium">COROS</p>
           <p className="text-xs text-muted-foreground">

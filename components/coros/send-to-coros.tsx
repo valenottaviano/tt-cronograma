@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Loader2, Watch } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CorosIcon } from './coros-icon';
 import type { CorosState } from '@/lib/coachApi';
 import { cn } from '@/lib/utils';
 
@@ -100,7 +101,7 @@ export function SendToCorosButton({
       ) : sending === 'sent' ? (
         <Check className="h-6 w-6 p-1" />
       ) : (
-        <Watch className="h-6 w-6 p-1" />
+        <CorosIcon className="h-6 w-6" />
       )}
       {sending === 'sent' ? 'Enviado a COROS' : 'Enviar a COROS'}
     </button>
