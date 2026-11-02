@@ -2,7 +2,7 @@ import type { LinkedApp } from './oauth-return';
 
 export type LinkResultMessage = { kind: 'success' | 'error' | 'message'; text: string };
 
-/** Lo que se le dice al atleta al volver de vincular Strava o Garmin, según el resultado. */
+/** Lo que se le dice al atleta al volver de vincular Strava, Garmin o COROS, según el resultado. */
 export const LINK_RESULT_MESSAGES: Record<LinkedApp, Record<string, LinkResultMessage>> = {
   strava: {
     connected: { kind: 'success', text: '¡Listo! Vinculaste tu Strava. Estamos trayendo tus actividades.' },
@@ -22,5 +22,12 @@ export const LINK_RESULT_MESSAGES: Record<LinkedApp, Record<string, LinkResultMe
     },
     expired: { kind: 'error', text: 'El enlace venció o ya se usó. Volvé a la app y probá vincular de nuevo.' },
     error: { kind: 'error', text: 'No pudimos vincular Garmin Connect. Probá de nuevo en un momento.' },
+  },
+  coros: {
+    connected: { kind: 'success', text: '¡Listo! Vinculaste COROS. Ya podés mandar tus entrenamientos al reloj.' },
+    cancelled: { kind: 'message', text: 'No se vinculó COROS. Podés hacerlo cuando quieras.' },
+    taken: { kind: 'error', text: 'Esa cuenta de COROS ya está vinculada a otro atleta.' },
+    expired: { kind: 'error', text: 'El enlace venció o ya se usó. Volvé a la app y probá vincular de nuevo.' },
+    error: { kind: 'error', text: 'No pudimos vincular COROS. Probá de nuevo en un momento.' },
   },
 };

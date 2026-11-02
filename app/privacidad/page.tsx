@@ -14,7 +14,7 @@ export const metadata: Metadata = {
  * dato o un servicio nuevo que procese datos de los atletas, actualizarla
  * (y la fecha de abajo).
  */
-const UPDATED = "27 de octubre de 2026";
+const UPDATED = "2 de noviembre de 2026";
 const RESPONSIBLE = "Roberto Parodi";
 const EMAIL = "rparodi26@gmail.com";
 
@@ -107,10 +107,10 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2>Apps vinculadas: Strava y Garmin</h2>
+            <h2>Apps vinculadas: Strava, Garmin y COROS</h2>
             <p className="mb-3">
-              Vincularlas es opcional y lo hacés vos desde tu perfil, autorizando el acceso en la página de Strava o de
-              Garmin. Podés desvincularlas cuando quieras, desde tu perfil o desde la configuración de esas apps.
+              Vincularlas es opcional y lo hacés vos desde tu perfil, autorizando el acceso en la página de Strava, de
+              Garmin o de COROS. Podés desvincularlas cuando quieras, desde tu perfil o desde la configuración de esas apps.
             </p>
             <ul>
               <li>
@@ -123,6 +123,11 @@ export default function PrivacyPage() {
                 <strong className="text-white">Garmin:</strong> sólo enviamos a tu calendario de Garmin Connect los
                 entrenamientos que te arma el coach, para que los veas en tu reloj. No leemos tus actividades ni tus
                 datos de salud. Al desvincular, borramos el acceso guardado.
+              </li>
+              <li>
+                <strong className="text-white">COROS:</strong> sólo enviamos a tu calendario de COROS los entrenamientos
+                que te arma el coach, para que los veas en tu reloj. No leemos tus actividades ni tus datos de salud. Al
+                desvincular, revocamos el acceso y lo borramos.
               </li>
             </ul>
             <p className="mt-3">Los permisos de estas apps se guardan cifrados.</p>
@@ -141,8 +146,8 @@ export default function PrivacyPage() {
             <h2>Cuánto tiempo</h2>
             <p>
               Mientras seas parte del grupo. Si dejás de entrenar con nosotros conservamos tu historial de
-              entrenamiento, salvo que nos pidas que lo borremos. Los datos de Strava y Garmin se borran apenas
-              desvinculás esas apps.
+              entrenamiento, salvo que nos pidas que lo borremos. Los datos de Strava, Garmin y COROS se borran
+              apenas desvinculás esas apps.
             </p>
           </section>
 
@@ -167,9 +172,10 @@ export default function PrivacyPage() {
             <p>
               Grupo TT (data controller: {RESPONSIBLE}, Tucumán, Argentina, {EMAIL}) stores athletes&apos;
               account and training data only to run our coaching service. We do not sell or share personal data,
-              show ads, or use it to train AI. Connecting Strava or Garmin is optional: Strava activity summaries are
+              show ads, or use it to train AI. Connecting Strava, Garmin or COROS is optional: Strava activity summaries are
               shown only to the athlete they belong to, and Garmin is used only to send the coach&apos;s workouts to the
-              athlete&apos;s Garmin Connect calendar (we do not read activity or health data). Tokens are stored
+              athlete&apos;s Garmin Connect calendar, and COROS only to send them to the athlete&apos;s COROS calendar
+              (we do not read activity or health data from either). Tokens are stored
               encrypted, and disconnecting deletes the related data immediately. Data is stored on our own server;
               the website is hosted on Vercel and account emails are sent through Resend. To access, correct, export or
               delete your data, or withdraw consent, email {EMAIL}.

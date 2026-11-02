@@ -760,3 +760,29 @@ export function disconnectGarmin(token: string) {
 export function sendToGarmin(input: { variantId: string; date: string }, token: string) {
   return post<{ alreadySent: boolean }>('/api/v1/athlete/garmin/send', input, token);
 }
+
+// --- COROS --------------------------------------------------------------------
+
+/** `enabled: false` mientras COROS esté habilitado sólo para algunos atletas. */
+export type CorosState = { enabled: false } | { enabled: true; connected: boolean };
+
+export function getCoros(token: string) {
+  return get<CorosState>('/api/v1/athlete/coros', token);
+}
+
+export function getCorosAuthorizeUrl(token: string) {
+  return post<{ url: string }>('/api/v1/athlete/coros/authorize', {}, token);
+}
+
+/** Sin token: el panel identifica al atleta por el `state` (la vuelta cae en el navegador, sin sesión). */
+export function connectCoros(input: { code: string; state: string }, token?: string) {
+  return post<{ athleteName: string }>('/api/v1/athlete/coros/connect', input, token);
+}
+
+export function disconnectCoros(token: string) {
+  return del('/api/v1/athlete/coros', token);
+}
+
+export function sendToCoros(input: { variantId: string; date: string }, token: string) {
+  return post<{ alreadySent: boolean }>('/api/v1/athlete/coros/send', input, token);
+}

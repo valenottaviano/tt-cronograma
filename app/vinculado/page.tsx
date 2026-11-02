@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-const APP_NAMES: Record<LinkedApp, string> = { strava: 'Strava', garmin: 'Garmin Connect' };
+const APP_NAMES: Record<LinkedApp, string> = { strava: 'Strava', garmin: 'Garmin Connect', coros: 'COROS' };
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
- * El final de vincular Strava o Garmin cuando la vuelta cae en el navegador sin
+ * El final de vincular Strava, Garmin o COROS cuando la vuelta cae en el navegador sin
  * sesión: casi siempre, la app instalada en el iPhone. La vinculación ya se hizo;
  * sólo falta que el atleta vuelva a la app, que se actualiza sola al volver.
  * Desde Safari no hay forma de abrir la app instalada, por eso es un texto y no
@@ -22,7 +22,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
  */
 export default async function LinkedPage({ searchParams }: { searchParams: Promise<{ app?: string; result?: string }> }) {
   const { app: appParam, result = 'error' } = await searchParams;
-  const app: LinkedApp = appParam === 'strava' ? 'strava' : 'garmin';
+  const app: LinkedApp = appParam === 'strava' || appParam === 'coros' ? appParam : 'garmin';
   const message = LINK_RESULT_MESSAGES[app][result] ?? LINK_RESULT_MESSAGES[app].error;
   const ok = result === 'connected' || result === 'permission';
   // Para que se note si alguien vinculó su cuenta con el enlace de otro atleta.

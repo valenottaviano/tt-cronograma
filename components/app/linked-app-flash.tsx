@@ -3,20 +3,19 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { LINK_RESULT_MESSAGES } from '@/lib/linked-app-messages';
+import type { LinkedApp } from '@/lib/oauth-return';
 
-const MESSAGES = LINK_RESULT_MESSAGES.garmin;
-
-/** El resultado de volver de Garmin (`?garmin=`): se avisa una vez y se limpia la URL. */
-export function GarminFlash({ result }: { result?: string }) {
+/** El resultado de volver de vincular una app (`?garmin=`, `?coros=`): se avisa una vez y se limpia la URL. */
+export function LinkedAppFlash({ app, result }: { app: LinkedApp; result?: string }) {
   useEffect(() => {
-    const message = result ? MESSAGES[result] : undefined;
+    const message = result ? LINK_RESULT_MESSAGES[app][result] : undefined;
     if (!message) return;
     if (message.kind === 'message') toast(message.text);
     else toast[message.kind](message.text);
     const url = new URL(window.location.href);
-    url.searchParams.delete('garmin');
+    url.searchParams.delete(app);
     window.history.replaceState(window.history.state, '', url);
-  }, [result]);
+  }, [app, result]);
 
   return null;
 }

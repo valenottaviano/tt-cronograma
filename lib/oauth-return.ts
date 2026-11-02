@@ -1,15 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-export type LinkedApp = 'strava' | 'garmin';
+export type LinkedApp = 'strava' | 'garmin' | 'coros';
 
 /** Dónde se muestra el resultado dentro de la app, con sesión. */
-const IN_APP: Record<LinkedApp, string> = { strava: '/inicio', garmin: '/perfil' };
+const IN_APP: Record<LinkedApp, string> = { strava: '/inicio', garmin: '/perfil', coros: '/perfil' };
 
 /** Cookie con el nombre del atleta para la pantalla de "Volvé a la app": no va en la URL. */
 export const LINKED_NAME_COOKIE = 'vinculado_nombre';
 
 /**
- * A dónde mandar al atleta después de volver de Strava o Garmin.
+ * A dónde mandar al atleta después de volver de Strava, Garmin o COROS.
  *
  * Con sesión, a la app, que muestra el aviso (`?strava=` / `?garmin=`). Sin
  * sesión es el caso de la app instalada en el iPhone: Strava y Garmin vuelven al

@@ -21,6 +21,7 @@ import {
   Route,
 } from "lucide-react";
 import { SendToGarminButton } from "@/components/garmin/send-to-garmin";
+import { SendToCorosButton } from "@/components/coros/send-to-coros";
 import { downloadFile } from "@/lib/download-file";
 import { shareOrDownloadImage } from "@/lib/share-image";
 import { toast } from "sonner";
@@ -343,6 +344,9 @@ export function AttachmentLinks({ fileUrl, variantFileUrl, variantFitUrl, workou
           sendable={variant?.fitWorkout != null}
           className={pillCls}
         />
+      )}
+      {variantFitUrl && variant?.id && variant.fitWorkout != null && date && (
+        <SendToCorosButton variantId={variant.id} date={date} className={pillCls} />
       )}
       {downloads.map((item) => (
         <button
