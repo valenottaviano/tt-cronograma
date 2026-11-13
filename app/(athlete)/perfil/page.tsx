@@ -35,6 +35,7 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
     <ProfileView initialProfile={profile} dni={session.dni}>
       <ProfileMenu
         dni={session.dni}
+        medical={profile?.medical}
         payment={
           monthStatus
             ? { year, month, monthLabel: format(now, 'MMMM yyyy', { locale: es }), paid: monthStatus.paid }

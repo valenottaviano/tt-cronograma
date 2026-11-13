@@ -4,13 +4,15 @@ import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Bandage, ChevronRight, CreditCard, DollarSign, HelpCircle, LogOut, Play, ShoppingBag,
+  Bandage, ChevronRight, CreditCard, DollarSign, FileHeart, HelpCircle, LogOut, Play, ShoppingBag,
   type LucideIcon,
 } from 'lucide-react';
 import { AbsencesSheetButton } from '@/components/absences-section';
 import { forgetAppPath } from '@/components/back-to-app';
+import { MEDICAL_COPY, MedicalCertificateDialog } from '@/components/medical-certificate-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
+import type { MedicalCertificate } from '@/lib/coachApi';
 import { cn } from '@/lib/utils';
 
 interface RowProps extends ComponentPropsWithoutRef<'button'> {
@@ -63,9 +65,11 @@ function Group({ children }: { children: ReactNode }) {
 interface Props {
   dni: string;
   payment: { year: number; month: number; monthLabel: string; paid: boolean } | null;
+  /** `undefined` = el panel todavía no tiene aptos: no se muestra la fila. */
+  medical?: MedicalCertificate | null;
 }
 
-export function ProfileMenu({ dni, payment }: Props) {
+export function ProfileMenu({ dni, payment, medical }: Props) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -92,6 +96,22 @@ export function ProfileMenu({ dni, payment }: Props) {
                   ) : (
                     <span className="text-xs font-semibold text-amber-400">Pendiente</span>
                   )
+                }
+              />
+            }
+          />
+        )}
+        {medical !== undefined && (
+          <MedicalCertificateDialog
+            medical={medical}
+            trigger={
+              <MenuRow
+                icon={FileHeart}
+                label="Apto médico"
+                hint={
+                  <span className={cn('text-xs font-semibold', MEDICAL_COPY[medical?.status ?? 'missing'].cls)}>
+                    {MEDICAL_COPY[medical?.status ?? 'missing'].label}
+                  </span>
                 }
               />
             }

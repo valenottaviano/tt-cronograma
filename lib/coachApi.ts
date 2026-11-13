@@ -101,6 +101,21 @@ export interface AthleteProfile {
   hasBike?: boolean | null;
   /** `YYYY-MM-DD`; `null` = no la cargó; ausente = panel viejo. */
   birthDate?: string | null;
+  /** Apto médico; `null` = no lo subió; ausente = panel viejo. */
+  medical?: MedicalCertificate | null;
+}
+
+export type MedicalStatus = 'valid' | 'expiring' | 'expired';
+
+export interface MedicalCertificate {
+  /** `YYYY-MM-DD`: la fecha que firmó el médico. */
+  issuedOn: string;
+  /** `YYYY-MM-DD`: un año después. */
+  expiresOn: string;
+  /** Calculado por el panel. `expiring` = vence en menos de un mes. */
+  status: MedicalStatus;
+  isPdf: boolean;
+  uploadedAt: string;
 }
 
 export interface ClientInfo {

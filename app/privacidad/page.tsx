@@ -14,7 +14,7 @@ export const metadata: Metadata = {
  * dato o un servicio nuevo que procese datos de los atletas, actualizarla
  * (y la fecha de abajo).
  */
-const UPDATED = "2 de noviembre de 2026";
+const UPDATED = "12 de noviembre de 2026";
 const RESPONSIBLE = "Roberto Parodi";
 const EMAIL = "rparodi26@gmail.com";
 
@@ -71,6 +71,10 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong className="text-white">Pagos:</strong> los comprobantes de la cuota mensual que subís.
+              </li>
+              <li>
+                <strong className="text-white">Apto médico:</strong> la foto o el PDF que subís y la fecha en que lo firmó
+                el médico. Ver «Apto médico» más abajo.
               </li>
               <li>
                 <strong className="text-white">Solicitud de ingreso:</strong> las respuestas del formulario de «Sumate», si lo
@@ -134,6 +138,16 @@ export default function PrivacyPage() {
           </section>
 
           <section>
+            <h2>Apto médico</h2>
+            <p>
+              Es un dato de salud, así que lo tratamos con más cuidado: lo guardamos sólo si lo aceptás al subirlo, y
+              lo usamos únicamente para saber si tu apto está vigente. Lo ve sólo el coach. Guardamos el último que
+              subiste (al subir uno nuevo, el anterior se borra), en un espacio privado de nuestro servidor. Lo podés
+              borrar cuando quieras desde tu perfil, y se borra solo si dejás el grupo.
+            </p>
+          </section>
+
+          <section>
             <h2>Dónde se guardan</h2>
             <p>
               En nuestro propio servidor (base de datos y archivos). La web y la app se sirven desde Vercel, y los
@@ -146,8 +160,8 @@ export default function PrivacyPage() {
             <h2>Cuánto tiempo</h2>
             <p>
               Mientras seas parte del grupo. Si dejás de entrenar con nosotros conservamos tu historial de
-              entrenamiento, salvo que nos pidas que lo borremos. Los datos de Strava, Garmin y COROS se borran
-              apenas desvinculás esas apps.
+              entrenamiento, salvo que nos pidas que lo borremos. Tu apto médico, en cambio, se borra cuando dejás
+              el grupo. Los datos de Strava, Garmin y COROS se borran apenas desvinculás esas apps.
             </p>
           </section>
 
@@ -175,7 +189,9 @@ export default function PrivacyPage() {
               show ads, or use it to train AI. Connecting Strava, Garmin or COROS is optional: Strava activity summaries are
               shown only to the athlete they belong to, and Garmin is used only to send the coach&apos;s workouts to the
               athlete&apos;s Garmin Connect calendar, and COROS only to send them to the athlete&apos;s COROS calendar
-              (we do not read activity or health data from either). Tokens are stored
+              (we do not read activity or health data from either). Athletes may upload their medical fitness
+              certificate (health data): it is stored only with their explicit consent, seen only by the coach, kept
+              in private storage (only the latest one), and deleted when they leave or ask. Tokens are stored
               encrypted, and disconnecting deletes the related data immediately. Data is stored on our own server;
               the website is hosted on Vercel and account emails are sent through Resend. To access, correct, export or
               delete your data, or withdraw consent, email {EMAIL}.

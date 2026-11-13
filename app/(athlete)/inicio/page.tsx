@@ -2,8 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Bandage, ChevronRight, Flag, Moon, Plane, QrCode, Receipt, TreePalm, User, UserRoundPen } from 'lucide-react';
+import { Bandage, ChevronRight, FileHeart, Flag, Moon, Plane, QrCode, Receipt, TreePalm, User, UserRoundPen } from 'lucide-react';
 import { InstallAppCard } from '@/components/app/install-app-card';
+import { MedicalCertificateDialog } from '@/components/medical-certificate-dialog';
 import { RefreshOnReturn } from '@/components/app/refresh-on-return';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import { PaymentReminder } from '@/components/payment-reminder';
@@ -73,6 +74,16 @@ export default async function InicioPage({ searchParams }: { searchParams: Promi
   })?.coachNoteExternal;
 
   const missingProfile = profile ? missingProfileFields(profile) : [];
+  // `undefined` = panel sin aptos todavía. Vigente con más de un mes por delante: no se molesta.
+  const medical = profile?.medical;
+  const medicalReminder =
+    medical === undefined || medical?.status === 'valid'
+      ? null
+      : !medical
+        ? 'Subí tu apto médico desde acá: te lleva un minuto.'
+        : medical.status === 'expired'
+          ? 'Tu apto médico venció. Subí el nuevo cuando lo tengas.'
+          : `Tu apto médico vence el ${format(parseLocalDate(medical.expiresOn), "d 'de' MMMM", { locale: es })}. Andá sacando turno.`;
 
   const firstName = cap((session.name ?? '').split(' ')[0]?.toLowerCase() ?? '');
 
@@ -134,6 +145,25 @@ export default async function InicioPage({ searchParams }: { searchParams: Promi
           </p>
           <ChevronRight className="h-4 w-4 shrink-0 text-red-400" />
         </Link>
+      )}
+
+      {/* Recordatorio, no bloqueo: se va solo cuando sube un apto vigente. */}
+      {medicalReminder && (
+        <MedicalCertificateDialog
+          medical={medical ?? null}
+          trigger={
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-left transition-colors hover:bg-amber-500/15"
+            >
+              <FileHeart className="h-5 w-5 shrink-0 text-amber-400" />
+              <p className="flex-1 text-sm">
+                <span className="font-semibold text-amber-300">Apto médico.</span> {medicalReminder}
+              </p>
+              <ChevronRight className="h-4 w-4 shrink-0 text-amber-400" />
+            </button>
+          }
+        />
       )}
 
       {/* Recordatorio, no reclamo: se va solo cuando el atleta notifica el pago del mes. */}
