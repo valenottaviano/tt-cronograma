@@ -4,6 +4,7 @@ import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Bandage, ChevronRight, FileHeart, Flag, Moon, Plane, QrCode, Receipt, TreePalm, User, UserRoundPen } from 'lucide-react';
 import { InstallAppCard } from '@/components/app/install-app-card';
+import { InsuranceIntro } from '@/components/app/insurance-intro';
 import { MedicalCertificateDialog } from '@/components/medical-certificate-dialog';
 import { RefreshOnReturn } from '@/components/app/refresh-on-return';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
@@ -335,6 +336,8 @@ export default async function InicioPage({ searchParams }: { searchParams: Promi
           <InstallAppCard />
         </div>
       </div>
+      {/* Si falta contestar lo de la bici, ese pop-up va primero. */}
+      <InsuranceIntro wait={profile?.hasBike === null} />
     </main>
   );
 }

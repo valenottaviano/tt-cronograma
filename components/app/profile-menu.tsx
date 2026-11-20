@@ -4,7 +4,7 @@ import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Bandage, ChevronRight, CreditCard, DollarSign, FileHeart, HelpCircle, LogOut, Play, ShoppingBag,
+  Bandage, ChevronRight, CreditCard, DollarSign, ExternalLink, FileHeart, HelpCircle, LogOut, Play, ShieldPlus, ShoppingBag,
   type LucideIcon,
 } from 'lucide-react';
 import { AbsencesSheetButton } from '@/components/absences-section';
@@ -13,6 +13,7 @@ import { MEDICAL_COPY, MedicalCertificateDialog } from '@/components/medical-cer
 import { PaymentReminder } from '@/components/payment-reminder';
 import { TTCCredencialDialog } from '@/components/tt-credencial-dialog';
 import type { MedicalCertificate } from '@/lib/coachApi';
+import { INJURY_INSURANCE_URL } from '@/lib/injury-insurance';
 import { cn } from '@/lib/utils';
 
 interface RowProps extends ComponentPropsWithoutRef<'button'> {
@@ -118,6 +119,16 @@ export function ProfileMenu({ dni, payment, medical }: Props) {
           />
         )}
         <AbsencesSheetButton trigger={<MenuRow icon={Bandage} label="Lesión, vacaciones o viaje" />} />
+        <a
+          href={INJURY_INSURANCE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-neutral-800/60"
+        >
+          <ShieldPlus className="h-5 w-5 shrink-0 text-muted-foreground" />
+          <span className="flex-1 text-sm font-medium">Seguro de lesiones</span>
+          <ExternalLink className="h-4 w-4 shrink-0 text-neutral-600" />
+        </a>
       </Group>
 
       <Group>
